@@ -1,0 +1,103 @@
+.oro-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--oro-space-8);
+  min-height: 48px;
+  padding: var(--oro-space-12) var(--oro-space-20);
+  border: 1px solid transparent;
+  border-radius: var(--oro-radius-control);
+  font: 600 16px/24px var(--oro-font-body);
+  color: var(--oro-color-text-primary);
+  cursor: pointer;
+  transition: background-color 180ms var(--oro-easing-standard),
+    border-color 180ms var(--oro-easing-standard),
+    outline-color 180ms var(--oro-easing-standard);
+}
+
+.oro-button:focus-visible {
+  outline: var(--oro-border-focus) solid var(--oro-color-border-focus);
+  outline-offset: -1px;
+}
+
+.oro-button:disabled {
+  background: var(--oro-color-surface-disabled);
+  border-color: var(--oro-color-border-default);
+  color: var(--oro-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.oro-button--primary {
+  background: var(--oro-color-action-primary);
+  border-color: var(--oro-color-action-primary);
+}
+
+.oro-button--primary:hover:not(:disabled) {
+  background: var(--oro-color-action-primary-hover);
+}
+
+.oro-button--primary:active:not(:disabled) {
+  background: var(--oro-color-action-primary-pressed);
+}
+
+.oro-button--secondary {
+  background: var(--oro-color-action-secondary);
+  border-color: var(--oro-color-border-strong);
+}
+
+.oro-button--secondary:hover:not(:disabled) {
+  background: var(--oro-color-action-secondary-hover);
+}
+
+.oro-button--secondary:active:not(:disabled) {
+  background: var(--oro-color-action-secondary-pressed);
+}
+
+.oro-button--tertiary {
+  background: var(--oro-color-action-secondary);
+  border-color: var(--oro-color-action-secondary);
+}
+
+.oro-button--tertiary:hover:not(:disabled) {
+  background: var(--oro-color-surface-subtle);
+}
+
+.oro-button--tertiary:active:not(:disabled) {
+  background: var(--oro-color-surface-selected);
+}
+
+.oro-button--destructive {
+  background: var(--oro-color-action-destructive);
+  border-color: var(--oro-color-action-destructive);
+  color: var(--oro-color-text-inverse);
+}
+
+.oro-button--destructive:hover:not(:disabled),
+.oro-button--destructive:active:not(:disabled) {
+  background: var(--oro-color-action-destructive-hover);
+}
+
+.oro-button__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: oro-button-spin 700ms linear infinite;
+}
+
+@keyframes oro-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oro-button {
+    transition: none;
+  }
+
+  .oro-button__spinner {
+    animation-duration: 1.5s;
+  }
+}

@@ -1,0 +1,172 @@
+/* Layout primitives */
+.oro-container {
+  width: min(calc(100% - 32px), var(--oro-layout-content-max));
+  margin-inline: auto;
+}
+
+.oro-container--wide {
+  width: min(calc(100% - 48px), var(--oro-layout-content-max));
+}
+
+.oro-section {
+  padding-block: var(--oro-space-48);
+}
+
+.oro-section--compact {
+  padding-block: var(--oro-space-32);
+}
+
+.oro-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--oro-space-24);
+}
+
+.oro-stack--tight {
+  gap: var(--oro-space-12);
+}
+
+.oro-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--oro-space-12);
+}
+
+.oro-grid {
+  display: grid;
+  gap: var(--oro-layout-grid-gutter);
+}
+
+.oro-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.oro-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Typography primitives */
+.oro-heading-display,
+.oro-heading-page,
+.oro-heading-section,
+.oro-heading-card {
+  color: var(--oro-color-text-primary);
+  font-family: var(--oro-font-display);
+  font-weight: var(--oro-font-weight-semibold);
+}
+
+.oro-heading-display {
+  font-size: var(--oro-type-display-size);
+  letter-spacing: var(--oro-type-display-tracking);
+  line-height: var(--oro-type-display-line);
+}
+
+.oro-heading-page {
+  font-size: var(--oro-type-page-size);
+  letter-spacing: var(--oro-type-page-tracking);
+  line-height: var(--oro-type-page-line);
+}
+
+.oro-heading-section {
+  font-size: var(--oro-type-section-size);
+  line-height: var(--oro-type-section-line);
+}
+
+.oro-heading-card {
+  font-size: var(--oro-type-card-size);
+  line-height: var(--oro-type-card-line);
+}
+
+.oro-body-lg {
+  font-size: var(--oro-type-body-lg-size);
+  line-height: var(--oro-type-body-lg-line);
+}
+
+.oro-body-md {
+  font-size: var(--oro-type-body-md-size);
+  line-height: var(--oro-type-body-md-line);
+}
+
+.oro-body-supporting {
+  font-size: var(--oro-type-body-md-size);
+  line-height: var(--oro-type-supporting-line);
+}
+
+.oro-label-form,
+.oro-label-button {
+  font-size: var(--oro-type-body-md-size);
+  line-height: var(--oro-type-label-line);
+}
+
+.oro-label-form {
+  font-weight: var(--oro-font-weight-medium);
+}
+
+.oro-label-button {
+  font-weight: var(--oro-font-weight-semibold);
+}
+
+.oro-caption,
+.oro-chart-label {
+  font-size: var(--oro-type-caption-size);
+  line-height: var(--oro-type-caption-line);
+}
+
+.oro-chart-label {
+  font-weight: var(--oro-font-weight-medium);
+}
+
+.oro-data-value {
+  font-size: var(--oro-type-data-size);
+  font-weight: var(--oro-font-weight-medium);
+  letter-spacing: var(--oro-type-page-tracking);
+  line-height: var(--oro-type-data-line);
+}
+
+/* Surface primitives */
+.oro-surface-page {
+  background: var(--oro-color-surface-page);
+}
+
+.oro-surface-card {
+  background: var(--oro-color-surface-card);
+}
+
+.oro-surface-subtle,
+.oro-surface-selected {
+  background: var(--oro-color-surface-subtle);
+}
+
+.oro-card {
+  padding: var(--oro-space-24);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-lg);
+  background: var(--oro-color-surface-card);
+  box-shadow: var(--oro-shadow-level-1);
+}
+
+@media (max-width: 767px) {
+  .oro-container--wide {
+    width: min(calc(100% - 32px), var(--oro-layout-content-max));
+  }
+
+  .oro-section {
+    padding-block: var(--oro-space-32);
+  }
+
+  .oro-heading-display {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .oro-heading-page {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .oro-grid--two,
+  .oro-grid--three {
+    grid-template-columns: 1fr;
+  }
+}
