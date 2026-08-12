@@ -1,35 +1,24 @@
 .oro-button {
   display: inline-flex;
+  min-height: var(--oro-control-height);
   align-items: center;
   justify-content: center;
   gap: var(--oro-space-8);
-  min-height: 48px;
-  padding: var(--oro-space-12) var(--oro-space-20);
-  border: 1px solid transparent;
-  border-radius: var(--oro-radius-control);
-  font: 600 16px/24px var(--oro-font-body);
-  color: var(--oro-color-text-primary);
+  padding: var(--oro-space-8) var(--oro-space-20);
+  border: var(--oro-border-default) solid transparent;
+  border-radius: var(--oro-radius-full);
+  font: var(--oro-font-weight-semibold) var(--oro-type-button-size) /
+    var(--oro-type-button-line) var(--oro-font-body);
   cursor: pointer;
-  transition: background-color 180ms var(--oro-easing-standard),
-    border-color 180ms var(--oro-easing-standard),
-    outline-color 180ms var(--oro-easing-standard);
-}
-
-.oro-button:focus-visible {
-  outline: var(--oro-border-focus) solid var(--oro-color-border-focus);
-  outline-offset: -1px;
-}
-
-.oro-button:disabled {
-  background: var(--oro-color-surface-disabled);
-  border-color: var(--oro-color-border-default);
-  color: var(--oro-color-text-disabled);
-  cursor: not-allowed;
+  transition:
+    background-color var(--oro-duration-standard) var(--oro-easing-standard),
+    border-color var(--oro-duration-standard) var(--oro-easing-standard),
+    color var(--oro-duration-standard) var(--oro-easing-standard);
 }
 
 .oro-button--primary {
   background: var(--oro-color-action-primary);
-  border-color: var(--oro-color-action-primary);
+  color: var(--oro-color-text-inverse);
 }
 
 .oro-button--primary:hover:not(:disabled) {
@@ -41,8 +30,9 @@
 }
 
 .oro-button--secondary {
+  border-color: var(--oro-color-border-selected);
   background: var(--oro-color-action-secondary);
-  border-color: var(--oro-color-border-strong);
+  color: var(--oro-color-text-action);
 }
 
 .oro-button--secondary:hover:not(:disabled) {
@@ -54,35 +44,33 @@
 }
 
 .oro-button--tertiary {
-  background: var(--oro-color-action-secondary);
-  border-color: var(--oro-color-action-secondary);
+  background: transparent;
+  color: var(--oro-color-text-action);
 }
 
-.oro-button--tertiary:hover:not(:disabled) {
+.oro-button--tertiary:hover:not(:disabled),
+.oro-button--tertiary:active:not(:disabled) {
   background: var(--oro-color-surface-subtle);
 }
 
-.oro-button--tertiary:active:not(:disabled) {
-  background: var(--oro-color-surface-selected);
+.oro-button:disabled {
+  border-color: var(--oro-color-border-default);
+  background: var(--oro-color-action-disabled);
+  color: var(--oro-color-text-disabled);
+  cursor: not-allowed;
 }
 
-.oro-button--destructive {
-  background: var(--oro-color-action-destructive);
-  border-color: var(--oro-color-action-destructive);
-  color: var(--oro-color-text-inverse);
-}
-
-.oro-button--destructive:hover:not(:disabled),
-.oro-button--destructive:active:not(:disabled) {
-  background: var(--oro-color-action-destructive-hover);
+.oro-button--tertiary:disabled {
+  border-color: transparent;
+  background: transparent;
 }
 
 .oro-button__spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid currentColor;
+  width: var(--oro-icon-size-sm);
+  height: var(--oro-icon-size-sm);
+  border: var(--oro-border-emphasis) solid currentColor;
   border-right-color: transparent;
-  border-radius: 50%;
+  border-radius: var(--oro-radius-full);
   animation: oro-button-spin 700ms linear infinite;
 }
 
@@ -98,6 +86,6 @@
   }
 
   .oro-button__spinner {
-    animation-duration: 1.5s;
+    animation: none;
   }
 }

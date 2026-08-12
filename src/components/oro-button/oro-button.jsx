@@ -1,15 +1,15 @@
 import './oro-button.css'
 
-const variants = new Set(['primary', 'secondary', 'tertiary', 'destructive'])
+const variants = new Set(['primary', 'secondary', 'tertiary'])
 
-function Button({
+function OroButton({
   children,
   variant = 'primary',
   loading = false,
   disabled = false,
   className = '',
   type = 'button',
-  ...props
+  ...buttonProps
 }) {
   const safeVariant = variants.has(variant) ? variant : 'primary'
   const classes = [
@@ -20,16 +20,16 @@ function Button({
 
   return (
     <button
-      {...props}
+      {...buttonProps}
       type={type}
       className={classes}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
     >
       {loading && <span className="oro-button__spinner" aria-hidden="true" />}
-      <span>{children}</span>
+      <span className="oro-button__label">{children}</span>
     </button>
   )
 }
 
-export default Button
+export default OroButton
