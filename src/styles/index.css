@@ -3,13 +3,11 @@
 @import "./base.css";
 @import "./utilities.css";
 
-@import url("../fonts.css");
-
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-dm-sans);
 }
