@@ -1,4 +1,5 @@
-@font-face {
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@600&display=swap");
+/* @font-face {
   font-family: "Fraunces";
   src: url("/fonts/fraunces-variable.ttf") format("truetype");
   font-display: swap;
@@ -12,9 +13,7 @@
   font-display: swap;
   font-style: normal;
   font-weight: 100 900;
-}
-
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@600&display=swap");
+} */
 
 :root {
   --font-fraunces: "Fraunces", serif;

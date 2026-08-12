@@ -1,0 +1,40 @@
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(133, 147, 143, 1);
+  box-sizing: border-box;
+  gap: 1rem;
+}
+
+.navigation__brand {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  gap: 12px;
+  font-family: var(--font-playfair-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.navigation__logo {
+  display: block;
+  margin-left: 24px;
+}
+
+.navigation__product-name {
+  font-family: var(--font-dem-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 100%;
+}
+
+.navigation__disclaimer {
+  margin: 28px 24px 22px 0;
+  text-align: right;
+  color: rgba(111, 109, 105, 1);
+  white-space: nowrap;
+  font-family: var(--font-dm-sans);
+  font-size: 13px;
+  font-weight: 400;
+}
