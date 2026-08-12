@@ -1,0 +1,41 @@
+.oro-stat-tile {
+  display: flex;
+  width: 100%;
+  max-width: 190px;
+  min-width: 0;
+  min-height: var(--oro-stat-tile-height);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--oro-space-4);
+  padding: var(--oro-space-12);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-control);
+  background: var(--oro-color-surface-subtle);
+}
+
+.oro-stat-tile--strong {
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-surface-selected);
+}
+
+.oro-stat-tile__label,
+.oro-stat-tile__helper {
+  color: var(--oro-color-text-muted);
+  font-size: var(--oro-type-micro-size);
+  line-height: var(--oro-type-micro-line);
+}
+
+.oro-stat-tile__label {
+  font-weight: var(--oro-font-weight-semibold);
+}
+
+.oro-stat-tile__value {
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-data-large-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-data-large-line);
+}
+
+.oro-stat-tile--strong .oro-stat-tile__value {
+  color: var(--oro-color-text-action);
+}
