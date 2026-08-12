@@ -1,0 +1,61 @@
+.oro-cta-banner {
+  display: flex;
+  width: 100%;
+  min-height: 140px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--oro-space-24);
+  padding: var(--oro-space-24);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+}
+
+.oro-cta-banner--concierge-support {
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-surface-selected);
+}
+
+.oro-cta-banner__copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--oro-space-8);
+}
+
+.oro-cta-banner__title {
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-data-large-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-data-line);
+}
+
+.oro-cta-banner__body {
+  max-width: 520px;
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-compact-size);
+  line-height: var(--oro-type-body-compact-line);
+}
+
+.oro-cta-banner__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--oro-space-8);
+}
+
+@media (max-width: 767px) {
+  .oro-cta-banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .oro-cta-banner__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .oro-cta-banner__actions .oro-button {
+    width: 100%;
+  }
+}
