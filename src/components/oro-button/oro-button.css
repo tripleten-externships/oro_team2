@@ -4,11 +4,11 @@
   align-items: center;
   justify-content: center;
   gap: var(--oro-space-8);
-  padding: var(--oro-space-8) var(--oro-space-20);
+  padding: var(--oro-space-12) var(--oro-space-20);
   border: var(--oro-border-default) solid transparent;
-  border-radius: var(--oro-radius-full);
+  border-radius: var(--oro-radius-control);
   font: var(--oro-font-weight-semibold) var(--oro-type-button-size) /
-    var(--oro-type-button-line) var(--oro-font-body);
+    var(--oro-type-button-line) var(--oro-font-control);
   cursor: pointer;
   transition:
     background-color var(--oro-duration-standard) var(--oro-easing-standard),
@@ -18,7 +18,7 @@
 
 .oro-button--primary {
   background: var(--oro-color-action-primary);
-  color: var(--oro-color-text-inverse);
+  color: var(--oro-color-text-primary);
 }
 
 .oro-button--primary:hover:not(:disabled) {
@@ -30,7 +30,7 @@
 }
 
 .oro-button--secondary {
-  border-color: var(--oro-color-border-selected);
+  border-color: var(--oro-color-border-strong);
   background: var(--oro-color-action-secondary);
   color: var(--oro-color-text-action);
 }
@@ -44,7 +44,8 @@
 }
 
 .oro-button--tertiary {
-  background: transparent;
+  border-color: var(--oro-color-surface-card);
+  background: var(--oro-color-surface-card);
   color: var(--oro-color-text-action);
 }
 
@@ -53,24 +54,39 @@
   background: var(--oro-color-surface-subtle);
 }
 
-.oro-button:disabled {
+.oro-button--destructive {
+  border-color: var(--oro-color-action-destructive);
+  background: var(--oro-color-action-destructive);
+  color: var(--oro-color-text-inverse);
+}
+
+.oro-button--destructive:hover:not(:disabled) {
+  border-color: var(--oro-color-action-destructive-hover);
+  background: var(--oro-color-action-destructive-hover);
+}
+
+.oro-button--destructive:active:not(:disabled) {
+  background: var(--oro-color-action-destructive-pressed);
+}
+
+.oro-button:focus-visible {
+  outline-offset: 0;
+}
+
+.oro-button:disabled:not(.oro-button--loading) {
   border-color: var(--oro-color-border-default);
   background: var(--oro-color-action-disabled);
   color: var(--oro-color-text-disabled);
   cursor: not-allowed;
 }
 
-.oro-button--tertiary:disabled {
-  border-color: transparent;
-  background: transparent;
+.oro-button--loading {
+  cursor: wait;
 }
 
 .oro-button__spinner {
   width: var(--oro-icon-size-sm);
   height: var(--oro-icon-size-sm);
-  border: var(--oro-border-emphasis) solid currentColor;
-  border-right-color: transparent;
-  border-radius: var(--oro-radius-full);
   animation: oro-button-spin 700ms linear infinite;
 }
 

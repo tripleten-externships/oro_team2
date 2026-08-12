@@ -1,6 +1,8 @@
 import './oro-button.css'
+import loadingIndicator from '../../assets/icons/oro-button__loading-indicator.svg'
+import loadingIndicatorInverse from '../../assets/icons/oro-button__loading-indicator-inverse.svg'
 
-const variants = new Set(['primary', 'secondary', 'tertiary'])
+const variants = new Set(['primary', 'secondary', 'tertiary', 'destructive'])
 
 function OroButton({
   children,
@@ -12,9 +14,13 @@ function OroButton({
   ...buttonProps
 }) {
   const safeVariant = variants.has(variant) ? variant : 'primary'
+  const spinner = safeVariant === 'destructive'
+    ? loadingIndicatorInverse
+    : loadingIndicator
   const classes = [
     'oro-button',
     `oro-button--${safeVariant}`,
+    loading && 'oro-button--loading',
     className,
   ].filter(Boolean).join(' ')
 
@@ -26,7 +32,14 @@ function OroButton({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
     >
-      {loading && <span className="oro-button__spinner" aria-hidden="true" />}
+      {loading && (
+        <img
+          className="oro-button__spinner"
+          src={spinner}
+          alt=""
+          aria-hidden="true"
+        />
+      )}
       <span className="oro-button__label">{children}</span>
     </button>
   )

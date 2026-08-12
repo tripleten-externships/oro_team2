@@ -1,23 +1,23 @@
-.oro-input-field {
+.oro-dropdown {
   display: flex;
   width: 100%;
   flex-direction: column;
   gap: var(--oro-space-8);
+  font-family: var(--oro-font-control);
 }
 
-.oro-input-field__label {
+.oro-dropdown__label {
   color: var(--oro-color-text-primary);
-  font-family: var(--oro-font-control);
   font-size: var(--oro-type-card-size);
   font-weight: var(--oro-font-weight-medium);
   line-height: var(--oro-type-card-line);
 }
 
-.oro-input-field__control {
+.oro-dropdown__control {
+  position: relative;
   display: flex;
   min-height: var(--oro-field-height);
   align-items: center;
-  gap: var(--oro-space-8);
   overflow: hidden;
   border: var(--oro-border-default) solid var(--oro-color-border-strong);
   border-radius: var(--oro-radius-control);
@@ -27,85 +27,71 @@
     outline-color var(--oro-duration-standard) var(--oro-easing-standard);
 }
 
-.oro-input-field:not(.oro-input-field--disabled) .oro-input-field__control:hover {
+.oro-dropdown:not(.oro-dropdown--disabled) .oro-dropdown__control:hover {
   border-color: var(--oro-color-border-selected);
 }
 
-.oro-input-field__control:focus-within {
+.oro-dropdown__control:focus-within {
   outline: var(--oro-border-focus) solid var(--oro-color-border-focus);
   outline-offset: 1px;
 }
 
-.oro-input-field__affix {
-  flex: 0 0 auto;
-  color: var(--oro-color-text-secondary);
-}
-
-.oro-input-field__affix:first-child {
-  padding-inline-start: var(--oro-space-16);
-}
-
-.oro-input-field__affix:last-child {
-  padding-inline-end: var(--oro-space-16);
-}
-
-.oro-input-field__input {
+.oro-dropdown__select {
   width: 100%;
-  min-width: 0;
   min-height: calc(var(--oro-field-height) - var(--oro-border-emphasis));
-  padding: var(--oro-space-16);
+  padding: var(--oro-space-16) var(--oro-space-48) var(--oro-space-16)
+    var(--oro-space-16);
+  appearance: none;
   border: 0;
   outline: 0;
   background: transparent;
   color: var(--oro-color-text-primary);
-  font-family: var(--oro-font-control);
-  font-size: var(--oro-type-card-size);
-  line-height: var(--oro-type-card-line);
+  font: var(--oro-font-weight-regular) var(--oro-type-card-size) /
+    var(--oro-type-card-line) var(--oro-font-control);
+  cursor: pointer;
 }
 
-.oro-input-field__affix + .oro-input-field__input {
-  padding-inline-start: 0;
-}
-
-.oro-input-field__input:has(+ .oro-input-field__affix) {
-  padding-inline-end: 0;
-}
-
-.oro-input-field__input::placeholder {
+.oro-dropdown__select:has(option[value='']:checked) {
   color: var(--oro-color-text-muted);
 }
 
-.oro-input-field__message {
+.oro-dropdown__icon {
+  position: absolute;
+  right: var(--oro-space-16);
+  pointer-events: none;
+}
+
+.oro-dropdown__message {
   color: var(--oro-color-text-secondary);
-  font-family: var(--oro-font-control);
   font-size: var(--oro-type-body-size);
   line-height: var(--oro-type-body-line);
 }
 
-.oro-input-field--error .oro-input-field__control {
+.oro-dropdown--error .oro-dropdown__control {
   border: var(--oro-border-emphasis) solid var(--oro-color-border-error);
 }
 
-.oro-input-field--error .oro-input-field__message {
+.oro-dropdown--error .oro-dropdown__message {
   color: var(--oro-color-text-error);
 }
 
-.oro-input-field--success .oro-input-field__control {
+.oro-dropdown--success .oro-dropdown__control {
   border: var(--oro-border-emphasis) solid var(--oro-color-border-success);
 }
 
-.oro-input-field--success .oro-input-field__message {
+.oro-dropdown--success .oro-dropdown__message {
   color: var(--oro-color-text-success);
 }
 
-.oro-input-field--disabled .oro-input-field__control {
+.oro-dropdown--disabled .oro-dropdown__control {
   border-color: var(--oro-color-border-default);
   background: var(--oro-color-surface-disabled);
 }
 
-.oro-input-field--disabled .oro-input-field__input,
-.oro-input-field--disabled .oro-input-field__affix,
-.oro-input-field--disabled .oro-input-field__message {
+.oro-dropdown--disabled .oro-dropdown__select,
+.oro-dropdown--disabled .oro-dropdown__message,
+.oro-dropdown--disabled .oro-dropdown__icon {
   color: var(--oro-color-text-disabled);
   cursor: not-allowed;
+  opacity: var(--oro-opacity-disabled);
 }
