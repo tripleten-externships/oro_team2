@@ -1,0 +1,83 @@
+.oro-app-header {
+  display: flex;
+  width: 100%;
+  min-height: var(--oro-layout-header-height);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--oro-space-16);
+  padding: var(--oro-space-16) var(--oro-space-24);
+  border-bottom: var(--oro-border-default) solid var(--oro-color-border-default);
+  background: var(--oro-color-surface-card);
+}
+
+.oro-app-header__brand {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--oro-space-12);
+}
+
+.oro-app-header__wordmark {
+  flex: 0 0 auto;
+  color: var(--oro-color-text-accent);
+  font: var(--oro-font-weight-semibold) var(--oro-type-brand-size) /
+    var(--oro-type-brand-line) var(--oro-font-display);
+  letter-spacing: var(--oro-type-brand-tracking);
+}
+
+.oro-app-header__product {
+  overflow: hidden;
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-button-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-button-line);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oro-app-header__notice {
+  color: var(--oro-color-text-muted);
+  font-size: var(--oro-type-body-small-size);
+  line-height: var(--oro-type-body-small-line);
+  text-align: right;
+}
+
+.oro-app-header__notice--mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .oro-app-header {
+    gap: var(--oro-space-8);
+    padding: var(--oro-space-16);
+  }
+
+  .oro-app-header__brand {
+    gap: var(--oro-space-8);
+  }
+
+  .oro-app-header__wordmark {
+    font-size: var(--oro-type-section-size);
+    line-height: var(--oro-type-section-line);
+  }
+
+  .oro-app-header__product {
+    font-size: var(--oro-type-body-small-size);
+    line-height: var(--oro-type-body-small-line);
+  }
+
+  .oro-app-header__notice {
+    width: 110px;
+    flex: 0 0 110px;
+    font-size: var(--oro-type-nano-size);
+    line-height: var(--oro-type-nano-line);
+  }
+
+  .oro-app-header__notice--desktop {
+    display: none;
+  }
+
+  .oro-app-header__notice--mobile {
+    display: block;
+  }
+}
