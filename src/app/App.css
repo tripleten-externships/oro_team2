@@ -1,19 +1,9 @@
-:root {
-  --color-brand-dark: var(--oro-color-surface-brand);
-  --color-text-primary: var(--oro-color-text-primary);
-  --color-text-secondary: var(--oro-color-text-secondary);
-  --color-border-default: var(--oro-color-border-default);
-  --color-border-strong: var(--oro-color-border-strong);
-  --color-accent-gold: var(--oro-color-action-primary);
-  --color-page-bg: var(--oro-color-surface-page);
-}
-
 .app {
   min-height: 100vh;
-  background: var(--color-page-bg);
+  background: var(--oro-color-surface-page);
 }
 
 .app__content {
-  max-width: 1200px;
+  max-width: var(--oro-layout-content-max);
   margin: 0 auto;
 }

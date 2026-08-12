@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Header from "../components/Header/Header.jsx";
+import { OroAppHeader } from "../components/oro-app-header";
 import StarterPage from "../components/StarterPage/StarterPage.jsx";
 import Questionnaire from "../components/Questionnaire/Questionnaire.jsx";
 import ResultsPanel from "../components/ResultsPanel/ResultsPanel.jsx";
@@ -98,7 +98,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
+      <OroAppHeader />
       <main className="app__content">
         {screen === "starter" && (
           <StarterPage
