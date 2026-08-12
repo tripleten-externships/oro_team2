@@ -1,0 +1,23 @@
+.oro-segmented-control {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: flex-start;
+  padding: var(--oro-space-4);
+  overflow-x: auto;
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-subtle);
+}
+
+.oro-segmented-control .oro-segment:first-child {
+  border-radius: var(--oro-radius-sm) 0 0 var(--oro-radius-sm);
+}
+
+.oro-segmented-control .oro-segment:last-child {
+  border-radius: 0 var(--oro-radius-sm) var(--oro-radius-sm) 0;
+}
+
+.oro-segmented-control .oro-segment + .oro-segment {
+  margin-left: calc(var(--oro-border-default) * -1);
+}

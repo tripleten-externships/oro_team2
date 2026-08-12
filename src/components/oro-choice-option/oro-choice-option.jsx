@@ -1,11 +1,13 @@
 import { useId } from 'react'
-import selectionMarker from '../../assets/icons/oro-choice-option__selection-marker.svg'
 import './oro-choice-option.css'
+
+const choiceTypes = new Set(['radio', 'checkbox'])
 
 function OroChoiceOption({
   id,
   name,
   value,
+  type = 'radio',
   label,
   helper,
   checked = false,
@@ -16,8 +18,10 @@ function OroChoiceOption({
 }) {
   const generatedId = useId()
   const inputId = id || generatedId
+  const safeType = choiceTypes.has(type) ? type : 'radio'
   const classes = [
     'oro-choice-option',
+    `oro-choice-option--${safeType}`,
     checked && 'oro-choice-option--selected',
     disabled && 'oro-choice-option--disabled',
     className,
@@ -29,7 +33,7 @@ function OroChoiceOption({
         {...inputProps}
         className="oro-choice-option__input oro-visually-hidden"
         id={inputId}
-        type="radio"
+        type={safeType}
         name={name}
         value={value}
         checked={checked}
@@ -37,12 +41,11 @@ function OroChoiceOption({
         onChange={onChange}
       />
       <span className="oro-choice-option__marker" aria-hidden="true">
-        {checked && (
-          <img
-            className="oro-choice-option__marker-image"
-            src={selectionMarker}
-            alt=""
-          />
+        {checked && safeType === 'radio' && (
+          <span className="oro-choice-option__selected-dot" />
+        )}
+        {checked && safeType === 'checkbox' && (
+          <span className="oro-choice-option__check">✓</span>
         )}
       </span>
       <span className="oro-choice-option__copy">

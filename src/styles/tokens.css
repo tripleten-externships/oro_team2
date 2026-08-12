@@ -20,6 +20,7 @@
   --oro-color-text-accent: #5b4209;
   --oro-color-text-warning: var(--oro-color-text-accent);
   --oro-color-text-error: #b91b40;
+  --oro-color-text-success: #09453b;
   --oro-color-text-disabled: var(--oro-color-text-muted);
   --oro-color-border-default: #85938f;
   --oro-color-border-strong: #6f6d69;
@@ -27,6 +28,7 @@
   --oro-color-border-focus: var(--oro-color-border-selected);
   --oro-color-border-warning: var(--oro-color-text-warning);
   --oro-color-border-error: var(--oro-color-text-error);
+  --oro-color-border-success: var(--oro-color-text-success);
   --oro-color-action-primary: #e29f06;
   --oro-color-action-primary-hover: #faae02;
   --oro-color-action-primary-pressed: #f0d77d;
@@ -34,12 +36,16 @@
   --oro-color-action-secondary: var(--oro-color-surface-card);
   --oro-color-action-secondary-hover: var(--oro-color-surface-page);
   --oro-color-action-secondary-pressed: var(--oro-color-surface-selected);
+  --oro-color-action-destructive: #b91b40;
+  --oro-color-action-destructive-hover: #511b08;
+  --oro-color-action-destructive-pressed: #511b08;
   --oro-color-action-disabled: var(--oro-color-surface-disabled);
   --oro-color-scrim: rgb(0 0 0 / 20%);
 
   /* Typography */
   --oro-font-display: 'Playfair Display', Georgia, serif;
   --oro-font-body: 'DM Sans', system-ui, sans-serif;
+  --oro-font-control: 'Work Sans', var(--oro-font-body);
   --oro-font-weight-regular: 400;
   --oro-font-weight-medium: 500;
   --oro-font-weight-semibold: 600;
@@ -67,8 +73,8 @@
   --oro-type-label-size: 12px;
   --oro-type-label-line: 16px;
   --oro-type-label-tracking: 0.4px;
-  --oro-type-button-size: 14px;
-  --oro-type-button-line: 20px;
+  --oro-type-button-size: 16px;
+  --oro-type-button-line: 24px;
   --oro-type-data-size: 16px;
   --oro-type-data-line: 24px;
   --oro-type-data-large-size: 18px;
@@ -95,10 +101,12 @@
   --oro-border-default: 1px;
   --oro-border-emphasis: 2px;
   --oro-border-focus: 3px;
-  --oro-control-height: 42px;
-  --oro-field-height: 48px;
-  --oro-choice-height: 80px;
-  --oro-choice-marker-size: 22px;
+  --oro-control-height: 48px;
+  --oro-field-height: 56px;
+  --oro-choice-height: 64px;
+  --oro-choice-marker-size: 24px;
+  --oro-icon-button-size: 48px;
+  --oro-segment-min-width: 160px;
   --oro-stat-tile-height: 92px;
   --oro-icon-size-sm: 16px;
   --oro-icon-size-md: 24px;
@@ -116,4 +124,5 @@
   --oro-duration-fast: 100ms;
   --oro-duration-standard: 180ms;
   --oro-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --oro-opacity-disabled: 0.72;
 }

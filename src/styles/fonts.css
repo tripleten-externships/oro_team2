@@ -7,6 +7,14 @@
 }
 
 @font-face {
+  font-family: 'Work Sans';
+  src: url('/fonts/work-sans-variable.ttf') format('truetype');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 100 900;
+}
+
+@font-face {
   font-family: 'Playfair Display';
   src: url('/fonts/playfair-display-variable.ttf') format('truetype');
   font-display: swap;

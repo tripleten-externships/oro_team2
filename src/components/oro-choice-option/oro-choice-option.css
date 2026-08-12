@@ -9,6 +9,7 @@
   border-radius: var(--oro-radius-panel);
   background: var(--oro-color-surface-card);
   color: var(--oro-color-text-primary);
+  font-family: var(--oro-font-control);
   cursor: pointer;
   transition:
     background-color var(--oro-duration-standard) var(--oro-easing-standard),
@@ -16,11 +17,11 @@
 }
 
 .oro-choice-option:hover:not(.oro-choice-option--disabled) {
-  border-color: var(--oro-color-border-strong);
+  background: var(--oro-color-surface-subtle);
 }
 
 .oro-choice-option--selected {
-  border: var(--oro-border-emphasis) solid var(--oro-color-border-selected);
+  border-color: var(--oro-color-border-selected);
   background: var(--oro-color-surface-selected);
 }
 
@@ -28,7 +29,6 @@
   background: var(--oro-color-surface-disabled);
   color: var(--oro-color-text-disabled);
   cursor: not-allowed;
-  opacity: 0.75;
 }
 
 .oro-choice-option:has(.oro-choice-option__input:focus-visible) {
@@ -43,18 +43,32 @@
   flex: 0 0 var(--oro-choice-marker-size);
   place-items: center;
   overflow: hidden;
-  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border: var(--oro-border-emphasis) solid var(--oro-color-border-strong);
   border-radius: var(--oro-radius-full);
   background: var(--oro-color-surface-card);
 }
 
 .oro-choice-option--selected .oro-choice-option__marker {
-  border: 0;
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-action-primary);
 }
 
-.oro-choice-option__marker-image {
-  width: 100%;
-  height: 100%;
+.oro-choice-option--checkbox .oro-choice-option__marker {
+  border-radius: var(--oro-space-4);
+}
+
+.oro-choice-option__selected-dot {
+  width: var(--oro-space-8);
+  height: var(--oro-space-8);
+  border-radius: var(--oro-radius-full);
+  background: var(--oro-color-text-inverse);
+}
+
+.oro-choice-option__check {
+  color: var(--oro-color-text-inverse);
+  font-size: var(--oro-type-card-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: 1;
 }
 
 .oro-choice-option__copy {
@@ -66,15 +80,15 @@
 }
 
 .oro-choice-option__label {
-  font-size: var(--oro-type-label-large-size);
-  font-weight: var(--oro-font-weight-semibold);
-  line-height: var(--oro-type-label-large-line);
+  font-size: var(--oro-type-card-size);
+  font-weight: var(--oro-font-weight-regular);
+  line-height: var(--oro-type-card-line);
 }
 
 .oro-choice-option__helper {
   color: var(--oro-color-text-secondary);
-  font-size: var(--oro-type-body-compact-size);
-  line-height: var(--oro-type-body-compact-line);
+  font-size: var(--oro-type-body-size);
+  line-height: var(--oro-type-body-line);
 }
 
 .oro-choice-option--disabled .oro-choice-option__helper {

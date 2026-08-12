@@ -1,8 +1,8 @@
 ---
 version: alpha
 name: ORO Home Equity Explorer Design System
-source: "Figma Lo-Fi — Foundations & Components, node 363:173"
-description: "A restrained financial-education system built from cream, white, mint, dark green, and focused gold actions."
+source: "Figma Lo-Fi Foundations 363:173 and Hi-Fi Controls 363:1314"
+description: "A restrained financial-education system with accessible Hi-Fi form and navigation controls."
 
 colors:
   surface-page: "#FBF6ED"
@@ -25,6 +25,11 @@ colors:
   action-primary: "#E29F06"
 
 typography:
+  controls:
+    fontFamily: Work Sans
+    fontSize: 16px
+    fontWeight: 400–600
+    lineHeight: 24px
   brand:
     fontFamily: Playfair Display
     fontSize: 24px
@@ -87,7 +92,7 @@ layout:
 
 ## Source of truth
 
-This document records the current Lo-Fi foundations and component behavior from Figma node `363:173`. When an older component or style conflicts with this document, update it to these foundations rather than introducing a second visual system.
+This document records the shared foundations from Figma node `363:173` and the current control behavior from Hi-Fi node `363:1314`. Hi-Fi controls override their older Lo-Fi versions; the remaining Lo-Fi components stay valid until a newer reference replaces them.
 
 Use global custom properties from `src/styles/tokens.css`. Component styles consume those properties and use lowercase BEM classes. Add a global token when a design value is repeated; keep one-off chart geometry local to the chart.
 
@@ -97,28 +102,41 @@ Cream is the page canvas, white is the primary control and card surface, and min
 
 Status must never rely on color alone. Pair warning, error, selection, and unavailable colors with a marker or written label.
 
-Playfair Display is limited to the ORO wordmark and primary page heading. DM Sans is used for section and card headings, body copy, controls, labels, data, charts, and disclosures. Both fonts are self-hosted from `public/fonts`.
+Playfair Display is limited to the ORO wordmark and primary page heading. DM Sans remains the application body and data face. Work Sans is used by the Hi-Fi buttons, fields, choices, dropdowns, icon buttons, and segmented controls. All three fonts are self-hosted from `public/fonts`.
 
 ## Component rules
 
 ### Button
 
-- Primary, secondary, and tertiary variants.
-- 42px minimum height, full radius, 8px vertical and 20px horizontal web padding.
-- 14px SemiBold label.
+- Primary, secondary, tertiary, and destructive variants.
+- 48px minimum height, 10px radius, and 20px horizontal padding.
+- 16px Work Sans SemiBold label.
 - Disabled and loading states use the native `disabled` behavior; hover, pressed, and focus remain CSS states.
 
 ### Choice option
 
-- Native radio input inside an 80px minimum-height card.
+- Native radio or checkbox input inside a 64px minimum-height card.
 - 12px radius and 16px padding.
-- Selected state combines mint, a 2px green border, and the exported selection marker.
+- Selected state combines mint, a green border, a gold marker, and a visible dot or check.
 
-### Input field
+### Input field and dropdown
 
-- Persistent label, 48px control, 10px radius, and optional prefix.
-- Default, error, and disabled states.
+- Persistent 16px label, 56px control, 10px radius, and optional prefix or suffix.
+- Inputs support text, currency, percentage, and number kinds. Dropdowns use a native `select` and the exported chevron.
+- Default, filled, error, success, and disabled states.
 - Error copy is associated with the control and exposed through `aria-invalid` and `aria-describedby`.
+
+### Icons and icon buttons
+
+- System icons are 24px exported Figma assets: chevrons, close, info, and check.
+- Icon buttons are native 48px buttons with a 10px radius and a required accessible name.
+- Loading and disabled icon buttons preserve native button semantics.
+
+### Segmented controls
+
+- Segments are 48px native buttons with a 160px reference width.
+- The selected segment combines the dark green brand surface with inverse text.
+- Segmented controls compose Segment instances and support arrow, Home, and End keys.
 
 ### Step indicator and view tabs
 
