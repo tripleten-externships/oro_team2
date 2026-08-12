@@ -38,13 +38,13 @@ src/components/oro-component/
 
 - Use lowercase BEM names for UI blocks, elements, and modifiers: `oro-component`, `oro-component__element`, and `oro-component--modifier`. Apply this to component files and CSS classes, not fonts or documentation. Use descriptive kebab-case for font assets, such as `fraunces-variable.ttf`.
 - Export from `index.js` and import from the folder path. Keep React and CSS file names aligned with the same block name.
-- Put shared design tokens in `src/styles/index.css` under `:root`, using names such as `--oro-color-*`, `--oro-space-*`, and `--oro-radius-*`.
+- Put shared design tokens in `src/styles/tokens.css` under `:root`; keep `src/styles/index.css` as the import entry point. Use names such as `--oro-color-*`, `--oro-space-*`, and `--oro-radius-*`.
 - Map tokens from `DESIGN.md` once. Component CSS must consume variables and avoid repeated hex values, magic spacing, or inline styles.
 - Keep styles prefixed, responsive where needed, and include visible keyboard focus and reduced-motion behavior.
 
 ## Use and verify
 
-- Compose the component in the nearest feature instead of duplicating markup.
+- Compose primitives from their folder exports, such as `import { OroButton } from '../oro-button'`, instead of duplicating markup.
 - Verify default, every supported variant, disabled/loading behavior, keyboard focus, long labels, and narrow screens.
 - Run `npm run lint` and `npm run build`. Report checks and known limitations. Avoid unrelated refactors.
 
