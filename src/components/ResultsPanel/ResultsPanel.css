@@ -20,7 +20,7 @@
 
 .results-panel__header h1 {
   margin: 0;
-  font-family: var(--font-playfair-display);
+  font-family: var(--oro-font-display);
   font-size: clamp(2.2rem, 3vw, 3.4rem);
   line-height: 1.02;
   color: var(--oro-color-surface-brand);
@@ -71,7 +71,7 @@
 
 .results-card h2 {
   margin: 0 0 12px;
-  font-family: var(--font-playfair-display);
+  font-family: var(--oro-font-display);
   font-size: 2rem;
   color: var(--oro-color-surface-brand);
 }

@@ -1,23 +1,15 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@600&display=swap");
-/* @font-face {
-  font-family: "Fraunces";
-  src: url("/fonts/fraunces-variable.ttf") format("truetype");
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/dm-sans-variable.ttf') format('truetype');
   font-display: swap;
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 100 1000;
 }
 
 @font-face {
-  font-family: "Work Sans";
-  src: url("/fonts/work-sans-variable.ttf") format("truetype");
+  font-family: 'Playfair Display';
+  src: url('/fonts/playfair-display-variable.ttf') format('truetype');
   font-display: swap;
   font-style: normal;
-  font-weight: 100 900;
-} */
-
-:root {
-  --font-fraunces: "Fraunces", serif;
-  --font-work-sans: "Work Sans", sans-serif;
-  --font-dm-sans: "DM Sans", sans-serif;
-  --font-playfair-display: "Playfair Display", serif;
+  font-weight: 400 900;
 }

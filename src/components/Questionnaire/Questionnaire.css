@@ -20,7 +20,7 @@
 
 .questionnaire__header h1 {
   margin: 0;
-  font-family: var(--font-playfair-display);
+  font-family: var(--oro-font-display);
   font-size: clamp(2.1rem, 3vw, 3.5rem);
   line-height: 1.04;
   font-weight: 600;
