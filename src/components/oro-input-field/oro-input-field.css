@@ -1,0 +1,76 @@
+.oro-input-field {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--oro-space-8);
+}
+
+.oro-input-field__label {
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-label-size);
+  font-weight: var(--oro-font-weight-semibold);
+  letter-spacing: var(--oro-type-label-tracking);
+  line-height: var(--oro-type-label-line);
+}
+
+.oro-input-field__control {
+  display: flex;
+  min-height: var(--oro-field-height);
+  align-items: center;
+  overflow: hidden;
+  border: var(--oro-border-default) solid var(--oro-color-border-strong);
+  border-radius: var(--oro-radius-control);
+  background: var(--oro-color-surface-card);
+}
+
+.oro-input-field__control:focus-within {
+  outline: var(--oro-border-focus) solid var(--oro-color-border-focus);
+  outline-offset: 1px;
+}
+
+.oro-input-field__prefix {
+  padding-inline-start: var(--oro-space-16);
+  color: var(--oro-color-text-secondary);
+}
+
+.oro-input-field__input {
+  width: 100%;
+  min-width: 0;
+  min-height: calc(var(--oro-field-height) - var(--oro-border-emphasis));
+  padding: var(--oro-space-12) var(--oro-space-16);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--oro-color-text-primary);
+}
+
+.oro-input-field__input::placeholder {
+  color: var(--oro-color-text-muted);
+}
+
+.oro-input-field__message {
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-small-size);
+  line-height: var(--oro-type-body-small-line);
+}
+
+.oro-input-field--error .oro-input-field__control {
+  border: var(--oro-border-emphasis) solid var(--oro-color-border-error);
+}
+
+.oro-input-field--error .oro-input-field__message {
+  color: var(--oro-color-text-error);
+}
+
+.oro-input-field--disabled .oro-input-field__control {
+  border-color: var(--oro-color-border-default);
+  background: var(--oro-color-surface-disabled);
+}
+
+.oro-input-field--disabled .oro-input-field__label,
+.oro-input-field--disabled .oro-input-field__input,
+.oro-input-field--disabled .oro-input-field__prefix,
+.oro-input-field--disabled .oro-input-field__message {
+  color: var(--oro-color-text-disabled);
+  cursor: not-allowed;
+}
