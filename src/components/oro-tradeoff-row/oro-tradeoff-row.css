@@ -1,0 +1,28 @@
+.oro-tradeoff-row {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: flex-start;
+  gap: var(--oro-space-10);
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-regular) var(--oro-type-card-size) /
+    var(--oro-type-card-line) var(--oro-font-control);
+}
+
+.oro-tradeoff-row__marker {
+  flex: 0 0 auto;
+  color: var(--oro-color-text-success);
+  font-weight: var(--oro-font-weight-medium);
+}
+
+.oro-tradeoff-row--consideration .oro-tradeoff-row__marker {
+  color: var(--oro-color-text-warning);
+}
+
+.oro-tradeoff-row--requirement .oro-tradeoff-row__marker {
+  color: var(--oro-color-text-info);
+}
+
+.oro-tradeoff-row__text {
+  min-width: 0;
+}

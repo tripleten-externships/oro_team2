@@ -96,9 +96,18 @@ function App() {
     setScreen("results");
   };
 
+  const headerContext = screen === "questionnaire"
+    ? "Guided questions"
+    : screen === "results"
+      ? "Options to explore"
+      : "Home equity explorer";
+
   return (
     <div className="app">
-      <OroAppHeader />
+      <OroAppHeader
+        context={headerContext}
+        onRestart={screen === "starter" ? undefined : handleRestart}
+      />
       <main className="app__content">
         {screen === "starter" && (
           <StarterPage

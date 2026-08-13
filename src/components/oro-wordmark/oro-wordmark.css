@@ -1,0 +1,60 @@
+.oro-wordmark,
+.oro-wordmark__artwork {
+  position: relative;
+  display: block;
+  width: var(--oro-wordmark-width);
+  height: var(--oro-wordmark-height);
+  flex: 0 0 auto;
+}
+
+.oro-wordmark__part,
+.oro-wordmark__asset {
+  position: absolute;
+}
+
+.oro-wordmark > .oro-wordmark__artwork {
+  width: 100%;
+  height: 100%;
+}
+
+.oro-wordmark__part--left-o {
+  top: 0;
+  left: 0;
+  width: 33.04%;
+  height: 74.32%;
+}
+
+.oro-wordmark__part--r {
+  top: 0.62%;
+  left: 37.9%;
+  width: 26.62%;
+  height: 72.95%;
+}
+
+.oro-wordmark__part--right-o {
+  top: 0;
+  left: 66.92%;
+  width: 33.01%;
+  height: 74.26%;
+}
+
+.oro-wordmark__part--left-dot {
+  top: 85.32%;
+  left: 13.24%;
+  width: 6.47%;
+  height: 14.55%;
+}
+
+.oro-wordmark__part--right-dot {
+  top: 85.32%;
+  left: 80.16%;
+  width: 6.47%;
+  height: 14.55%;
+}
+
+.oro-wordmark__asset {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}

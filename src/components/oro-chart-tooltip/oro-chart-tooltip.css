@@ -1,0 +1,27 @@
+.oro-chart-tooltip {
+  display: flex;
+  width: 220px;
+  min-height: 80px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--oro-space-4);
+  padding: var(--oro-space-12);
+  border: var(--oro-border-default) solid var(--oro-color-border-strong);
+  border-radius: var(--oro-radius-sm);
+  background: var(--oro-color-surface-elevated);
+  font-family: var(--oro-font-control);
+  white-space: nowrap;
+}
+
+.oro-chart-tooltip__context {
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-compact-size);
+  font-weight: var(--oro-font-weight-medium);
+  line-height: 19px;
+}
+
+.oro-chart-tooltip__value {
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-card-size);
+  line-height: 23px;
+}
