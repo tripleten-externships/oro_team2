@@ -5,138 +5,16 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--oro-space-16);
-  padding: var(--oro-space-24);
-  border: var(--oro-border-default) solid var(--oro-color-border-default);
-  border-radius: var(--oro-radius-panel);
-  background: var(--oro-color-surface-card);
 }
 
-.oro-chart-panel__heading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--oro-space-4);
-}
-
-.oro-chart-panel__title {
-  color: var(--oro-color-text-primary);
-  font-size: var(--oro-type-section-size);
-  font-weight: var(--oro-font-weight-semibold);
-  line-height: var(--oro-type-section-line);
-}
-
-.oro-chart-panel__description {
-  color: var(--oro-color-text-secondary);
-  font-size: var(--oro-type-body-compact-size);
-  line-height: var(--oro-type-body-compact-line);
-}
-
-.oro-chart-panel__tabs,
-.oro-chart-panel__legend {
+.oro-chart-panel__tabs {
   display: flex;
   width: 100%;
+  max-width: 760px;
   gap: var(--oro-space-8);
   overflow-x: auto;
 }
 
-.oro-chart-panel__legend {
-  gap: var(--oro-space-16);
-}
-
-.oro-chart-panel__legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--oro-space-4);
-  font-size: var(--oro-type-body-small-size);
-  font-weight: var(--oro-font-weight-semibold);
-  line-height: var(--oro-type-body-small-line);
-  white-space: nowrap;
-}
-
-.oro-chart-panel__legend-item--primary {
-  color: var(--oro-color-border-selected);
-}
-
-.oro-chart-panel__legend-item--accent {
-  color: var(--oro-color-text-accent);
-}
-
-.oro-chart-panel__legend-item--neutral {
-  color: var(--oro-color-text-secondary);
-}
-
-.oro-chart-panel__plot {
+.oro-chart-panel > [role='tabpanel'] {
   width: 100%;
-  min-height: var(--oro-layout-chart-height);
-  overflow-x: auto;
-  border: var(--oro-border-default) solid var(--oro-color-border-default);
-  border-radius: var(--oro-radius-control);
-  background: var(--oro-color-surface-subtle);
-}
-
-.oro-chart-panel__svg {
-  width: 100%;
-  min-width: 640px;
-  height: auto;
-  font-family: var(--oro-font-body);
-}
-
-.oro-chart-panel__axis {
-  stroke: var(--oro-color-border-default);
-  stroke-width: var(--oro-border-default);
-}
-
-.oro-chart-panel__axis-label,
-.oro-chart-panel__bar-label {
-  fill: var(--oro-color-text-muted);
-  font-size: var(--oro-type-micro-size);
-  font-weight: var(--oro-font-weight-medium);
-}
-
-.oro-chart-panel__line {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: var(--oro-border-focus);
-}
-
-.oro-chart-panel__series--primary {
-  color: var(--oro-color-border-selected);
-  fill: var(--oro-color-border-selected);
-}
-
-.oro-chart-panel__series--accent {
-  color: var(--oro-color-action-accent);
-  fill: var(--oro-color-action-accent);
-}
-
-.oro-chart-panel__series--neutral {
-  color: var(--oro-color-text-secondary);
-  fill: var(--oro-color-text-secondary);
-}
-
-.oro-chart-panel__series--neutral .oro-chart-panel__line {
-  stroke-dasharray: 8 6;
-}
-
-.oro-chart-panel__series-label,
-.oro-chart-panel__bar-value {
-  fill: currentColor;
-  font-size: var(--oro-type-nano-size);
-  font-weight: var(--oro-font-weight-semibold);
-}
-
-.oro-chart-panel__bar {
-  fill: currentColor;
-}
-
-.oro-chart-panel__empty {
-  display: grid;
-  min-height: var(--oro-layout-chart-height);
-  place-items: center;
-  color: var(--oro-color-text-secondary);
-}
-
-@media (max-width: 767px) {
-  .oro-chart-panel {
-    padding: var(--oro-space-16);
-  }
 }
