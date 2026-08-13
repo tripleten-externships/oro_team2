@@ -1,27 +1,38 @@
+import { OroButton } from '../oro-button'
+import { OroWordmark } from '../oro-wordmark'
 import './oro-app-header.css'
 
 function OroAppHeader({
-  productLabel = 'Home equity explorer',
+  context,
+  productLabel,
   notice,
+  restartLabel = 'Restart',
+  onRestart,
+  brandHref,
   className = '',
 }) {
   const classes = ['oro-app-header', className].filter(Boolean).join(' ')
-  const desktopNotice = notice
-    || 'Illustrative estimates · Educational only · Inputs stay on this device'
-  const mobileNotice = notice || 'Illustrative · educational only'
+  const journeyContext = context
+    || notice
+    || productLabel
+    || 'Step 1 of 6 · Guided questions'
 
   return (
     <header className={classes}>
-      <div className="oro-app-header__brand">
-        <span className="oro-app-header__wordmark" aria-label="ORO">ORO</span>
-        <span className="oro-app-header__product">{productLabel}</span>
-      </div>
-      <p className="oro-app-header__notice oro-app-header__notice--desktop">
-        {desktopNotice}
-      </p>
-      <p className="oro-app-header__notice oro-app-header__notice--mobile">
-        {mobileNotice}
-      </p>
+      <OroWordmark
+        className="oro-app-header__wordmark"
+        href={brandHref}
+      />
+      <p className="oro-app-header__context">{journeyContext}</p>
+      {onRestart && (
+        <OroButton
+          className="oro-app-header__restart"
+          variant="tertiary"
+          onClick={onRestart}
+        >
+          {restartLabel}
+        </OroButton>
+      )}
     </header>
   )
 }

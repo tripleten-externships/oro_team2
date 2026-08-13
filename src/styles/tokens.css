@@ -12,6 +12,7 @@
   --oro-color-surface-error: #ffeaed;
   --oro-color-surface-disabled: #fbf6ed;
   --oro-color-surface-brand: #09453b;
+  --oro-color-surface-elevated: var(--oro-color-surface-card);
   --oro-color-text-primary: #06281d;
   --oro-color-text-secondary: #6f6d69;
   --oro-color-text-muted: var(--oro-color-text-secondary);
@@ -21,6 +22,7 @@
   --oro-color-text-warning: var(--oro-color-text-accent);
   --oro-color-text-error: #b91b40;
   --oro-color-text-success: #09453b;
+  --oro-color-text-info: #09453b;
   --oro-color-text-disabled: var(--oro-color-text-muted);
   --oro-color-border-default: #85938f;
   --oro-color-border-strong: #6f6d69;
@@ -29,6 +31,7 @@
   --oro-color-border-warning: var(--oro-color-text-warning);
   --oro-color-border-error: var(--oro-color-text-error);
   --oro-color-border-success: var(--oro-color-text-success);
+  --oro-color-border-info: var(--oro-color-text-info);
   --oro-color-action-primary: #e29f06;
   --oro-color-action-primary-hover: #faae02;
   --oro-color-action-primary-pressed: #f0d77d;
@@ -43,7 +46,7 @@
   --oro-color-scrim: rgb(0 0 0 / 20%);
 
   /* Typography */
-  --oro-font-display: 'Playfair Display', Georgia, serif;
+  --oro-font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
   --oro-font-body: 'DM Sans', system-ui, sans-serif;
   --oro-font-control: 'Work Sans', var(--oro-font-body);
   --oro-font-weight-regular: 400;
@@ -79,15 +82,30 @@
   --oro-type-data-line: 24px;
   --oro-type-data-large-size: 18px;
   --oro-type-data-large-line: 22px;
+  --oro-type-education-title-size: 22px;
+  --oro-type-education-title-line: 33px;
+  --oro-type-chart-title-size: 24px;
+  --oro-type-chart-title-line: 34px;
+  --oro-type-panel-title-size: 30px;
+  --oro-type-panel-title-line: 41px;
+  --oro-type-detail-title-size: 28px;
+  --oro-type-detail-title-line: 36px;
+  --oro-type-body-emphasis-size: 18px;
+  --oro-type-body-emphasis-line: 26px;
+  --oro-type-body-standard-line: 26px;
 
   /* Spacing */
   --oro-space-2: 2px;
   --oro-space-4: 4px;
+  --oro-space-6: 6px;
   --oro-space-8: 8px;
+  --oro-space-10: 10px;
   --oro-space-12: 12px;
   --oro-space-16: 16px;
+  --oro-space-18: 18px;
   --oro-space-20: 20px;
   --oro-space-24: 24px;
+  --oro-space-28: 28px;
   --oro-space-32: 32px;
   --oro-space-40: 40px;
   --oro-space-48: 48px;
@@ -97,6 +115,7 @@
   --oro-radius-sm: 8px;
   --oro-radius-control: 10px;
   --oro-radius-panel: 12px;
+  --oro-radius-state: 16px;
   --oro-radius-full: 999px;
   --oro-border-default: 1px;
   --oro-border-emphasis: 2px;
@@ -107,6 +126,9 @@
   --oro-choice-marker-size: 24px;
   --oro-icon-button-size: 48px;
   --oro-segment-min-width: 160px;
+  --oro-progress-height: 8px;
+  --oro-wordmark-width: 113px;
+  --oro-wordmark-height: 50px;
   --oro-stat-tile-height: 92px;
   --oro-icon-size-sm: 16px;
   --oro-icon-size-md: 24px;
@@ -116,8 +138,9 @@
   --oro-layout-content-max: 1200px;
   --oro-layout-form-max: 720px;
   --oro-layout-grid-gutter: 24px;
-  --oro-layout-header-height: 72px;
+  --oro-layout-header-height: 80px;
   --oro-layout-chart-height: 300px;
+  --oro-layout-system-state-height: 240px;
 
   /* Elevation and motion */
   --oro-shadow-level-1: 0 2px 8px rgb(18 31 23 / 8%);

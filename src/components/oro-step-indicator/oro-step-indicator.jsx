@@ -1,15 +1,21 @@
 import './oro-step-indicator.css'
 
 const defaultLabels = [
-  'Question 1',
-  'Question 2',
-  'Question 3',
-  'Question 4',
-  'Home details',
-  'Matched options',
+  'Your priorities',
+  'Time in home',
+  'Payment comfort',
+  'Decision priority',
+  'Your home details',
+  'Options to explore',
 ]
 
-function OroStepIndicator({ currentStep = 1, totalSteps = 6, label, className = '' }) {
+function OroStepIndicator({
+  currentStep = 1,
+  totalSteps = 6,
+  label,
+  showLabel = true,
+  className = '',
+}) {
   const safeTotal = Number.isInteger(totalSteps) && totalSteps > 0 ? totalSteps : 6
   const safeCurrent = Number.isInteger(currentStep)
     ? Math.min(Math.max(currentStep, 1), safeTotal)
@@ -37,11 +43,13 @@ function OroStepIndicator({ currentStep = 1, totalSteps = 6, label, className = 
           />
         ))}
       </div>
-      <p className="oro-step-indicator__label">
-        <span>{safeCurrent} of {safeTotal}</span>
-        <span aria-hidden="true"> · </span>
-        <span>{currentLabel}</span>
-      </p>
+      {showLabel && (
+        <p className="oro-step-indicator__label">
+          <span>Step {safeCurrent} of {safeTotal}</span>
+          <span aria-hidden="true"> · </span>
+          <span>{currentLabel}</span>
+        </p>
+      )}
     </div>
   )
 }

@@ -13,9 +13,9 @@
 }
 
 .oro-step-indicator__segment {
-  height: var(--oro-space-8);
+  height: var(--oro-progress-height);
   border-radius: var(--oro-radius-full);
-  background: var(--oro-color-border-default);
+  background: var(--oro-color-action-disabled);
 }
 
 .oro-step-indicator__segment--active {
@@ -26,7 +26,6 @@
   display: flex;
   gap: var(--oro-space-2);
   color: var(--oro-color-text-secondary);
-  font-size: var(--oro-type-body-small-size);
-  font-weight: var(--oro-font-weight-semibold);
-  line-height: var(--oro-type-body-small-line);
+  font: var(--oro-font-weight-medium) var(--oro-type-body-size) /
+    var(--oro-type-body-line) var(--oro-font-control);
 }
