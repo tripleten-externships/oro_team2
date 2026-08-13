@@ -121,16 +121,6 @@ function App() {
       <OroAppHeader
         productLabel="Home equity explorer"
         notice="Illustrative estimates · Educational only · Inputs stay on this device"
-        context={
-          screen === "questionnaire"
-            ? "Guided questions"
-            : screen === "homeDetails"
-              ? "Home details"
-            : screen === "results"
-              ? "Options to explore"
-              : ""
-        }
-        onRestart={screen === "starter" ? undefined : handleRestart}
       />
       <main className="app__content">
         {screen === "starter" && (
