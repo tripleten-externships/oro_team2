@@ -180,7 +180,7 @@ Start every product score at zero. Apply all matching adjustments below, then se
 | `q3 = no` | Reverse `+3`; HEI `+3`; co-ownership `+2`; sale leaseback `+1`; HELOC/HELOAN/refi `-2` each |
 | `q3 = min` | HEI `+1`; reverse `+1`; HELOC `+1` |
 | `q3 = yes` | HELOC/HELOAN/refi `+2` each |
-| `q1 = lump` | HELOAN `+2`; HELOC/refi/HEI/sale leaseback `+1` each |
+| `q1 = lump` | HELOAN/HEI `+2` each; HELOC/refi/sale leaseback `+1` each |
 | `q1 = income` | Reverse `+3`; HELOC `+1` |
 | `q1 = lower` | Refi `+3`; HELOC `-1` |
 | `q1 = faster` | Refi `+2` |
