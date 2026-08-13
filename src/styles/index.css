@@ -2,12 +2,3 @@
 @import "./tokens.css";
 @import "./base.css";
 @import "./utilities.css";
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: var(--font-dm-sans);
-}

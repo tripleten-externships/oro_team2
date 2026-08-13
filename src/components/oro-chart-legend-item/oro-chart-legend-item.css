@@ -1,0 +1,37 @@
+.oro-chart-legend-item {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  gap: var(--oro-space-8);
+  padding: var(--oro-space-12) var(--oro-space-8);
+  border: 0;
+  border-radius: var(--oro-radius-sm);
+  background: transparent;
+  color: var(--oro-color-text-primary);
+  font: var(--oro-font-weight-medium) var(--oro-type-body-size) / 20px
+    var(--oro-font-control);
+  white-space: nowrap;
+}
+
+button.oro-chart-legend-item {
+  cursor: pointer;
+}
+
+button.oro-chart-legend-item:hover {
+  background: var(--oro-color-action-secondary-hover);
+}
+
+.oro-chart-legend-item--selected {
+  background: var(--oro-color-surface-selected);
+  font-weight: var(--oro-font-weight-semibold);
+}
+
+.oro-chart-legend-item__marker {
+  width: 28px;
+  height: 12px;
+  flex: 0 0 auto;
+}
+
+.oro-chart-legend-item__check {
+  color: var(--oro-color-text-success);
+}

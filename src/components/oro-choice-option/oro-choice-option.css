@@ -1,0 +1,96 @@
+.oro-choice-option {
+  display: flex;
+  width: 100%;
+  min-height: var(--oro-choice-height);
+  align-items: center;
+  gap: var(--oro-space-12);
+  padding: var(--oro-space-16);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+  color: var(--oro-color-text-primary);
+  font-family: var(--oro-font-control);
+  cursor: pointer;
+  transition:
+    background-color var(--oro-duration-standard) var(--oro-easing-standard),
+    border-color var(--oro-duration-standard) var(--oro-easing-standard);
+}
+
+.oro-choice-option:hover:not(.oro-choice-option--disabled) {
+  background: var(--oro-color-surface-subtle);
+}
+
+.oro-choice-option--selected {
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-surface-selected);
+}
+
+.oro-choice-option--disabled {
+  background: var(--oro-color-surface-disabled);
+  color: var(--oro-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.oro-choice-option:has(.oro-choice-option__input:focus-visible) {
+  outline: var(--oro-border-focus) solid var(--oro-color-border-focus);
+  outline-offset: 2px;
+}
+
+.oro-choice-option__marker {
+  display: grid;
+  width: var(--oro-choice-marker-size);
+  height: var(--oro-choice-marker-size);
+  flex: 0 0 var(--oro-choice-marker-size);
+  place-items: center;
+  overflow: hidden;
+  border: var(--oro-border-emphasis) solid var(--oro-color-border-strong);
+  border-radius: var(--oro-radius-full);
+  background: var(--oro-color-surface-card);
+}
+
+.oro-choice-option--selected .oro-choice-option__marker {
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-action-primary);
+}
+
+.oro-choice-option--checkbox .oro-choice-option__marker {
+  border-radius: var(--oro-space-4);
+}
+
+.oro-choice-option__selected-dot {
+  width: var(--oro-space-8);
+  height: var(--oro-space-8);
+  border-radius: var(--oro-radius-full);
+  background: var(--oro-color-text-inverse);
+}
+
+.oro-choice-option__check {
+  color: var(--oro-color-text-inverse);
+  font-size: var(--oro-type-card-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: 1;
+}
+
+.oro-choice-option__copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--oro-space-4);
+}
+
+.oro-choice-option__label {
+  font-size: var(--oro-type-card-size);
+  font-weight: var(--oro-font-weight-regular);
+  line-height: var(--oro-type-card-line);
+}
+
+.oro-choice-option__helper {
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-size);
+  line-height: var(--oro-type-body-line);
+}
+
+.oro-choice-option--disabled .oro-choice-option__helper {
+  color: inherit;
+}

@@ -1,0 +1,30 @@
+.oro-eligibility-badge {
+  display: inline-flex;
+  height: 32px;
+  align-items: center;
+  gap: var(--oro-space-6);
+  padding: 0 var(--oro-space-12);
+  border: var(--oro-border-default) solid var(--oro-color-border-success);
+  border-radius: var(--oro-radius-control);
+  background: var(--oro-color-surface-success);
+  color: var(--oro-color-text-success);
+  font: var(--oro-font-weight-semibold) var(--oro-type-body-size) / 20px
+    var(--oro-font-control);
+  white-space: nowrap;
+}
+
+.oro-eligibility-badge--ineligible {
+  border-color: var(--oro-color-border-error);
+  background: var(--oro-color-surface-error);
+  color: var(--oro-color-text-error);
+}
+
+.oro-eligibility-badge--review {
+  border-color: var(--oro-color-border-warning);
+  background: var(--oro-color-surface-warning);
+  color: var(--oro-color-text-warning);
+}
+
+.oro-eligibility-badge__marker {
+  font-weight: var(--oro-font-weight-semibold);
+}

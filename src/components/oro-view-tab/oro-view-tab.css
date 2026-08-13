@@ -1,0 +1,25 @@
+.oro-view-tab {
+  display: inline-flex;
+  min-height: var(--oro-control-height);
+  align-items: center;
+  justify-content: center;
+  padding: var(--oro-space-8) var(--oro-space-16);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-full);
+  background: var(--oro-color-surface-card);
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-button-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-button-line);
+  cursor: pointer;
+}
+
+.oro-view-tab:hover {
+  border-color: var(--oro-color-border-strong);
+}
+
+.oro-view-tab--selected {
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-surface-selected);
+  color: var(--oro-color-text-action);
+}
