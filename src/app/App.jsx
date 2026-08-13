@@ -3,12 +3,17 @@ import "./App.css";
 import { OroAppHeader } from "../components/oro-app-header";
 import StarterPage from "../components/StarterPage/StarterPage.jsx";
 import Questionnaire from "../components/Questionnaire/Questionnaire.jsx";
+import HomeDetails from "../components/HomeDetails/HomeDetails.jsx";
 import ResultsPanel from "../components/ResultsPanel/ResultsPanel.jsx";
-import { DEFAULT_INPUTS, getTopRecommendations } from "../utils/homeEquityCalculations.js";
+import {
+  DEFAULT_INPUTS,
+  getTopRecommendations,
+} from "../utils/homeEquityCalculations.js";
 
 const STORAGE_KEY = "oro-home-equity-explorer";
 const emptyAnswers = { goal: "", stay: "", payment: "", priority: "" };
 const emptyResults = { recommendations: [], allProducts: [] };
+const defaultInputs = { ...DEFAULT_INPUTS };
 
 const readStoredState = () => {
   try {
@@ -18,6 +23,7 @@ const readStoredState = () => {
         screen: "starter",
         answers: emptyAnswers,
         results: emptyResults,
+        inputs: defaultInputs,
       };
     }
 
@@ -26,6 +32,7 @@ const readStoredState = () => {
       screen: stored?.screen ?? "starter",
       answers: { ...emptyAnswers, ...(stored?.answers ?? {}) },
       results: stored?.results ?? emptyResults,
+      inputs: { ...defaultInputs, ...(stored?.inputs ?? {}) },
     };
   } catch {
     localStorage.removeItem(STORAGE_KEY);
@@ -33,6 +40,7 @@ const readStoredState = () => {
       screen: "starter",
       answers: emptyAnswers,
       results: emptyResults,
+      inputs: defaultInputs,
     };
   }
 };
@@ -42,6 +50,7 @@ function App() {
   const [screen, setScreen] = useState(initialState.screen);
   const [answers, setAnswers] = useState(initialState.answers);
   const [results, setResults] = useState(initialState.results);
+  const [inputs, setInputs] = useState(initialState.inputs);
 
   useEffect(() => {
     if (screen === "starter") {
@@ -55,12 +64,13 @@ function App() {
           screen,
           answers,
           results,
+          inputs,
         }),
       );
     } catch {
       // Ignore storage write failures for unsupported browser environments.
     }
-  }, [answers, results, screen]);
+  }, [answers, inputs, results, screen]);
 
   const handleGuidedStart = () => {
     setScreen("questionnaire");
@@ -71,7 +81,7 @@ function App() {
   };
 
   const handleCompareAll = () => {
-    const nextResults = getTopRecommendations(emptyAnswers, DEFAULT_INPUTS);
+    const nextResults = getTopRecommendations(emptyAnswers, inputs);
     setResults({
       recommendations: nextResults.allProducts.slice(0, 3),
       allProducts: nextResults.allProducts,
@@ -83,12 +93,22 @@ function App() {
     setScreen("starter");
     setAnswers(emptyAnswers);
     setResults({ recommendations: [], allProducts: [] });
+    setInputs(defaultInputs);
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  const handleComplete = (nextAnswers) => {
-    const nextResults = getTopRecommendations(nextAnswers, DEFAULT_INPUTS);
+  const handleQuestionsComplete = (nextAnswers) => {
     setAnswers(nextAnswers);
+    setScreen("homeDetails");
+  };
+
+  const handleHomeDetailsBack = () => {
+    setScreen("questionnaire");
+  };
+
+  const handleHomeDetailsComplete = (nextInputs) => {
+    const nextResults = getTopRecommendations(answers, nextInputs);
+    setInputs(nextInputs);
     setResults({
       recommendations: nextResults.recommendations,
       allProducts: nextResults.allProducts,
@@ -96,16 +116,20 @@ function App() {
     setScreen("results");
   };
 
-  const headerContext = screen === "questionnaire"
-    ? "Guided questions"
-    : screen === "results"
-      ? "Options to explore"
-      : "Home equity explorer";
-
   return (
     <div className="app">
       <OroAppHeader
-        context={headerContext}
+        productLabel="Home equity explorer"
+        notice="Illustrative estimates · Educational only · Inputs stay on this device"
+        context={
+          screen === "questionnaire"
+            ? "Guided questions"
+            : screen === "homeDetails"
+              ? "Home details"
+            : screen === "results"
+              ? "Options to explore"
+              : ""
+        }
         onRestart={screen === "starter" ? undefined : handleRestart}
       />
       <main className="app__content">
@@ -116,7 +140,14 @@ function App() {
           />
         )}
         {screen === "questionnaire" && (
-          <Questionnaire onComplete={handleComplete} onBack={handleBack} />
+          <Questionnaire onComplete={handleQuestionsComplete} onBack={handleBack} />
+        )}
+        {screen === "homeDetails" && (
+          <HomeDetails
+            initialValues={inputs}
+            onBack={handleHomeDetailsBack}
+            onSubmit={handleHomeDetailsComplete}
+          />
         )}
         {screen === "results" && (
           <ResultsPanel
