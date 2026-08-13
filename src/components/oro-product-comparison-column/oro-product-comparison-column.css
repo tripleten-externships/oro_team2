@@ -1,0 +1,25 @@
+.oro-product-comparison-column {
+  width: 100%;
+  max-width: 360px;
+  overflow: hidden;
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+}
+
+.oro-product-comparison-column__product {
+  max-width: none;
+  border: 0;
+  border-bottom: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.oro-product-comparison-column__rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.oro-product-comparison-column__rows .oro-comparison-row:last-child {
+  border-bottom: 0;
+}

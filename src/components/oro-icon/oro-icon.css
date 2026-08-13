@@ -1,0 +1,46 @@
+.oro-icon {
+  position: relative;
+  display: inline-block;
+  width: var(--oro-icon-size-md);
+  height: var(--oro-icon-size-md);
+  flex: 0 0 var(--oro-icon-size-md);
+}
+
+.oro-icon__asset {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  transform: translate(-50%, -50%);
+}
+
+.oro-icon--chevron-right .oro-icon__asset,
+.oro-icon--chevron-left .oro-icon__asset {
+  width: 8px;
+  height: 14px;
+}
+
+.oro-icon--chevron-down .oro-icon__asset {
+  width: 14px;
+  height: 8px;
+}
+
+.oro-icon--close .oro-icon__asset {
+  width: 14px;
+  height: 14px;
+}
+
+.oro-icon--check .oro-icon__asset {
+  width: 16px;
+  height: 12px;
+}
+
+.oro-icon--info .oro-icon__asset:first-child {
+  width: 20px;
+  height: 20px;
+}
+
+.oro-icon--info .oro-icon__asset:last-child {
+  width: 2px;
+  height: 12px;
+}

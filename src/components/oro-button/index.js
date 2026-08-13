@@ -1,1 +1,1 @@
-export { default as Button } from './oro-button'
+export { default as OroButton } from './oro-button.jsx'
