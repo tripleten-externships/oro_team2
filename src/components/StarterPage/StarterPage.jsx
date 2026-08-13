@@ -8,7 +8,7 @@ function StarterPage({ onGuidedStart, onCompareAll }) {
           A private, educational tool from ORO
         </p>
         <h1 className="starter-page__title">
-          Understand your home equity and options
+          Understand your home equity options
         </h1>
         <p className="starter-page__description">
           Tell us what matters, add a few home details, and compare how seven
@@ -60,9 +60,9 @@ function StarterPage({ onGuidedStart, onCompareAll }) {
           i
         </span>
         <p>
-          Private by design. Your entries are calculated in this browser session and
-          are not stored or transmitted. Results are illustrative estimates—not
-          financial advice.
+          Private by design. Your entries are calculated in this browser session
+          and are not stored or transmitted. Results are illustrative
+          estimates—not financial advice.
         </p>
       </div>
     </main>
