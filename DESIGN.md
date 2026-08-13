@@ -1,8 +1,8 @@
 ---
 version: alpha
 name: ORO Home Equity Explorer Design System
-source: "Figma Lo-Fi Foundations 363:173 and Hi-Fi Controls 363:1314"
-description: "A restrained financial-education system with accessible Hi-Fi form and navigation controls."
+source: "Figma Lo-Fi Foundations 363:173; Hi-Fi Controls 363:1314; Hi-Fi Nav & Feedback 363:1680; Hi-Fi Product & Data 363:1793"
+description: "A restrained financial-education system with accessible controls, navigation, product education, comparison data, and feedback."
 
 colors:
   surface-page: "#FBF6ED"
@@ -25,6 +25,11 @@ colors:
   action-primary: "#E29F06"
 
 typography:
+  display:
+    fontFamily: Fraunces
+    fontSize: 24–30px
+    fontWeight: 600
+    lineHeight: 34–41px
   controls:
     fontFamily: Work Sans
     fontSize: 16px
@@ -79,20 +84,20 @@ typography:
     lineHeight: 24px
 
 spacing: [2px, 4px, 8px, 12px, 16px, 20px, 24px, 32px, 40px, 48px, 64px]
-rounded: [8px, 10px, 12px, 999px]
+rounded: [8px, 10px, 12px, 16px, 999px]
 borders: [1px, 2px, 3px]
 layout:
   desktop-canvas: 1440px
   content-max: 1200px
   form-max: 720px
-  header-height: 72px
+  header-height: 80px
 ---
 
 # ORO Home Equity Explorer Design System
 
 ## Source of truth
 
-This document records the shared foundations from Figma node `363:173` and the current control behavior from Hi-Fi node `363:1314`. Hi-Fi controls override their older Lo-Fi versions; the remaining Lo-Fi components stay valid until a newer reference replaces them.
+This document records the shared foundations from Figma node `363:173`, controls from Hi-Fi node `363:1314`, navigation and feedback from Hi-Fi node `363:1680`, and product and data components from Hi-Fi node `363:1793`. Hi-Fi components override their older Lo-Fi versions; remaining Lo-Fi components stay valid until a newer reference replaces them.
 
 Use global custom properties from `src/styles/tokens.css`. Component styles consume those properties and use lowercase BEM classes. Add a global token when a design value is repeated; keep one-off chart geometry local to the chart.
 
@@ -102,7 +107,7 @@ Cream is the page canvas, white is the primary control and card surface, and min
 
 Status must never rely on color alone. Pair warning, error, selection, and unavailable colors with a marker or written label.
 
-Playfair Display is limited to the ORO wordmark and primary page heading. DM Sans remains the application body and data face. Work Sans is used by the Hi-Fi buttons, fields, choices, dropdowns, icon buttons, and segmented controls. All three fonts are self-hosted from `public/fonts`.
+Fraunces is the Hi-Fi display face for product panels, education sections, and chart titles. Work Sans is used by Hi-Fi controls, product copy, labels, and data. DM Sans remains available to legacy application content, while Playfair Display remains available to legacy headings. All fonts are self-hosted from `public/fonts`.
 
 ## Component rules
 
@@ -138,6 +143,24 @@ Playfair Display is limited to the ORO wordmark and primary page heading. DM San
 - The selected segment combines the dark green brand surface with inverse text.
 - Segmented controls compose Segment instances and support arrow, Home, and End keys.
 
+### Progress indicator
+
+- Six responsive 8px segments show the current and completed steps.
+- The written `Step n of 6 · label` description keeps progress understandable without color.
+- Work Sans Medium at 14px is used for the optional label.
+
+### Educational callouts and disclosures
+
+- Callouts support info, neutral, success, warning, error, and risk intents with a written symbol reinforcing color.
+- Disclaimer and help panels compose the callout rather than duplicating feedback markup.
+- Tooltip and definition disclosures are static educational surfaces; accordions use native `details` and `summary` behavior.
+
+### System states
+
+- Empty, loading, and recoverable error states use a 480px reference width and 240px minimum height.
+- Every state includes a marker, title, and plain-language recovery guidance.
+- Loading exposes `aria-busy`; errors use an alert role.
+
 ### Step indicator and view tabs
 
 - Progress uses six written and visual segments so it is understandable without color.
@@ -146,23 +169,28 @@ Playfair Display is limited to the ORO wordmark and primary page heading. DM San
 ### Product and data components
 
 - Product cards use a 360px reference width but grow to the available container.
-- Card order remains product identity, eligibility, description, two key outcomes, risk, and education action.
-- Selected and unavailable products remain educational and visible.
-- Stat tiles are 92px minimum-height labeled outcomes with default and strong emphasis.
-- Callouts support info, warning, error, and risk with a text marker and semantic copy.
+- Card order remains product identity, definition, separate eligibility and suitability indicators, two key outcomes, primary tradeoff, and education or comparison action.
+- Summary and comparison modes share one component. Match emphasis uses an explicit fit label and a 2px outline; selected uses a 3px outline; unavailable remains visible with a written status and disabled action.
+- Eligibility never implies suitability. Suitability describes relative alignment with the user's priorities and must not imply approval or personalized financial advice.
+- Product definition sections compose benefit, consideration, and requirement rows. Detail panels compose the definition section, illustrative disclaimer, and shared controls.
+- Comparison columns compose one comparison-mode product card and semantic 88px comparison rows. Values come from the calculation model or product content; components never calculate them.
+- Long-form product education composes six native disclosure accordions for use case, costs, payments, equity, eligibility, and professional questions.
 
 ### Charts and actions
 
 - Chart panels expose Equity remaining, Cumulative cost, and Monthly impact views.
 - Charts receive normalized series; they do not calculate mortgage values.
-- Chart labels, line styles, markers, and accessible summaries prevent color-only interpretation.
+- Chart labels, solid/dashed/dotted line patterns, written legend labels, selected checkmarks, and accessible summaries prevent color-only interpretation.
+- Chart containers provide default, selected-series, and no-data states. Selection is represented by a pressed legend control and an accessible tooltip.
+- Every chart includes direct labels and an educational caption explaining that values are illustrative and not guaranteed.
 - CTA banners provide one primary and one supporting action and stack on narrow screens.
 
 ### App header
 
 - One responsive component serves desktop and mobile layouts.
-- Height is 72px with a white surface and bottom border.
-- It always retains the product label and educational-estimate notice.
+- It uses the official exported Oro primary wordmark at no less than 100px wide.
+- Desktop is 80px with brand, journey context, and restart action; mobile stacks context beneath a 44px brand/action row for a 96px total reference height.
+- Restart remains a native tertiary button and is rendered only when a handler is supplied.
 
 ## Accessibility and responsive behavior
 

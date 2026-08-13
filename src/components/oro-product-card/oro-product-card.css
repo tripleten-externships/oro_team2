@@ -1,40 +1,32 @@
 .oro-product-card {
   display: flex;
   width: 100%;
+  max-width: 360px;
   min-width: 0;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--oro-space-16);
   padding: var(--oro-space-24);
   border: var(--oro-border-default) solid var(--oro-color-border-default);
-  border-radius: var(--oro-radius-panel);
-  background: var(--oro-color-surface-card);
+  border-radius: var(--oro-radius-state);
+  background: var(--oro-color-surface-elevated);
+  box-shadow: var(--oro-shadow-level-1);
+  font-family: var(--oro-font-control);
 }
 
-.oro-product-card--selected {
+.oro-product-card--match.oro-product-card--default {
   border: var(--oro-border-emphasis) solid var(--oro-color-border-selected);
   background: var(--oro-color-surface-selected);
 }
 
+.oro-product-card--selected {
+  border: var(--oro-border-focus) solid var(--oro-color-border-selected);
+  background: var(--oro-color-surface-card);
+}
+
 .oro-product-card--unavailable {
-  border-color: var(--oro-color-border-warning);
-  background: var(--oro-color-surface-subtle);
-}
-
-.oro-product-card__header {
-  display: flex;
-  width: 100%;
-  min-height: 60px;
-  align-items: flex-start;
-  gap: var(--oro-space-12);
-}
-
-.oro-product-card__identity {
-  display: flex;
-  min-width: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--oro-space-8);
+  border-color: var(--oro-color-border-default);
+  background: var(--oro-color-surface-disabled);
 }
 
 .oro-product-card__name {
@@ -44,85 +36,53 @@
   line-height: var(--oro-type-section-line);
 }
 
-.oro-product-card__eligibility {
-  color: var(--oro-color-text-action);
-  font-size: var(--oro-type-body-small-size);
-  font-weight: var(--oro-font-weight-semibold);
-  line-height: var(--oro-type-body-small-line);
-}
-
-.oro-product-card--unavailable .oro-product-card__name {
-  color: var(--oro-color-text-muted);
-}
-
-.oro-product-card--unavailable .oro-product-card__eligibility {
-  color: var(--oro-color-text-warning);
-}
-
-.oro-product-card__marker {
-  display: grid;
-  width: var(--oro-icon-size-md);
-  height: var(--oro-icon-size-md);
-  flex: 0 0 var(--oro-icon-size-md);
-  place-items: center;
-  padding: 0;
-  border: var(--oro-border-default) solid var(--oro-color-border-default);
-  border-radius: var(--oro-radius-full);
-  background: var(--oro-color-surface-card);
-  color: var(--oro-color-text-inverse);
-  font-size: var(--oro-type-body-compact-size);
-  font-weight: var(--oro-font-weight-semibold);
-  line-height: 1;
-}
-
-.oro-product-card--selected .oro-product-card__marker {
-  border-color: var(--oro-color-border-selected);
-  background: var(--oro-color-action-primary);
-}
-
-.oro-product-card--unavailable .oro-product-card__marker {
-  color: var(--oro-color-text-muted);
-}
-
-.oro-product-card__marker--interactive {
-  cursor: pointer;
-}
-
-.oro-product-card__marker--interactive:disabled {
-  cursor: not-allowed;
-}
-
 .oro-product-card__description {
+  min-height: 72px;
   color: var(--oro-color-text-secondary);
-  font-size: var(--oro-type-body-compact-size);
-  line-height: var(--oro-type-body-compact-line);
+  font-size: var(--oro-type-card-size);
+  line-height: var(--oro-type-card-line);
 }
 
-.oro-product-card--unavailable .oro-product-card__description {
-  color: var(--oro-color-text-muted);
+.oro-product-card__status {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: var(--oro-space-8);
+  overflow-x: auto;
 }
 
 .oro-product-card__metrics {
-  display: grid;
+  display: flex;
   width: 100%;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--oro-space-12);
+  flex-direction: column;
+  gap: var(--oro-space-8);
+  margin: 0;
+  padding: var(--oro-space-16);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-subtle);
 }
 
-.oro-product-card__metrics .oro-stat-tile {
-  max-width: none;
+.oro-product-card__metric dd {
+  margin: 0;
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-label-large-size);
+  font-weight: var(--oro-font-weight-medium);
+  line-height: var(--oro-type-label-large-line);
 }
 
 .oro-product-card > .oro-button {
   align-self: flex-start;
 }
 
+.oro-product-card--unavailable .oro-product-card__name,
+.oro-product-card--unavailable .oro-product-card__description,
+.oro-product-card--unavailable .oro-product-card__metric dd,
+.oro-product-card--unavailable .oro-tradeoff-row {
+  color: var(--oro-color-text-muted);
+}
+
 @media (max-width: 359px) {
   .oro-product-card {
     padding: var(--oro-space-16);
-  }
-
-  .oro-product-card__metrics {
-    grid-template-columns: 1fr;
   }
 }
