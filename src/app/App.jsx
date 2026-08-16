@@ -1,134 +1,169 @@
-import { useEffect, useState } from "react";
-import "./App.css";
-import { OroAppHeader } from "../components/oro-app-header";
-import StarterPage from "../components/StarterPage/StarterPage.jsx";
-import Questionnaire from "../components/Questionnaire/Questionnaire.jsx";
-import ResultsPanel from "../components/ResultsPanel/ResultsPanel.jsx";
-import { DEFAULT_INPUTS, getTopRecommendations } from "../utils/homeEquityCalculations.js";
-
-const STORAGE_KEY = "oro-home-equity-explorer";
-const emptyAnswers = { goal: "", stay: "", payment: "", priority: "" };
-const emptyResults = { recommendations: [], allProducts: [] };
-
-const readStoredState = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return {
-        screen: "starter",
-        answers: emptyAnswers,
-        results: emptyResults,
-      };
-    }
-
-    const stored = JSON.parse(raw);
-    return {
-      screen: stored?.screen ?? "starter",
-      answers: { ...emptyAnswers, ...(stored?.answers ?? {}) },
-      results: stored?.results ?? emptyResults,
-    };
-  } catch {
-    localStorage.removeItem(STORAGE_KEY);
-    return {
-      screen: "starter",
-      answers: emptyAnswers,
-      results: emptyResults,
-    };
-  }
-};
+import { useEffect, useMemo, useState } from 'react'
+import './App.css'
+import { getResults } from '../application/mortgage-view-model.js'
+import {
+  clearStoredState,
+  createDefaultState,
+  EMPTY_ANSWERS,
+  persistStoredState,
+  readStoredState,
+} from '../application/mortgage-storage.js'
+import { HomeDetails } from '../components/home-details'
+import { OroAppHeader } from '../components/oro-app-header'
+import { OroCallout } from '../components/oro-callout'
+import Questionnaire from '../components/Questionnaire/Questionnaire.jsx'
+import ResultsPanel from '../components/ResultsPanel/ResultsPanel.jsx'
+import StarterPage from '../components/StarterPage/StarterPage.jsx'
 
 function App() {
-  const initialState = readStoredState();
-  const [screen, setScreen] = useState(initialState.screen);
-  const [answers, setAnswers] = useState(initialState.answers);
-  const [results, setResults] = useState(initialState.results);
+  const [state, setState] = useState(() => readStoredState())
 
   useEffect(() => {
-    if (screen === "starter") {
-      return;
+    if (state.screen === 'starter') {
+      clearStoredState()
+      return
+    }
+
+    persistStoredState(state)
+  }, [state])
+
+  const results = useMemo(() => {
+    if (state.screen !== 'results') {
+      return null
     }
 
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          screen,
-          answers,
-          results,
-        }),
-      );
+      return getResults(state.inputs, state.answers, state.flowMode === 'direct')
     } catch {
-      // Ignore storage write failures for unsupported browser environments.
+      return null
     }
-  }, [answers, results, screen]);
+  }, [state.answers, state.flowMode, state.inputs, state.screen])
 
-  const handleGuidedStart = () => {
-    setScreen("questionnaire");
-  };
+  function updateState(updates) {
+    setState((current) => ({ ...current, ...updates }))
+  }
 
-  const handleBack = () => {
-    setScreen("starter");
-  };
+  function handleGuidedStart() {
+    updateState({
+      answers: { ...EMPTY_ANSWERS },
+      activeTab: 'matches',
+      detailProductId: null,
+      flowMode: 'guided',
+      screen: 'questionnaire',
+      selectedIds: [],
+    })
+  }
 
-  const handleCompareAll = () => {
-    const nextResults = getTopRecommendations(emptyAnswers, DEFAULT_INPUTS);
-    setResults({
-      recommendations: nextResults.allProducts.slice(0, 3),
-      allProducts: nextResults.allProducts,
-    });
-    setScreen("results");
-  };
+  function handleDirectStart() {
+    updateState({
+      activeTab: 'all',
+      detailProductId: null,
+      flowMode: 'direct',
+      screen: 'home-details',
+      selectedIds: [],
+    })
+  }
 
-  const handleRestart = () => {
-    setScreen("starter");
-    setAnswers(emptyAnswers);
-    setResults({ recommendations: [], allProducts: [] });
-    localStorage.removeItem(STORAGE_KEY);
-  };
+  function handleQuestionnaireComplete(answers) {
+    updateState({
+      answers,
+      flowMode: 'guided',
+      screen: 'home-details',
+    })
+  }
 
-  const handleComplete = (nextAnswers) => {
-    const nextResults = getTopRecommendations(nextAnswers, DEFAULT_INPUTS);
-    setAnswers(nextAnswers);
-    setResults({
-      recommendations: nextResults.recommendations,
-      allProducts: nextResults.allProducts,
-    });
-    setScreen("results");
-  };
+  function handleHomeDetailsBack() {
+    updateState({
+      screen: state.flowMode === 'guided' ? 'questionnaire' : 'starter',
+    })
+  }
 
-  const headerContext = screen === "questionnaire"
-    ? "Guided questions"
-    : screen === "results"
-      ? "Options to explore"
-      : "Home equity explorer";
+  function handleDetailsSubmit(inputs) {
+    updateState({
+      activeTab: state.flowMode === 'direct' ? 'all' : 'matches',
+      detailProductId: null,
+      inputs,
+      screen: 'results',
+      selectedIds: [],
+    })
+  }
+
+  function handleRestart() {
+    clearStoredState()
+    setState(createDefaultState())
+  }
+
+  function handleSelection(productId) {
+    setState((current) => {
+      const selectedIds = current.selectedIds.includes(productId)
+        ? current.selectedIds.filter((id) => id !== productId)
+        : current.selectedIds.length < 3
+          ? [...current.selectedIds, productId]
+          : current.selectedIds
+
+      return { ...current, selectedIds }
+    })
+  }
+
+  const headerContext = state.screen === 'questionnaire'
+    ? 'Guided questions'
+    : state.screen === 'home-details'
+      ? 'Home details'
+      : state.screen === 'results'
+        ? 'Options to explore'
+        : 'Home equity explorer'
 
   return (
     <div className="app">
       <OroAppHeader
         context={headerContext}
-        onRestart={screen === "starter" ? undefined : handleRestart}
+        onRestart={state.screen === 'starter' ? undefined : handleRestart}
       />
-      <main className="app__content">
-        {screen === "starter" && (
+      <div className="app__content">
+        {state.screen === 'starter' && (
           <StarterPage
+            onCompareAll={handleDirectStart}
             onGuidedStart={handleGuidedStart}
-            onCompareAll={handleCompareAll}
           />
         )}
-        {screen === "questionnaire" && (
-          <Questionnaire onComplete={handleComplete} onBack={handleBack} />
+        {state.screen === 'questionnaire' && (
+          <Questionnaire
+            initialAnswers={state.answers}
+            onBack={() => updateState({ screen: 'starter' })}
+            onComplete={handleQuestionnaireComplete}
+          />
         )}
-        {screen === "results" && (
+        {state.screen === 'home-details' && (
+          <HomeDetails
+            initialValues={state.inputs}
+            onBack={handleHomeDetailsBack}
+            onSubmit={handleDetailsSubmit}
+          />
+        )}
+        {state.screen === 'results' && results && (
           <ResultsPanel
-            recommendations={results.recommendations}
-            allProducts={results.allProducts}
+            activeTab={state.activeTab}
+            detailProductId={state.detailProductId}
+            onEditInputs={() => updateState({ screen: 'home-details' })}
+            onOpenDetail={(productId) => updateState({ detailProductId: productId })}
+            onRemoveDetail={() => updateState({ detailProductId: null })}
             onRestart={handleRestart}
-            onCompareAll={handleCompareAll}
+            onSelection={handleSelection}
+            onTabChange={(activeTab) => updateState({ activeTab })}
+            results={results}
+            selectedIds={state.selectedIds}
           />
         )}
-      </main>
+        {state.screen === 'results' && !results && (
+          <main className="app__error" aria-labelledby="calculation-error-title">
+            <OroCallout type="error" title="We could not calculate these options" role="alert">
+              Check your home details and try again.
+            </OroCallout>
+          </main>
+        )}
+      </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

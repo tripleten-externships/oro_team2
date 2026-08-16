@@ -60,9 +60,8 @@ function StarterPage({ onGuidedStart, onCompareAll }) {
           i
         </span>
         <p>
-          Private by design. Your entries are calculated in this browser session and
-          are not stored or transmitted. Results are illustrative estimates—not
-          financial advice.
+          Private by design. Your entries stay on this device and are not
+          transmitted. Results are illustrative estimates—not financial advice.
         </p>
       </div>
     </main>

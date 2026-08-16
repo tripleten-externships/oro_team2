@@ -32,6 +32,8 @@
   --oro-color-border-error: var(--oro-color-text-error);
   --oro-color-border-success: var(--oro-color-text-success);
   --oro-color-border-info: var(--oro-color-text-info);
+  --oro-color-border-suitability-strong: #a07814;
+  --oro-color-border-selection-emphasis: #d4a834;
   --oro-color-action-primary: #e29f06;
   --oro-color-action-primary-hover: #faae02;
   --oro-color-action-primary-pressed: #f0d77d;
@@ -120,6 +122,7 @@
   --oro-border-default: 1px;
   --oro-border-emphasis: 2px;
   --oro-border-focus: 3px;
+  --oro-border-selection-emphasis: 5px;
   --oro-control-height: 48px;
   --oro-field-height: 56px;
   --oro-choice-height: 64px;
@@ -139,6 +142,7 @@
   --oro-layout-form-max: 720px;
   --oro-layout-grid-gutter: 24px;
   --oro-layout-header-height: 80px;
+  --oro-layout-header-padding-inline: 80px;
   --oro-layout-chart-height: 300px;
   --oro-layout-system-state-height: 240px;
 

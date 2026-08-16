@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: ORO Home Equity Explorer Design System
-source: "Figma Lo-Fi Foundations 363:173; Hi-Fi Controls 363:1314; Hi-Fi Nav & Feedback 363:1680; Hi-Fi Product & Data 363:1793"
+source: "Figma file JrvM5uyW4lDxTEdUe6Sd6k · Lo-Fi Foundations 363:173; Hi-Fi Controls 363:1314; Hi-Fi Nav & Feedback 363:1680; Hi-Fi Product & Data 363:1793"
 description: "A restrained financial-education system with accessible controls, navigation, product education, comparison data, and feedback."
 
 colors:
@@ -10,19 +10,33 @@ colors:
   surface-subtle: "#E2F4EA"
   surface-selected: "#E2F4EA"
   surface-info: "#F0F9F4"
+  surface-success: "#F0F9F4"
+  surface-disabled: "#FBF6ED"
+  surface-brand: "#09453B"
   surface-warning: "#FFF4CD"
   surface-error: "#FFEAED"
   text-primary: "#06281D"
   text-secondary: "#6F6D69"
   text-inverse: "#FFFFFF"
+  text-muted: "#6F6D69"
+  text-action: "#06281D"
   text-accent: "#5B4209"
+  text-warning: "#5B4209"
+  text-success: "#09453B"
+  text-info: "#09453B"
+  text-disabled: "#6F6D69"
   text-error: "#B91B40"
   border-default: "#85938F"
   border-strong: "#6F6D69"
   border-selected: "#09453B"
+  border-focus: "#09453B"
   border-warning: "#5B4209"
   border-error: "#B91B40"
+  border-success: "#09453B"
   action-primary: "#E29F06"
+  action-primary-hover: "#FAAE02"
+  action-primary-pressed: "#F0D77D"
+  action-destructive: "#B91B40"
 
 typography:
   display:
@@ -36,68 +50,72 @@ typography:
     fontWeight: 400–600
     lineHeight: 24px
   brand:
-    fontFamily: Playfair Display
+    fontFamily: Fraunces
     fontSize: 24px
     fontWeight: 600
     lineHeight: 32px
     letterSpacing: 0.4px
   heading-page:
-    fontFamily: Playfair Display
+    fontFamily: Fraunces
     fontSize: 32px
     fontWeight: 600
     lineHeight: 40px
   heading-section:
-    fontFamily: DM Sans
+    fontFamily: Fraunces
     fontSize: 20px
     fontWeight: 600
     lineHeight: 28px
   heading-card:
-    fontFamily: DM Sans
+    fontFamily: Fraunces
     fontSize: 16px
     fontWeight: 600
     lineHeight: 24px
   body-default:
-    fontFamily: DM Sans
+    fontFamily: Work Sans
     fontSize: 14px
     fontWeight: 400
     lineHeight: 22px
   body-small:
-    fontFamily: DM Sans
+    fontFamily: Work Sans
     fontSize: 12px
     fontWeight: 400
     lineHeight: 18px
   label-default:
-    fontFamily: DM Sans
+    fontFamily: Work Sans
     fontSize: 12px
     fontWeight: 600
     lineHeight: 16px
     letterSpacing: 0.4px
   label-button:
-    fontFamily: DM Sans
+    fontFamily: Work Sans
     fontSize: 14px
     fontWeight: 600
     lineHeight: 20px
   data-value:
-    fontFamily: DM Sans
+    fontFamily: Work Sans
     fontSize: 16px
     fontWeight: 500
     lineHeight: 24px
 
 spacing: [2px, 4px, 8px, 12px, 16px, 20px, 24px, 32px, 40px, 48px, 64px]
 rounded: [8px, 10px, 12px, 16px, 999px]
-borders: [1px, 2px, 3px]
+borders: [1px, 2px, 3px, 5px]
 layout:
   desktop-canvas: 1440px
   content-max: 1200px
   form-max: 720px
   header-height: 80px
+  header-padding-inline: 80px
+  mobile-header-height: 96px
 ---
 
 # ORO Home Equity Explorer Design System
 
 ## Source of truth
 
-This document records the shared foundations from Figma node `363:173`, controls from Hi-Fi node `363:1314`, navigation and feedback from Hi-Fi node `363:1680`, and product and data components from Hi-Fi node `363:1793`. Hi-Fi components override their older Lo-Fi versions; remaining Lo-Fi components stay valid until a newer reference replaces them.
+This document records the shared foundations from Figma node `363:173`, controls from Hi-Fi node `363:1314`, navigation and feedback from Hi-Fi node `363:1680`, and product and data components from Hi-Fi node `363:1793` in the current Figma file.
+
+Reference links: [Foundations](https://www.figma.com/design/JrvM5uyW4lDxTEdUe6Sd6k/ORO-Home-Equity-Tool-%E2%80%94-Lo-Fi-Prototype-v1--Copy-?node-id=363-173), [Controls](https://www.figma.com/design/JrvM5uyW4lDxTEdUe6Sd6k/ORO-Home-Equity-Tool-%E2%80%94-Lo-Fi-Prototype-v1--Copy-?node-id=363-1314), [Nav and feedback](https://www.figma.com/design/JrvM5uyW4lDxTEdUe6Sd6k/ORO-Home-Equity-Tool-%E2%80%94-Lo-Fi-Prototype-v1--Copy-?node-id=363-1680), [Product and data](https://www.figma.com/design/JrvM5uyW4lDxTEdUe6Sd6k/ORO-Home-Equity-Tool-%E2%80%94-Lo-Fi-Prototype-v1--Copy-?node-id=363-1793).
 
 Use global custom properties from `src/styles/tokens.css`. Component styles consume those properties and use lowercase BEM classes. Add a global token when a design value is repeated; keep one-off chart geometry local to the chart.
 
@@ -107,7 +125,7 @@ Cream is the page canvas, white is the primary control and card surface, and min
 
 Status must never rely on color alone. Pair warning, error, selection, and unavailable colors with a marker or written label.
 
-Fraunces is the Hi-Fi display face for product panels, education sections, and chart titles. Work Sans is used by Hi-Fi controls, product copy, labels, and data. DM Sans remains available to legacy application content, while Playfair Display remains available to legacy headings. All fonts are self-hosted from `public/fonts`.
+Fraunces is the Hi-Fi display face for brand text, headings, product panels, education sections, and chart titles. Work Sans is used by Hi-Fi controls, body copy, labels, and data. DM Sans remains available for legacy application content and Figma documentation metadata; Playfair Display remains only as a legacy fallback. All fonts are self-hosted from `public/fonts`.
 
 ## Component rules
 
@@ -128,7 +146,7 @@ Fraunces is the Hi-Fi display face for product panels, education sections, and c
 
 - Persistent 16px label, 56px control, 10px radius, and optional prefix or suffix.
 - Inputs support text, currency, percentage, and number kinds. Dropdowns use a native `select` and the exported chevron.
-- Default, filled, error, success, and disabled states.
+- Default, hover, focus, filled, error, success, and disabled states.
 - Error copy is associated with the control and exposed through `aria-invalid` and `aria-describedby`.
 
 ### Icons and icon buttons
@@ -170,7 +188,8 @@ Fraunces is the Hi-Fi display face for product panels, education sections, and c
 
 - Product cards use a 360px reference width but grow to the available container.
 - Card order remains product identity, definition, separate eligibility and suitability indicators, two key outcomes, primary tradeoff, and education or comparison action.
-- Summary and comparison modes share one component. Match emphasis uses an explicit fit label and a 2px outline; selected uses a 3px outline; unavailable remains visible with a written status and disabled action.
+- Summary and comparison modes share one component. The rendered Figma variants use a 1px green outline for Summary/Match and a 2px green outline for Comparison/Match. Selected uses a 5px gold outline; unavailable remains visible with a written status and disabled action. Figma's component description states a 2px Match outline for all modes, so that discrepancy should be confirmed with design before further visual changes.
+- Strong suitability uses a gold surface with a written match label; possible uses a cream surface with warning text; limited uses the disabled surface. Suitability is separate from eligibility.
 - Eligibility never implies suitability. Suitability describes relative alignment with the user's priorities and must not imply approval or personalized financial advice.
 - Product definition sections compose benefit, consideration, and requirement rows. Detail panels compose the definition section, illustrative disclaimer, and shared controls.
 - Comparison columns compose one comparison-mode product card and semantic 88px comparison rows. Values come from the calculation model or product content; components never calculate them.

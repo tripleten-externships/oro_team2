@@ -6,10 +6,9 @@
   grid-template-areas: 'brand context action';
   align-items: center;
   gap: var(--oro-space-16);
-  padding: var(--oro-space-12) var(--oro-space-64);
+  padding: var(--oro-space-12) var(--oro-layout-header-padding-inline);
   background: var(--oro-color-surface-brand);
-  box-shadow: inset 0 calc(-1 * var(--oro-border-default))
-    var(--oro-color-text-primary);
+  border-bottom: var(--oro-border-default) solid var(--oro-color-text-primary);
   color: var(--oro-color-text-inverse);
 }
 

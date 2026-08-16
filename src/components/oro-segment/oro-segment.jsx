@@ -1,6 +1,7 @@
+import { forwardRef } from 'react'
 import './oro-segment.css'
 
-function OroSegment({
+const OroSegment = forwardRef(function OroSegment({
   label,
   selected = false,
   disabled = false,
@@ -8,7 +9,7 @@ function OroSegment({
   type = 'button',
   role,
   ...buttonProps
-}) {
+}, ref) {
   const classes = [
     'oro-segment',
     selected && 'oro-segment--selected',
@@ -22,6 +23,7 @@ function OroSegment({
     <button
       {...buttonProps}
       {...selectionProps}
+      ref={ref}
       className={classes}
       type={type}
       role={role}
@@ -30,6 +32,6 @@ function OroSegment({
       {label}
     </button>
   )
-}
+})
 
 export default OroSegment
