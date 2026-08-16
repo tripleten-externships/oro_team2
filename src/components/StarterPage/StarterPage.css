@@ -105,7 +105,7 @@
 }
 
 .starter-page__card-meta {
-  margin: auto 0 0;
+  margin: var(--oro-space-12) 0 0;
   font-family: var(--oro-font-body);
   font-size: 12px;
   font-weight: 400;

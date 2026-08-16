@@ -5,7 +5,7 @@ description: "Implement, review, test, or explain Oro mortgage and home-equity c
 
 # Mortgage calculations
 
-`AGENTS.md` is the repository contract and has priority over this skill. Before touching financial logic, read `docs/mortgage-calculations.md` completely. It is the canonical transcription of the client HTML; do not replace its assumptions with generic mortgage advice or undocumented lender rules.
+`AGENTS.md` is the repository contract and has priority over this skill. Before touching financial logic, read `docs/mortgage-calculations.md` completely. It is the canonical corrected Oro prototype model based on the client HTML; do not replace its documented assumptions with generic mortgage advice or undocumented lender rules.
 
 ## Rules
 
@@ -13,9 +13,10 @@ description: "Implement, review, test, or explain Oro mortgage and home-equity c
 - Use named functions with explicit units. Convert annual percentage rates to decimal monthly rates before amortization.
 - Preserve the documented constants, rounding, eligibility rules, product formulas, projection horizon, and recommendation scores unless the user explicitly asks for a model change.
 - Do not silently “fix” a prototype simplification. Record any proposed change, update the canonical document first, then update consumers and tests together.
+- Keep the corrected model's explicit zero-rate branch, amortized balances, HELOC draw/repayment phases, signed projections, product-specific modeled costs, and non-negative cash proceeds/costs.
 - Keep signs consistent: positive monthly values are income, negative values are payments/costs.
 - Validate inputs and handle malformed or missing values safely. Never let `NaN`, infinity, or negative loan amounts reach the UI.
-- Label projections as illustrative; these formulas are not lender underwriting or financial advice.
+- Label projections as illustrative; these formulas are not lender underwriting, APR disclosures, HECM calculations, or financial advice.
 - For UI files, use lowercase BEM names: `oro-mortgage-form.jsx`, `oro-mortgage-form.css`, and `oro-mortgage-form__field.jsx`. Use kebab-case for pure calculation modules, docs, and font assets; BEM applies only to UI blocks, elements, and modifiers.
 
 ## Workflow

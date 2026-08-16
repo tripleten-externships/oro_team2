@@ -1,135 +1,180 @@
-import { useMemo, useState } from "react";
-import "./Questionnaire.css";
+import { useMemo, useState } from 'react'
+import './Questionnaire.css'
 
 const questionConfig = [
   {
-    id: "goal",
-    title: "What is your main goal?",
+    id: 'goal',
+    title: 'What are you trying to accomplish?',
+    description: 'Choose the outcome that is closest to what you need right now.',
     options: [
-      { value: "lump", label: "Access a lump sum of cash" },
-      { value: "income", label: "Create extra monthly income" },
-      { value: "lower", label: "Lower my monthly payment" },
-      { value: "faster", label: "Pay off my mortgage faster" },
+      { value: 'lump', label: 'Receive a lump sum', helper: 'Access cash for one-time needs or expenses.' },
+      { value: 'income', label: 'Create monthly income', helper: 'Supplement ongoing income from home equity.' },
+      { value: 'lower', label: 'Lower my monthly payment', helper: 'Reduce the amount leaving your budget each month.' },
+      { value: 'faster', label: 'Pay off my mortgage faster', helper: 'Prioritize becoming mortgage-free sooner.' },
     ],
   },
   {
-    id: "stay",
-    title: "How long do you plan to stay in your home?",
+    id: 'stay',
+    title: 'How long do you plan to stay in your home?',
+    description: 'This helps us prioritize options that fit your timeline.',
     options: [
-      { value: "yes", label: "At least 10+ years" },
-      { value: "prob", label: "Likely 5-10 years" },
-      { value: "open", label: "I may move in the next few years" },
-      { value: "soon", label: "I plan to move soon" },
+      { value: 'yes', label: 'At least 10+ years' },
+      { value: 'prob', label: 'Likely 5–10 years' },
+      { value: 'open', label: 'I may move in the next few years' },
+      { value: 'soon', label: 'I plan to move soon' },
     ],
   },
   {
-    id: "payment",
-    title: "Can you comfortably handle an added payment?",
+    id: 'payment',
+    title: 'Can you comfortably handle an added payment?',
+    description: 'Some options add a payment; others do not.',
     options: [
-      { value: "yes", label: "Yes, a regular payment is fine" },
-      { value: "min", label: "Only if it is small" },
-      { value: "no", label: "No, I need to avoid extra monthly costs" },
+      { value: 'yes', label: 'Yes, a regular payment is fine' },
+      { value: 'min', label: 'Only if it is small' },
+      { value: 'no', label: 'No, I need to avoid extra monthly costs' },
     ],
   },
   {
-    id: "priority",
-    title: "Which priority matters most?",
+    id: 'priority',
+    title: 'Which priority matters most?',
+    description: 'When tradeoffs arise, what matters most to you?',
     options: [
-      { value: "cost", label: "Lowest total cost" },
-      { value: "cash", label: "Maximum cash today" },
-      { value: "equity", label: "Strongest long-term equity" },
-      { value: "simple", label: "Simplest option" },
+      { value: 'cost', label: 'Lowest total cost' },
+      { value: 'cash', label: 'Maximum cash today' },
+      { value: 'equity', label: 'Strongest long-term equity' },
+      { value: 'simple', label: 'Simplicity and speed' },
     ],
   },
-];
+]
 
 const emptyAnswers = {
-  goal: "",
-  stay: "",
-  payment: "",
-  priority: "",
-};
+  goal: '',
+  stay: '',
+  payment: '',
+  priority: '',
+}
 
-function Questionnaire({ onComplete, onBack }) {
-  const [answers, setAnswers] = useState(emptyAnswers);
+function Questionnaire({ onComplete, onBack, initialAnswers = emptyAnswers }) {
+  const [answers, setAnswers] = useState(() => ({ ...emptyAnswers, ...initialAnswers }))
+  const [currentStep, setCurrentStep] = useState(0)
+  const question = questionConfig[currentStep]
+  const selectedValue = answers[question.id]
+  const isComplete = Boolean(selectedValue)
 
-  const completedCount = useMemo(
-    () => Object.values(answers).filter(Boolean).length,
-    [answers],
-  );
+  const progressLabel = useMemo(
+    () => `Question ${currentStep + 1} of ${questionConfig.length}`,
+    [currentStep],
+  )
 
-  const isComplete = completedCount === questionConfig.length;
+  const handleChange = (value) => {
+    setAnswers((current) => ({ ...current, [question.id]: value }))
+  }
 
-  const handleChange = (questionId, value) => {
-    setAnswers((current) => ({
-      ...current,
-      [questionId]: value,
-    }));
-  };
-
-  const handleSubmit = () => {
-    if (!isComplete) {
-      return;
+  const handleBack = () => {
+    if (currentStep === 0) {
+      onBack()
+      return
     }
 
-    onComplete(answers);
-  };
+    setCurrentStep((step) => step - 1)
+  }
+
+  const handleContinue = () => {
+    if (!isComplete) {
+      return
+    }
+
+    if (currentStep === questionConfig.length - 1) {
+      onComplete(answers)
+      return
+    }
+
+    setCurrentStep((step) => step + 1)
+  }
 
   return (
-    <section className="questionnaire">
-      <div className="questionnaire__header">
-        <p className="questionnaire__eyebrow">Step 1 of 2</p>
-        <h1>Tell us what matters most</h1>
+    <section className="questionnaire" aria-labelledby="questionnaire-title">
+      <div className="questionnaire__top-progress" aria-label="Options progress">
+        <div className="questionnaire__segments">
+          {questionConfig.map((item, index) => (
+            <span
+              className={`questionnaire__segment ${index <= currentStep ? 'active' : ''}`}
+              key={item.id}
+            />
+          ))}
+        </div>
+        <div className="questionnaire__top-meta">
+          <p>Options to explore</p>
+          <span>{progressLabel}</span>
+        </div>
       </div>
 
-      <div className="questionnaire__progress" aria-label="Questionnaire progress">
-        <span>{completedCount} of {questionConfig.length} answered</span>
-      </div>
+      <div className="questionnaire__layout">
+        <article className="questionnaire__panel">
+          <header className="questionnaire__header">
+            <p className="questionnaire__eyebrow">{progressLabel}</p>
+            <h1 id="questionnaire-title">{question.title}</h1>
+            <p className="questionnaire__description">{question.description}</p>
+          </header>
 
-      <div className="questionnaire__stack">
-        {questionConfig.map((question) => (
-          <fieldset key={question.id} className="questionnaire__group">
-            <legend>{question.title}</legend>
+          <fieldset className="questionnaire__group">
+            <legend className="oro-visually-hidden">{question.title}</legend>
             <div className="questionnaire__options">
               {question.options.map((option) => {
-                const isSelected = answers[question.id] === option.value;
+                const isSelected = selectedValue === option.value
 
                 return (
                   <label
+                    className={`questionnaire__option ${isSelected ? 'selected' : ''}`}
                     key={option.value}
-                    className={`questionnaire__option ${isSelected ? "selected" : ""}`}
                   >
                     <input
-                      type="radio"
-                      name={question.id}
-                      value={option.value}
                       checked={isSelected}
-                      onChange={() => handleChange(question.id, option.value)}
+                      name={question.id}
+                      onChange={() => handleChange(option.value)}
+                      type="radio"
+                      value={option.value}
                     />
-                    <span>{option.label}</span>
+                    <span className="questionnaire__option-mark" aria-hidden="true" />
+                    <span className="questionnaire__option-content">
+                      <strong>{option.label}</strong>
+                      {option.helper && <small>{option.helper}</small>}
+                    </span>
                   </label>
-                );
+                )
               })}
             </div>
           </fieldset>
-        ))}
-      </div>
 
-      <div className="questionnaire__actions">
-        <button type="button" className="questionnaire__secondary" onClick={onBack}>
-          Back
-        </button>
-        <button
-          type="button"
-          className="questionnaire__primary"
-          disabled={!isComplete}
-          onClick={handleSubmit}
-        >
-          See my options
-        </button>
+          <div className="questionnaire__actions">
+            <button type="button" className="questionnaire__secondary" onClick={handleBack}>
+              Back
+            </button>
+            <button
+              type="button"
+              className="questionnaire__primary"
+              disabled={!isComplete}
+              onClick={handleContinue}
+            >
+              {currentStep === questionConfig.length - 1 ? 'Continue to home details' : 'Continue'}
+            </button>
+          </div>
+        </article>
+
+        <aside className="questionnaire__help-panel" aria-label="Why we ask">
+          <h2>Why we ask</h2>
+          <p>Your answers guide fit scoring. They do not change the financial calculations.</p>
+          <div className="questionnaire__help-note" role="note">
+            <span aria-hidden="true">i</span>
+            <div>
+              <strong>Scoring, not advice</strong>
+              <p>Eligibility and home details are evaluated separately.</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
-  );
+  )
 }
 
-export default Questionnaire;
+export default Questionnaire

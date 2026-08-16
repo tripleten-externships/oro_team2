@@ -14,13 +14,19 @@
   font-family: var(--oro-font-control);
 }
 
-.oro-product-card--match.oro-product-card--default {
+.oro-product-card--summary.oro-product-card--match.oro-product-card--default {
+  border: var(--oro-border-default) solid var(--oro-color-border-selected);
+  background: var(--oro-color-surface-selected);
+}
+
+.oro-product-card--comparison.oro-product-card--match.oro-product-card--default {
   border: var(--oro-border-emphasis) solid var(--oro-color-border-selected);
   background: var(--oro-color-surface-selected);
 }
 
 .oro-product-card--selected {
-  border: var(--oro-border-focus) solid var(--oro-color-border-selected);
+  border: var(--oro-border-selection-emphasis) solid
+    var(--oro-color-border-selection-emphasis);
   background: var(--oro-color-surface-card);
 }
 
@@ -48,7 +54,7 @@
   width: 100%;
   align-items: flex-start;
   gap: var(--oro-space-8);
-  overflow-x: auto;
+  overflow: clip;
 }
 
 .oro-product-card__metrics {
