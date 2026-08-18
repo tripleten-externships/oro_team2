@@ -1,0 +1,20 @@
+.oro-chart-panel {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--oro-space-16);
+}
+
+.oro-chart-panel__tabs {
+  display: flex;
+  width: 100%;
+  max-width: 760px;
+  gap: var(--oro-space-8);
+  overflow-x: auto;
+}
+
+.oro-chart-panel > [role='tabpanel'] {
+  width: 100%;
+}

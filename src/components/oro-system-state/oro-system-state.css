@@ -1,0 +1,46 @@
+.oro-system-state {
+  display: flex;
+  width: 100%;
+  max-width: 480px;
+  min-height: var(--oro-layout-system-state-height);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--oro-space-12);
+  padding: var(--oro-space-32);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-state);
+  background: var(--oro-color-surface-subtle);
+  color: var(--oro-color-text-primary);
+  font-family: var(--oro-font-control);
+  text-align: center;
+}
+
+.oro-system-state--error {
+  border-color: var(--oro-color-border-error);
+  background: var(--oro-color-surface-error);
+  color: var(--oro-color-text-error);
+}
+
+.oro-system-state__marker {
+  font-size: var(--oro-type-page-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-page-line);
+}
+
+.oro-system-state__title {
+  font-size: var(--oro-type-section-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-section-line);
+}
+
+.oro-system-state__body {
+  max-width: 400px;
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-card-size);
+  line-height: var(--oro-type-card-line);
+}
+
+.oro-system-state--error .oro-system-state__body {
+  color: inherit;
+}

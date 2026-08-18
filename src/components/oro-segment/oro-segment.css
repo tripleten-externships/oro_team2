@@ -1,0 +1,46 @@
+.oro-segment {
+  display: inline-flex;
+  min-width: var(--oro-segment-min-width);
+  min-height: var(--oro-control-height);
+  align-items: center;
+  justify-content: center;
+  padding: var(--oro-space-12) var(--oro-space-16);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  background: var(--oro-color-surface-card);
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-medium) var(--oro-type-button-size) /
+    var(--oro-type-button-line) var(--oro-font-control);
+  cursor: pointer;
+  transition:
+    background-color var(--oro-duration-standard) var(--oro-easing-standard),
+    border-color var(--oro-duration-standard) var(--oro-easing-standard),
+    color var(--oro-duration-standard) var(--oro-easing-standard);
+}
+
+.oro-segment:hover:not(:disabled, .oro-segment--selected) {
+  background: var(--oro-color-surface-subtle);
+}
+
+.oro-segment--selected {
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-surface-brand);
+  color: var(--oro-color-text-inverse);
+}
+
+.oro-segment:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline-offset: 0;
+}
+
+.oro-segment:disabled {
+  background: var(--oro-color-surface-disabled);
+  color: var(--oro-color-text-disabled);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oro-segment {
+    transition: none;
+  }
+}

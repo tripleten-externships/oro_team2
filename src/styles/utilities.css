@@ -47,7 +47,6 @@
 }
 
 /* Typography primitives */
-.oro-heading-display,
 .oro-heading-page,
 .oro-heading-section,
 .oro-heading-card {
@@ -56,15 +55,8 @@
   font-weight: var(--oro-font-weight-semibold);
 }
 
-.oro-heading-display {
-  font-size: var(--oro-type-display-size);
-  letter-spacing: var(--oro-type-display-tracking);
-  line-height: var(--oro-type-display-line);
-}
-
 .oro-heading-page {
   font-size: var(--oro-type-page-size);
-  letter-spacing: var(--oro-type-page-tracking);
   line-height: var(--oro-type-page-line);
 }
 
@@ -78,24 +70,19 @@
   line-height: var(--oro-type-card-line);
 }
 
-.oro-body-lg {
-  font-size: var(--oro-type-body-lg-size);
-  line-height: var(--oro-type-body-lg-line);
-}
-
 .oro-body-md {
-  font-size: var(--oro-type-body-md-size);
-  line-height: var(--oro-type-body-md-line);
+  font-size: var(--oro-type-body-size);
+  line-height: var(--oro-type-body-line);
 }
 
 .oro-body-supporting {
-  font-size: var(--oro-type-body-md-size);
-  line-height: var(--oro-type-supporting-line);
+  font-size: var(--oro-type-body-small-size);
+  line-height: var(--oro-type-body-small-line);
 }
 
 .oro-label-form,
 .oro-label-button {
-  font-size: var(--oro-type-body-md-size);
+  font-size: var(--oro-type-label-size);
   line-height: var(--oro-type-label-line);
 }
 
@@ -104,13 +91,15 @@
 }
 
 .oro-label-button {
+  font-size: var(--oro-type-button-size);
   font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-button-line);
 }
 
 .oro-caption,
 .oro-chart-label {
-  font-size: var(--oro-type-caption-size);
-  line-height: var(--oro-type-caption-line);
+  font-size: var(--oro-type-body-small-size);
+  line-height: var(--oro-type-body-small-line);
 }
 
 .oro-chart-label {
@@ -120,7 +109,6 @@
 .oro-data-value {
   font-size: var(--oro-type-data-size);
   font-weight: var(--oro-font-weight-medium);
-  letter-spacing: var(--oro-type-page-tracking);
   line-height: var(--oro-type-data-line);
 }
 
@@ -141,7 +129,7 @@
 .oro-card {
   padding: var(--oro-space-24);
   border: var(--oro-border-default) solid var(--oro-color-border-default);
-  border-radius: var(--oro-radius-lg);
+  border-radius: var(--oro-radius-panel);
   background: var(--oro-color-surface-card);
   box-shadow: var(--oro-shadow-level-1);
 }
@@ -153,16 +141,6 @@
 
   .oro-section {
     padding-block: var(--oro-space-32);
-  }
-
-  .oro-heading-display {
-    font-size: 40px;
-    line-height: 48px;
-  }
-
-  .oro-heading-page {
-    font-size: 32px;
-    line-height: 40px;
   }
 
   .oro-grid--two,

@@ -12,9 +12,9 @@ body {
   min-width: 320px;
   min-height: 100svh;
   margin: 0;
-  background: #ffffff;
+  background: var(--oro-color-surface-page);
   color: var(--oro-color-text-primary);
-  font: var(--oro-type-body-md-size) / var(--oro-type-body-md-line)
+  font: var(--oro-type-body-size) / var(--oro-type-body-line)
     var(--oro-font-body);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -51,6 +51,11 @@ h2,
 h3,
 h4,
 p {
+  margin: 0;
+}
+
+dl,
+dd {
   margin: 0;
 }
 

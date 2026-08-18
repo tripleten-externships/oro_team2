@@ -1,0 +1,30 @@
+.oro-suitability-indicator {
+  display: inline-flex;
+  height: 32px;
+  align-items: center;
+  gap: var(--oro-space-8);
+  padding: 0 var(--oro-space-12);
+  border: var(--oro-border-default) solid var(--oro-color-border-suitability-strong);
+  border-radius: var(--oro-radius-control);
+  background: var(--oro-color-action-primary);
+  color: var(--oro-color-text-inverse);
+  font: var(--oro-font-weight-medium) var(--oro-type-body-size) / 20px
+    var(--oro-font-control);
+  white-space: nowrap;
+}
+
+.oro-suitability-indicator--possible {
+  border-color: var(--oro-color-border-selected);
+  background: var(--oro-color-action-disabled);
+  color: var(--oro-color-text-warning);
+}
+
+.oro-suitability-indicator--limited {
+  border-color: var(--oro-color-border-default);
+  background: var(--oro-color-surface-disabled);
+  color: var(--oro-color-text-secondary);
+}
+
+.oro-suitability-indicator__marker {
+  letter-spacing: -2px;
+}

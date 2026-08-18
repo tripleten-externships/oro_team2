@@ -1,0 +1,61 @@
+.oro-icon-button {
+  display: inline-flex;
+  width: var(--oro-icon-button-size);
+  height: var(--oro-icon-button-size);
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: var(--oro-border-default) solid var(--oro-color-border-strong);
+  border-radius: var(--oro-radius-control);
+  background: var(--oro-color-action-secondary);
+  color: var(--oro-color-text-action);
+  cursor: pointer;
+  transition:
+    background-color var(--oro-duration-standard) var(--oro-easing-standard),
+    border-color var(--oro-duration-standard) var(--oro-easing-standard);
+}
+
+.oro-icon-button:hover:not(:disabled) {
+  background: var(--oro-color-action-secondary-hover);
+}
+
+.oro-icon-button:active:not(:disabled) {
+  background: var(--oro-color-action-secondary-pressed);
+}
+
+.oro-icon-button:focus-visible {
+  outline-offset: 0;
+}
+
+.oro-icon-button:disabled:not(.oro-icon-button--loading) {
+  border-color: var(--oro-color-border-default);
+  background: var(--oro-color-action-disabled);
+  cursor: not-allowed;
+  opacity: var(--oro-opacity-disabled);
+}
+
+.oro-icon-button--loading {
+  cursor: wait;
+}
+
+.oro-icon-button__spinner {
+  width: var(--oro-icon-size-sm);
+  height: var(--oro-icon-size-sm);
+  animation: oro-icon-button-spin 700ms linear infinite;
+}
+
+@keyframes oro-icon-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oro-icon-button {
+    transition: none;
+  }
+
+  .oro-icon-button__spinner {
+    animation: none;
+  }
+}

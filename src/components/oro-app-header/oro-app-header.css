@@ -1,0 +1,70 @@
+.oro-app-header {
+  display: grid;
+  width: 100%;
+  min-height: var(--oro-layout-header-height);
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: 'brand context action';
+  align-items: center;
+  gap: var(--oro-space-16);
+  padding: var(--oro-space-12) var(--oro-layout-header-padding-inline);
+  background: var(--oro-color-surface-brand);
+  border-bottom: var(--oro-border-default) solid var(--oro-color-text-primary);
+  color: var(--oro-color-text-inverse);
+}
+
+.oro-app-header__wordmark {
+  grid-area: brand;
+  justify-self: start;
+}
+
+.oro-app-header__context {
+  grid-area: context;
+  color: var(--oro-color-text-inverse);
+  font: var(--oro-font-weight-regular) var(--oro-type-card-size) /
+    var(--oro-type-card-line) var(--oro-font-control);
+  text-align: center;
+}
+
+.oro-app-header__restart {
+  grid-area: action;
+  justify-self: end;
+  border-color: transparent;
+  background: transparent;
+  color: var(--oro-color-text-inverse);
+}
+
+.oro-app-header__restart:hover:not(:disabled),
+.oro-app-header__restart:active:not(:disabled) {
+  border-color: var(--oro-color-text-inverse);
+  background: transparent;
+}
+
+@media (max-width: 767px) {
+  .oro-app-header {
+    min-height: 96px;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'brand action'
+      'context context';
+    gap: var(--oro-space-8);
+    padding: var(--oro-space-12) var(--oro-space-16);
+  }
+
+  .oro-app-header__wordmark {
+    width: 100px;
+    height: 44px;
+  }
+
+  .oro-app-header__context {
+    width: 100%;
+    font-size: var(--oro-type-body-size);
+    line-height: 20px;
+    text-align: left;
+  }
+
+  .oro-app-header__restart {
+    height: 44px;
+    min-height: 44px;
+    padding-block: var(--oro-space-8);
+  }
+}

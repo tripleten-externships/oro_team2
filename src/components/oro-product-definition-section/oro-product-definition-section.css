@@ -1,0 +1,39 @@
+.oro-product-definition-section {
+  display: flex;
+  width: 100%;
+  max-width: 560px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--oro-space-16);
+  padding: var(--oro-space-24);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+  font-family: var(--oro-font-control);
+}
+
+.oro-product-definition-section__title {
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-education-title-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-type-education-title-line);
+}
+
+.oro-product-definition-section__definition {
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-card-size);
+  line-height: var(--oro-type-card-line);
+}
+
+.oro-product-definition-section__divider {
+  width: 100%;
+  height: var(--oro-border-default);
+  background: var(--oro-color-border-default);
+}
+
+.oro-product-definition-section__tradeoffs {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--oro-space-12);
+}

@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test src/domain/mortgage-calculator.test.js",
+    "test": "node --test src/domain/*.test.js src/application/*.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

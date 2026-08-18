@@ -1,0 +1,15 @@
+.app {
+  min-height: 100vh;
+  background: var(--oro-color-surface-page);
+}
+
+.app__content {
+  max-width: var(--oro-layout-content-max);
+  margin: 0 auto;
+}
+
+.app__error {
+  max-width: var(--oro-layout-form-max);
+  margin: 0 auto;
+  padding: var(--oro-space-48) var(--oro-space-24);
+}

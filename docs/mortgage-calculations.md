@@ -2,9 +2,9 @@
 
 ## Purpose and source
 
-This document is a faithful, calculation-only transcription of `oro-equity-comparison-tool.html`, supplied as the client reference. It captures the input flow, constants, formulas, projections, comparison metrics, and recommendation scoring. It intentionally excludes the source page's visual styling and marketing copy.
+This document is the canonical calculation model for Oro's corrected prototype. It started as a transcription of `oro-equity-comparison-tool.html`, supplied as the client reference, and records deliberate corrections that make the model internally coherent. It intentionally excludes the source page's visual styling and marketing copy.
 
-Treat this as the canonical source for the current prototype. These are illustrative comparison estimates, not lender underwriting, legal advice, or financial advice. Do not add lender-specific rules unless the client supplies them.
+Treat this as the canonical source for the current prototype. These are illustrative comparison estimates, not lender underwriting, APR disclosures, HECM calculations, legal advice, or financial advice. Rates, fees, discounts, appreciation and product formulas are Oro assumptions unless explicitly marked as standard amortization math.
 
 ## 1. Inputs and fallback values
 
@@ -19,13 +19,13 @@ The page reads six numeric inputs on every recalculation:
 | `cn` | Cash needed | 100,000 | dollars |
 | `age` | Homeowner age | 55 | years |
 
-The source parses each field as a number and uses `value || default`. Therefore a blank, zero, or other falsy value falls back to the default. Preserve this behavior only when matching the prototype; a production implementation should validate inputs explicitly and document any changed zero-value behavior.
+The corrected implementation applies defaults only when a field is absent. Numeric strings are accepted from forms and localStorage. Blank strings, non-numeric values, infinities and invalid negatives are rejected instead of silently falling back to defaults. A zero interest rate is valid and is handled explicitly.
 
 ## 2. Shared constants and notation
 
 - Annual home appreciation: `3%`; annual growth factor: `1.03`.
 - Cash-out refinance: `7.25%` fixed, new term `30 years` (`n30 = 360` months).
-- HELOC: `8.5%` variable, interest-only monthly estimate.
+- HELOC: `8.5%` representative rate, interest-only for a `10-year` draw period followed by a `15-year` amortizing repayment period. The rate is held constant for this illustration; real HELOC rates can change.
 - HELOAN: `8.0%` fixed, `15 years` (`hlN = 180` months).
 - Reverse mortgage: `7.5%` accruing, available only at age 62 or older.
 - `round(x)` means JavaScript `Math.round(x)` at the same points used by the source.
@@ -39,6 +39,16 @@ payment(L, r, n) = L × r × (1 + r)^n / ((1 + r)^n - 1)
 ```
 
 `L` is principal, `r` is the monthly decimal rate, and `n` is the number of monthly payments.
+
+When `r = 0`, use `payment(L, 0, n) = L / n`.
+
+For a fully amortizing balance after `k` payments:
+
+```text
+balance(L, r, n, k) = L × ((1 + r)^n - (1 + r)^k) / ((1 + r)^n - 1)
+```
+
+At `r = 0`, use `L × (1 - k / n)`, clamped to zero after the final payment.
 
 ## 3. Existing mortgage and refinance setup
 
@@ -62,14 +72,28 @@ All `cashNet` values are dollars delivered to the homeowner after the source's m
 
 ```text
 helocCC = round(min(cn × 0.02, 3,000))
-helocMonthly = cn × (8.5 / 100 / 12)
-monthly = -round(helocMonthly)
-cashNet = cn - helocCC
-cost10 = round(helocMonthly × 120 + helocCC)
-equityAt(y) = round(E0 - cn × max(0, 1 - y / 15) + hv × (1.03^y - 1))
+helocRateMonthly = 8.5 / 100 / 12
+drawMonths = 10 × 12
+repaymentMonths = 15 × 12
+
+balanceAtMonths(m) =
+  m <= drawMonths ? cn : balance(cn, helocRateMonthly, repaymentMonths, m - drawMonths)
+
+monthlyAtMonths(m) =
+  m < drawMonths
+    ? cn × helocRateMonthly
+    : payment(cn, helocRateMonthly, repaymentMonths)
+
+cashNet = max(0, cn - helocCC)
+monthlyAt(y) = -round(monthlyAtMonths(y × 12))
+costAt(y) = helocCC +
+  cn × helocRateMonthly × min(y × 12, drawMonths) +
+  payment(cn, helocRateMonthly, repaymentMonths) ×
+    min(max(0, y × 12 - drawMonths), repaymentMonths)
+equityAt(y) = round(E0 - balanceAtMonths(y × 12) + hv × (1.03^y - 1))
 ```
 
-The prototype describes a 10-year draw and 15-year repayment, but its monthly estimate is interest-only and its equity formula reduces the borrowed amount linearly over 15 years. Do not substitute an amortization schedule without an explicit model decision.
+This is still an Oro illustration: it assumes the full requested amount is drawn at the beginning and the representative rate never changes. The phases are explicit so the balance and payment no longer contradict the product description.
 
 ### HELOAN
 
@@ -78,20 +102,21 @@ heloanCC = round(min(cn × 0.025, 3,500))
 heloanRateMonthly = 8.0 / 100 / 12
 heloanPI = payment(cn, heloanRateMonthly, 180)
 monthly = -round(heloanPI)
-cashNet = cn - heloanCC
-cost10 = round(heloanPI × 120 + heloanCC)
-equityAt(y) = round(E0 - cn × max(0, 1 - y / 15) + hv × (1.03^y - 1))
+cashNet = max(0, cn - heloanCC)
+costAt(y) = heloanCC + heloanPI × min(y × 12, 180)
+equityAt(y) = round(E0 - balance(cn, heloanRateMonthly, 180, y × 12)
+  + hv × (1.03^y - 1))
 ```
 
-As with HELOC, the prototype uses a linear principal reduction for equity projections instead of the amortization schedule used for the payment.
+The equity projection now uses the same amortization schedule as the payment.
 
 ### Cash-out refinance
 
 ```text
 refiCC = round(min(newLoan × 0.025, 8,000))
 monthly = -round(refiPI - oldPI)
-cashNet = cn - refiCC
-cost10 = round((refiPI - oldPI) × 120 + refiCC)
+cashNet = max(0, cn - refiCC)
+costAt(y) = max(0, refiCC + (refiPI - oldPI) × min(y × 12, 360))
 
 remainingBalance(y) = newLoan × ((1 + refiRateMonthly)^360 -
   (1 + refiRateMonthly)^(12y)) /
@@ -107,19 +132,19 @@ This replaces the existing mortgage with the new loan and uses the amortizing re
 ```text
 eligible = age >= 62
 PLF = eligible ? min(0.60, 0.30 + (age - 62) × 0.015) : 0
-reverseAmount = eligible ? min(cn, E0 × PLF × 0.95) : 0
+reverseAmount = eligible ? min(cn, max(0, E0) × PLF × 0.95) : 0
 reverseCC = eligible ? round(reverseAmount × 0.04) : 0
 
 monthly = eligible ? round(reverseAmount × 0.005) : 0
-cashNet = eligible ? min(reverseAmount, cn) - reverseCC : 0
-cost10 = eligible ? round(reverseAmount × (1.075^10 - 1)) : null
+cashNet = eligible ? max(0, reverseAmount - reverseCC) : 0
+costAt(y) = eligible ? reverseCC + reverseAmount × (1.075^y - 1) : null
 
 equityAt(y) = eligible
-  ? max(0, round(E0 - reverseAmount × 1.075^y + hv × (1.03^y - 1)))
+  ? round(E0 - reverseAmount × 1.075^y + hv × (1.03^y - 1))
   : E0
 ```
 
-The source labels the positive monthly amount as income. Ineligible reverse mortgage results receive a recommendation score of `-99` and display no cash, cost, or monthly result.
+The corrected formula uses `max(0, E0)` when calculating `reverseAmount`. The positive monthly amount remains an Oro illustrative income heuristic, not the HECM mortgage insurance formula. Ineligible reverse mortgage results receive a recommendation score of `-99` and display no cash, cost, or monthly result.
 
 ### Home equity investment (HEI)
 
@@ -127,9 +152,9 @@ The source labels the positive monthly amount as income. Ineligible reverse mort
 heiShare = 0.15
 heiDiscount = 0.88
 monthly = 0
-cashNet = round(cn × heiDiscount)
 cashCC = round(cn × 0.03)
-cost10 = round(hv × 1.03^10 × heiShare - hv × heiShare)
+cashNet = max(0, round(cn × heiDiscount) - cashCC)
+costAt(y) = cashCC + hv × 1.03^y × heiShare - hv × heiShare
 equityAt(y) = round(hv × 1.03^y × (1 - heiShare) - mb)
 ```
 
@@ -141,9 +166,9 @@ The source describes the 12% reduction as an investor risk premium plus fees and
 coShare = min(cn / hv, 0.49)
 coDiscount = 0.90
 monthly = 0
-cashNet = round(cn × coDiscount)
 cashCC = round(cn × 0.02)
-cost10 = round(hv × 1.03^10 × coShare - hv × coShare)
+cashNet = max(0, round(cn × coDiscount) - cashCC)
+costAt(y) = cashCC + hv × 1.03^y × coShare - hv × coShare
 equityAt(y) = round(hv × 1.03^y × (1 - coShare) - mb)
 ```
 
@@ -154,9 +179,9 @@ salePrice = round(hv × 0.875)
 saleNet = salePrice - mb
 rent = round(hv × 0.005)
 cashCC = round(hv × 0.02)
-cashNet = saleNet - cashCC
+cashNet = max(0, saleNet - cashCC)
 monthly = -rent
-cost10 = round(rent × 120)
+costAt(y) = round(rent × y × 12)
 equityAt(y) = 0
 ```
 
@@ -191,14 +216,14 @@ Start every product score at zero. Apply all matching adjustments below, then se
 
 ## 6. Comparison and chart metrics
 
-- Cost at 5 years: `round(cost10 / 2)`.
-- Cost at 10 years: `cost10`.
+- Cost at 5 years: `round(costAt(5))`, using the product's actual 60-month model.
+- Cost at 10 years: `round(costAt(10))`.
 - Equity views use `equityAt(5)`, `equityAt(10)`, and `equityAt(15)`.
 - Chart years: `[0, 1, 2, 3, 5, 7, 10, 15, 20]`.
 - Cash chart: `round((cashNet + equityAt(y)) / 1,000)`; label `Net cash + equity ($K)`.
-- Equity chart: `max(0, round(equityAt(y) / 1,000))`; label `Equity ($K)`.
-- Cumulative-cost chart: `round((abs(monthly) × y × 12 + cashCC) / 1,000)`; label `Cumulative cost ($K)`.
-- Monthly-impact chart: `round(abs(monthly))`; label `Monthly ($)`.
+- Equity chart: `round(equityAt(y) / 1,000)`; label `Equity ($K)`. Negative equity remains visible.
+- Cumulative-cost chart: `round(costAt(y) / 1,000)`; label `Modeled cumulative cost ($K)`.
+- Monthly-impact chart: `round(monthlyAt(y))`; label `Monthly impact ($)`, preserving income and payment signs.
 
 Ineligible products return `null` for chart data and show unavailable comparison values.
 
@@ -206,5 +231,8 @@ Ineligible products return `null` for chart data and show unavailable comparison
 
 - Keep annual rates, monthly rates, years, months, dollars, and percentages explicit in names and documentation.
 - Keep pure formulas testable independently from formatting (`$`, `K`, and `M`) and UI state.
-- Round only where the source rounds; do not round intermediate values unless a new client-approved rule says so.
+- Round only at documented display and result boundaries; do not round intermediate balances or payment calculations.
+- `cashNet` means estimated cash actually received after the model's separate cash cost or closing cost.
+- Modeled costs and cash proceeds are never exposed as negative values; monthly impact and equity retain their documented signs.
+- Modeled costs combine product-specific outflows and are not APR, finance charge, total of payments, or a lender quote.
 - If a formula, constant, score, eligibility rule, or projection assumption changes, update this document and its consuming skill in the same change.

@@ -1,0 +1,32 @@
+.oro-comparison-row {
+  display: flex;
+  width: 100%;
+  min-height: 88px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--oro-space-4);
+  margin: 0;
+  padding: var(--oro-space-16);
+  border-bottom: var(--oro-border-default) solid var(--oro-color-border-default);
+  background: var(--oro-color-surface-card);
+  font-family: var(--oro-font-control);
+}
+
+.oro-comparison-row__label,
+.oro-comparison-row__value {
+  margin: 0;
+}
+
+.oro-comparison-row__label {
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-size);
+  font-weight: var(--oro-font-weight-medium);
+  line-height: 20px;
+}
+
+.oro-comparison-row__value {
+  color: var(--oro-color-text-primary);
+  font-size: var(--oro-type-card-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: 23px;
+}
