@@ -10,7 +10,7 @@ We are improving ORO Impact’s existing homeowner equity comparison tool to mak
 | Name | Role | GitHub | LinkedIn |
 |---|---|---|---|
 | Gabriel Romero | Software Engineering | [gabrielromerod](https://github.com/gabrielromerod) | [LinkedIn](https://www.linkedin.com/in/gabriel-eduardo-romero-diez/) |
-| Anyelo Carranza | Software Engineering | [GitHub](https://github.com/AnyeloNuggets24) | [LinkedIn](https://www.linkedin.com/in/anyelocarranzaedtech/) |
+| Anyelo Carranza | Software Engineering | [AnyeloNuggets24](https://github.com/AnyeloNuggets24) | [LinkedIn](https://www.linkedin.com/in/anyelocarranzaedtech/) |
 | James Chrisman | UX/UI Design, Senior Student | [GitHub](https://github.com/USERNAME) | [LinkedIn](https://www.linkedin.com/in/james-c-chrisman/) |
 | Raffaele Pappadia | Quality Assurance | [rafauru7](https://github.com/rafauru7) | [LinkedIn](https://www.linkedin.com/in/raffaelepappadia/) |
 
