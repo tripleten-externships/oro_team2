@@ -5,17 +5,11 @@ Team 2 project for the TripleTen Industry Experience Hackathon.
 
 We are improving ORO Impact’s existing homeowner equity comparison tool to make complex financial options easier to understand, compare, and navigate. The project focuses on usability, accessibility, responsive design, clear visual hierarchy, and a smooth experience between the guided assessment and comparison dashboard.
 
-![ORO Home Equity Explorer results](docs/screenshots/oro-home-equity-explorer--cover.jpg)
-
-## Product Screens
+## Product preview
 
 The current prototype flow includes guided questions, personalized home details, and illustrative option matches.
 
-![Guided questions](docs/screenshots/oro-home-equity-explorer--questionnaire.jpg)
-
-![Home details](docs/screenshots/oro-home-equity-explorer--home-details.jpg)
-
-![Option matches](docs/screenshots/oro-home-equity-explorer--results.jpg)
+![ORO Home Equity Explorer product preview](docs/screenshots/oro-home-equity-explorer--banner.jpg)
 
 ## Team
 
