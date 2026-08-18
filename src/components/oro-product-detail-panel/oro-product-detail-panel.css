@@ -1,0 +1,57 @@
+.oro-product-detail-panel {
+  display: flex;
+  width: 100%;
+  max-width: 640px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--oro-space-24);
+  padding: var(--oro-space-32);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-state);
+  background: var(--oro-color-surface-elevated);
+}
+
+.oro-product-detail-panel__header {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--oro-space-16);
+}
+
+.oro-product-detail-panel__title {
+  min-width: 0;
+  color: var(--oro-color-text-primary);
+  font: var(--oro-font-weight-semibold) var(--oro-type-panel-title-size) /
+    var(--oro-type-panel-title-line) var(--oro-font-display);
+}
+
+.oro-product-detail-panel__status {
+  display: flex;
+  max-width: 100%;
+  gap: var(--oro-space-12);
+  overflow-x: auto;
+}
+
+.oro-product-detail-panel__summary {
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-regular) var(--oro-type-body-emphasis-size) /
+    var(--oro-type-body-emphasis-line)
+    var(--oro-font-control);
+}
+
+.oro-product-detail-panel .oro-product-definition-section,
+.oro-product-detail-panel .oro-disclaimer-block {
+  max-width: none;
+}
+
+@media (max-width: 767px) {
+  .oro-product-detail-panel {
+    padding: var(--oro-space-20);
+  }
+
+  .oro-product-detail-panel__title {
+    font-size: 26px;
+    line-height: 36px;
+  }
+}

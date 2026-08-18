@@ -1,0 +1,72 @@
+.oro-callout {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: var(--oro-space-16);
+  padding: var(--oro-space-20);
+  border: var(--oro-border-default) solid var(--oro-color-border-info);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-info);
+  color: var(--oro-color-text-info);
+  font: var(--oro-font-weight-regular) var(--oro-type-card-size) /
+    var(--oro-type-card-line) var(--oro-font-control);
+}
+
+.oro-callout--neutral {
+  border-color: var(--oro-color-border-default);
+  background: var(--oro-color-surface-subtle);
+  color: var(--oro-color-text-primary);
+}
+
+.oro-callout--success {
+  border-color: var(--oro-color-border-success);
+  background: var(--oro-color-surface-success);
+  color: var(--oro-color-text-success);
+}
+
+.oro-callout--warning,
+.oro-callout--risk {
+  border-color: var(--oro-color-border-warning);
+  background: var(--oro-color-surface-warning);
+  color: var(--oro-color-text-warning);
+}
+
+.oro-callout--error {
+  border-color: var(--oro-color-border-error);
+  background: var(--oro-color-surface-error);
+  color: var(--oro-color-text-error);
+}
+
+.oro-callout__marker {
+  width: var(--oro-icon-size-md);
+  height: var(--oro-icon-size-md);
+  flex: 0 0 var(--oro-icon-size-md);
+  font-size: var(--oro-type-section-size);
+  font-weight: var(--oro-font-weight-semibold);
+  line-height: var(--oro-icon-size-md);
+  text-align: center;
+}
+
+.oro-callout__copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--oro-space-4);
+}
+
+.oro-callout__title {
+  font-weight: var(--oro-font-weight-semibold);
+}
+
+.oro-callout__body {
+  color: inherit;
+}
+
+.oro-callout--info .oro-callout__body {
+  color: var(--oro-color-text-secondary);
+}
+
+.oro-callout--card {
+  background: var(--oro-color-surface-card);
+}

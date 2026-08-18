@@ -1,0 +1,260 @@
+.results-panel {
+  max-width: var(--oro-layout-content-max);
+  margin: 0 auto;
+  padding: var(--oro-space-48) var(--oro-space-24) var(--oro-space-64);
+  color: var(--oro-color-text-primary);
+}
+
+.results-panel__header,
+.results-panel__section-heading,
+.results-panel__footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--oro-space-24);
+}
+
+.results-panel__header {
+  margin-bottom: var(--oro-space-28);
+}
+
+.results-panel__eyebrow {
+  margin: 0 0 var(--oro-space-12);
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-semibold) var(--oro-type-label-size) /
+    var(--oro-type-label-line) var(--oro-font-control);
+  letter-spacing: var(--oro-type-label-tracking);
+  text-transform: uppercase;
+}
+
+.results-panel__header h1 {
+  margin: 0 0 var(--oro-space-16);
+  color: var(--oro-color-surface-brand);
+  font: var(--oro-font-weight-regular) clamp(2.1rem, 4vw, 3.25rem) / 1.05 var(--oro-font-display);
+}
+
+.results-panel__intro,
+.results-panel__section-heading > p,
+.results-panel__footer p {
+  margin: 0;
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-emphasis-size);
+  line-height: var(--oro-type-body-emphasis-line);
+}
+
+.results-panel > .oro-callout {
+  margin-bottom: var(--oro-space-24);
+}
+
+.results-panel__tabs {
+  display: flex;
+  gap: var(--oro-space-8);
+  margin-bottom: var(--oro-space-32);
+  overflow-x: auto;
+  border-bottom: var(--oro-border-default) solid var(--oro-color-border-default);
+}
+
+.results-panel__tab {
+  flex: 0 0 auto;
+  min-height: var(--oro-control-height);
+  padding: var(--oro-space-12) var(--oro-space-16);
+  border: 0;
+  border-bottom: var(--oro-border-emphasis) solid transparent;
+  background: transparent;
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-semibold) var(--oro-type-label-large-size) /
+    var(--oro-type-label-large-line) var(--oro-font-control);
+  cursor: pointer;
+}
+
+.results-panel__tab:hover:not(:disabled),
+.results-panel__tab.selected {
+  color: var(--oro-color-text-primary);
+}
+
+.results-panel__tab.selected {
+  border-bottom-color: var(--oro-color-border-selected);
+}
+
+.results-panel__tab:disabled {
+  color: var(--oro-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.results-panel__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--oro-space-20);
+  margin-bottom: var(--oro-space-40);
+}
+
+.results-panel__card {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--oro-space-12);
+}
+
+.results-panel__card .oro-product-card {
+  height: 100%;
+}
+
+.results-panel__cards .oro-product-card__description {
+  min-height: 66px;
+}
+
+.results-panel__cards .oro-product-card__metrics {
+  min-height: 72px;
+}
+
+.results-panel__cards .oro-product-card .oro-button {
+  width: 100%;
+}
+
+.results-panel__detail-button {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--oro-color-text-primary);
+  font: var(--oro-font-weight-semibold) var(--oro-type-label-large-size) /
+    var(--oro-type-label-large-line) var(--oro-font-control);
+  text-decoration: underline;
+  text-underline-offset: var(--oro-space-4);
+  cursor: pointer;
+}
+
+.results-panel__section-heading {
+  align-items: end;
+  margin-bottom: var(--oro-space-16);
+}
+
+.results-panel__section-heading h2 {
+  margin: 0;
+  color: var(--oro-color-surface-brand);
+  font: var(--oro-font-weight-regular) var(--oro-type-section-size) /
+    var(--oro-type-section-line) var(--oro-font-display);
+}
+
+.results-panel__section-heading > p {
+  max-width: 420px;
+  font-size: var(--oro-type-body-size);
+  line-height: var(--oro-type-body-line);
+  text-align: right;
+}
+
+.results-panel__chart-section,
+.results-panel__table-section,
+.results-panel__detail,
+.results-panel__empty {
+  margin-top: var(--oro-space-32);
+  padding: var(--oro-space-24);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+}
+
+.results-panel__table-wrap {
+  overflow-x: auto;
+}
+
+.results-panel__table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: var(--oro-type-body-size);
+}
+
+.results-panel__table th,
+.results-panel__table td {
+  padding: var(--oro-space-12) var(--oro-space-10);
+  border-bottom: var(--oro-border-default) solid var(--oro-color-border-default);
+  text-align: left;
+  vertical-align: top;
+}
+
+.results-panel__table thead th {
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-label-size);
+  letter-spacing: var(--oro-type-label-tracking);
+  text-transform: uppercase;
+}
+
+.results-panel__table tbody th {
+  color: var(--oro-color-surface-brand);
+  font-weight: var(--oro-font-weight-semibold);
+}
+
+.results-panel__table tbody td {
+  color: var(--oro-color-text-primary);
+}
+
+.results-panel__detail {
+  background: var(--oro-color-surface-subtle);
+}
+
+.results-panel__empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--oro-space-16);
+}
+
+.results-panel__empty h2 {
+  margin: 0;
+  color: var(--oro-color-surface-brand);
+  font: var(--oro-font-weight-regular) var(--oro-type-section-size) /
+    var(--oro-type-section-line) var(--oro-font-display);
+}
+
+.results-panel__empty p {
+  margin: 0;
+  color: var(--oro-color-text-secondary);
+}
+
+.results-panel__footer {
+  align-items: center;
+  margin-top: var(--oro-space-40);
+  padding-top: var(--oro-space-20);
+  border-top: var(--oro-border-default) solid var(--oro-color-border-default);
+}
+
+@media (max-width: 980px) {
+  .results-panel__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .results-panel {
+    padding: var(--oro-space-32) var(--oro-space-16) var(--oro-space-48);
+  }
+
+  .results-panel__header,
+  .results-panel__section-heading,
+  .results-panel__footer {
+    display: grid;
+  }
+
+  .results-panel__header-actions,
+  .results-panel__header-actions .oro-button {
+    width: 100%;
+  }
+
+  .results-panel__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .results-panel__section-heading > p {
+    text-align: left;
+  }
+
+  .results-panel__chart-section,
+  .results-panel__table-section,
+  .results-panel__detail,
+  .results-panel__empty {
+    padding: var(--oro-space-16);
+  }
+
+  .results-panel__footer {
+    align-items: stretch;
+  }
+}

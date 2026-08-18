@@ -1,0 +1,155 @@
+.starter-page {
+  width: 100%;
+  margin: 0 auto;
+  padding: 72px 24px 48px;
+  background-color: var(--oro-color-surface-page);
+}
+
+.starter-page__intro {
+  margin-bottom: 16px;
+}
+
+.starter-page__eyebrow {
+  margin: 0 0 20px;
+  font-family: var(--oro-font-body);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: var(--oro-color-surface-brand);
+}
+
+.starter-page__title {
+  margin: 0 0 16px;
+  font-family: var(--oro-font-display);
+  font-size: clamp(2.75rem, 4vw, 4rem);
+  line-height: 1.03;
+  font-weight: 600;
+  color: var(--oro-color-surface-brand);
+}
+
+.starter-page__description {
+  max-width: 1080px;
+  margin: 0;
+  font-family: var(--oro-font-body);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--oro-color-text-secondary);
+}
+
+.starter-page__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.starter-page__card {
+  display: flex;
+  min-height: 218px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  border: 1px solid var(--oro-color-border-default);
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.74);
+}
+
+.starter-page__card-title {
+  margin: 0 0 16px;
+  font-family: var(--oro-font-body);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--oro-color-surface-brand);
+}
+
+.starter-page__card-description {
+  max-width: 500px;
+  margin: 0 0 18px;
+  font-family: var(--oro-font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--oro-color-surface-brand);
+}
+
+.starter-page__primary-button,
+.starter-page__secondary-button {
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--oro-color-surface-brand);
+  font-family: var(--oro-font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.starter-page__primary-button {
+  background: var(--oro-color-action-primary);
+  color: var(--oro-color-text-primary);
+}
+
+.starter-page__secondary-button {
+  background: transparent;
+  color: var(--oro-color-surface-brand);
+}
+
+.starter-page__primary-button:hover,
+.starter-page__secondary-button:hover {
+  opacity: 0.96;
+  transform: translateY(-1px);
+}
+
+.starter-page__card-meta {
+  margin: var(--oro-space-12) 0 0;
+  font-family: var(--oro-font-body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--oro-color-text-secondary);
+}
+
+.starter-page__callout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--oro-color-border-default);
+  border-radius: 18px;
+  background: rgba(226, 244, 234, 0.8);
+  color: var(--oro-color-surface-brand);
+}
+
+.starter-page__callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--oro-color-surface-brand);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.starter-page__callout p {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--oro-color-text-secondary);
+}
+
+@media (max-width: 700px) {
+  .starter-page__options {
+    grid-template-columns: 1fr;
+  }
+
+  .starter-page__callout {
+    align-items: flex-start;
+  }
+}
