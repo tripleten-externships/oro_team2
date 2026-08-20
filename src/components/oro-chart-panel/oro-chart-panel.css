@@ -10,11 +10,45 @@
 .oro-chart-panel__tabs {
   display: flex;
   width: 100%;
+  min-width: 0;
   max-width: 760px;
   gap: var(--oro-space-8);
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--oro-color-border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.oro-chart-panel__tabs > * {
+  flex: 0 0 auto;
+}
+
+.oro-chart-panel__scroll-hint {
+  display: none;
+  width: 100%;
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-medium) var(--oro-type-body-small-size) /
+    var(--oro-type-body-small-line) var(--oro-font-control);
 }
 
 .oro-chart-panel > [role='tabpanel'] {
   width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .oro-chart-panel__tabs {
+    max-width: 100%;
+    flex-wrap: wrap;
+    overflow-x: visible;
+    padding-block: var(--oro-space-2);
+  }
+
+  .oro-chart-panel__tabs > * {
+    flex: 1 1 auto;
+  }
+
+  .oro-chart-panel__scroll-hint {
+    display: none;
+  }
 }

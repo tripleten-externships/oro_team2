@@ -8,6 +8,19 @@
   margin: 0 auto;
 }
 
+.app__calculation-status {
+  width: min(100% - (var(--oro-space-48) * 2), var(--oro-layout-form-max));
+  margin: var(--oro-space-24) auto 0;
+  padding: var(--oro-space-12) var(--oro-space-16);
+  border: var(--oro-border-default) solid var(--oro-color-border-info);
+  border-radius: var(--oro-radius-control);
+  background: var(--oro-color-surface-info);
+  color: var(--oro-color-text-info);
+  font: var(--oro-font-weight-medium) var(--oro-type-body-size) /
+    var(--oro-type-body-line) var(--oro-font-control);
+  text-align: center;
+}
+
 .app__error {
   max-width: var(--oro-layout-form-max);
   margin: 0 auto;

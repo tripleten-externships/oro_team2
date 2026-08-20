@@ -82,6 +82,11 @@ function OroChartPanel({
   callout,
   selectedSeriesId,
   onSeriesSelect,
+  error,
+  errorTitle,
+  errorBody,
+  emptyTitle,
+  emptyBody,
   className = '',
 }) {
   const generatedId = useId().replace(/:/g, '')
@@ -89,6 +94,7 @@ function OroChartPanel({
   const activeView = viewOptions.find((option) => option.id === view) || viewOptions[0]
   const series = normalizeSeries(seriesByView?.[activeView.id], activeView.kind)
   const panelId = `${generatedId}-chart-panel`
+  const tabScrollHintId = `${generatedId}-tab-scroll-hint`
   const effectiveSelectedSeriesId = selectedSeriesId ?? internalSelectedSeriesId
   const classes = ['oro-chart-panel', className].filter(Boolean).join(' ')
 
@@ -132,6 +138,7 @@ function OroChartPanel({
         className="oro-chart-panel__tabs"
         role="tablist"
         aria-label="Comparison chart view"
+        aria-describedby={tabScrollHintId}
         onKeyDown={handleTabKeyDown}
       >
         {viewOptions.map((option) => (
@@ -145,6 +152,10 @@ function OroChartPanel({
           />
         ))}
       </div>
+
+      <p className="oro-chart-panel__scroll-hint" id={tabScrollHintId} role="note">
+        Scroll horizontally to see all three chart views.
+      </p>
 
       <div
         id={panelId}
@@ -160,6 +171,11 @@ function OroChartPanel({
           onSeriesSelect={selectSeries}
           valueFormatter={createValueFormatter(activeView.id)}
           caption={callout?.body || activeView.caption}
+          error={error}
+          errorTitle={errorTitle}
+          errorBody={errorBody}
+          emptyTitle={emptyTitle}
+          emptyBody={emptyBody}
         />
       </div>
     </section>
