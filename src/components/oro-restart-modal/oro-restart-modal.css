@@ -1,0 +1,61 @@
+.oro-restart-modal {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--oro-space-24);
+  background: var(--oro-color-scrim);
+}
+
+.oro-restart-modal__dialog {
+  width: min(100%, 480px);
+  padding: var(--oro-space-32);
+  border: var(--oro-border-default) solid var(--oro-color-border-strong);
+  border-radius: var(--oro-radius-state);
+  background: var(--oro-color-surface-card);
+  box-shadow: var(--oro-shadow-level-1);
+}
+
+.oro-restart-modal__eyebrow {
+  margin-bottom: var(--oro-space-8);
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-semibold) var(--oro-type-label-size) /
+    var(--oro-type-label-line) var(--oro-font-control);
+  letter-spacing: var(--oro-type-label-tracking);
+  text-transform: uppercase;
+}
+
+.oro-restart-modal__dialog h2 {
+  margin-bottom: var(--oro-space-12);
+  color: var(--oro-color-surface-brand);
+  font: var(--oro-font-weight-semibold) var(--oro-type-section-size) /
+    var(--oro-type-section-line) var(--oro-font-display);
+}
+
+.oro-restart-modal__dialog > p:not(.oro-restart-modal__eyebrow) {
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-regular) var(--oro-type-body-size) /
+    var(--oro-type-body-line) var(--oro-font-control);
+}
+
+.oro-restart-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--oro-space-12);
+  margin-top: var(--oro-space-32);
+}
+
+@media (max-width: 520px) {
+  .oro-restart-modal__dialog {
+    padding: var(--oro-space-24);
+  }
+
+  .oro-restart-modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .oro-restart-modal__actions .oro-button {
+    width: 100%;
+  }
+}
