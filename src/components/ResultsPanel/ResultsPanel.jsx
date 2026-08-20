@@ -6,8 +6,11 @@ import {
 import { OroButton } from '../oro-button'
 import { OroCallout } from '../oro-callout'
 import { OroChartPanel } from '../oro-chart-panel'
+import { OroDisclaimerBlock } from '../oro-disclaimer-block'
 import { OroProductCard } from '../oro-product-card'
 import { OroProductDetailPanel } from '../oro-product-detail-panel'
+import { OroResultsComparison } from '../oro-results-comparison'
+import { OroStepIndicator } from '../oro-step-indicator'
 import './ResultsPanel.css'
 
 const tabLabels = {
@@ -17,6 +20,7 @@ const tabLabels = {
 }
 
 const tabOrder = Object.keys(tabLabels)
+const STORAGE_KEY = 'oro-home-equity-explorer'
 
 function formatMetric(value, formatter = formatCurrency) {
   return value === null ? '—' : formatter(value)
@@ -28,6 +32,62 @@ function getProductTradeoff(product) {
   }
 
   return { type: 'consideration', text: product.risk }
+}
+
+function getEnteredAge(results) {
+  const candidates = [
+    results?.inputs?.age,
+    results?.age,
+    results?.homeownerAge,
+    results?.homeOwnerAge,
+  ]
+  const rawAge = candidates.find((candidate) => Number.isFinite(Number(candidate)))
+  return rawAge === undefined ? null : Number(rawAge)
+}
+
+function getStoredEnteredAge() {
+  try {
+    const stored = JSON.parse(globalThis.localStorage?.getItem(STORAGE_KEY) || 'null')
+    const rawAge = stored?.inputs?.age
+    return rawAge !== null && rawAge !== undefined && Number.isFinite(Number(rawAge))
+      ? Number(rawAge)
+      : null
+  } catch {
+    return null
+  }
+}
+
+function getSuitabilityLevel(product, recommendations, direct) {
+  if (product.ineligible) {
+    return 'limited'
+  }
+
+  const recommendation = recommendations.find((item) => item.id === product.id)
+  if (!recommendation || direct) {
+    return 'possible'
+  }
+
+  const topScore = recommendations[0]?.score
+  const secondScore = recommendations[1]?.score
+  const isClearTopMatch = recommendation.score === topScore
+    && (secondScore === undefined || topScore - secondScore > 1)
+
+  return isClearTopMatch ? 'strong' : 'possible'
+}
+
+function getUnavailableCallout(product, enteredAge) {
+  if (!product.ineligible || product.id !== 'reverse-mortgage') {
+    return undefined
+  }
+
+  const ageText = Number.isFinite(enteredAge)
+    ? `Entered age: ${enteredAge}. `
+    : 'The entered age is below 62. '
+  return {
+    type: 'neutral',
+    title: 'Not available for the entered age',
+    body: `${ageText}Reverse mortgages require age 62+. This option remains visible for education.`,
+  }
 }
 
 function ResultsPanel({
@@ -43,11 +103,24 @@ function ResultsPanel({
   selectedIds = [],
 }) {
   const [chartView, setChartView] = useState('equity')
+  const [comparisonMode, setComparisonMode] = useState('summary')
+  const [storedEnteredAge, setStoredEnteredAge] = useState(null)
   const [selectionLimitReached, setSelectionLimitReached] = useState(false)
   const allProducts = results?.allProducts || []
   const recommendations = results?.recommendations || []
-  const selectedProducts = allProducts.filter((product) => selectedIds.includes(product.id))
+  const selectedProducts = selectedIds
+    .map((id) => allProducts.find((product) => product.id === id))
+    .filter(Boolean)
   const detailProduct = allProducts.find((product) => product.id === detailProductId)
+  const enteredAge = getEnteredAge(results) ?? storedEnteredAge
+
+  useEffect(() => {
+    const timeoutId = globalThis.setTimeout(() => {
+      setStoredEnteredAge(getStoredEnteredAge())
+    }, 0)
+
+    return () => globalThis.clearTimeout(timeoutId)
+  }, [results])
   const visibleProducts = activeTab === 'matches'
     ? recommendations
     : activeTab === 'compare'
@@ -55,7 +128,7 @@ function ResultsPanel({
       : allProducts
 
   useEffect(() => {
-    if (activeTab === 'compare' && selectedIds.length === 0) {
+    if (activeTab === 'compare' && selectedIds.length < 2) {
       onTabChange('all')
     }
   }, [activeTab, onTabChange, selectedIds.length])
@@ -83,20 +156,24 @@ function ResultsPanel({
     onSelection(product.id)
   }
 
-  function renderCard(product, index) {
+  function renderCard(product) {
     const selected = selectedIds.includes(product.id)
     const unavailable = product.ineligible
     const isMatch = !results.direct
       && recommendations.some((recommendation) => recommendation.id === product.id)
+    const suitabilityLevel = getSuitabilityLevel(product, recommendations, results.direct)
 
     return (
       <div className="results-panel__card" key={product.id}>
         <OroProductCard
-          callout={unavailable ? { type: 'warning', title: 'Not available for this profile' } : undefined}
+          callout={getUnavailableCallout(product, enteredAge)}
           description={product.description}
-          emphasis={isMatch ? 'match' : 'standard'}
+          emphasis={isMatch && suitabilityLevel === 'strong' ? 'match' : 'standard'}
           eligibility={unavailable
-            ? { status: 'ineligible', label: 'Unavailable' }
+            ? {
+              status: 'ineligible',
+              label: product.id === 'reverse-mortgage' ? 'Unavailable · age 62+' : 'Unavailable',
+            }
             : { status: 'eligible', label: 'Eligible' }}
           metrics={[
             { id: 'monthly', label: product.monthlyLabel, value: formatMetric(product.monthly, formatSignedCurrency) },
@@ -107,8 +184,9 @@ function ResultsPanel({
           onSelect={() => handleSelection(product)}
           selectLabel={selected ? 'Remove from comparison' : 'Add to comparison'}
           state={unavailable ? 'unavailable' : selected ? 'selected' : 'default'}
-          suitability={{ level: unavailable ? 'limited' : isMatch && index === 0 ? 'strong' : 'possible' }}
+          suitability={{ level: suitabilityLevel }}
           tradeoff={getProductTradeoff(product)}
+          unavailableLabel={product.id === 'reverse-mortgage' ? 'Unavailable · age 62+' : 'Not available'}
         />
         <button
           className="results-panel__detail-button"
@@ -123,6 +201,11 @@ function ResultsPanel({
 
   return (
     <main className="results-panel" aria-labelledby="results-title">
+      <OroStepIndicator
+        className="results-panel__progress"
+        currentStep={6}
+        label="Options to explore"
+      />
       <header className="results-panel__header">
         <div>
           <p className="results-panel__eyebrow">Illustrative estimate</p>
@@ -137,6 +220,11 @@ function ResultsPanel({
         </div>
       </header>
 
+      <OroDisclaimerBlock title="Illustrative information—not financial advice">
+        These estimates are for education only. They are not a quote, approval, APR disclosure,
+        underwriting decision, or financial advice.
+      </OroDisclaimerBlock>
+
       {results.hasCloseMatch && activeTab === 'matches' && (
         <OroCallout type="info" title="Two options may fit similarly">
           Your answers point to more than one reasonable path. Compare the tradeoffs
@@ -147,7 +235,7 @@ function ResultsPanel({
       <nav className="results-panel__tabs" aria-label="Results views" role="tablist">
         {tabOrder.map((tab) => {
           const isSelected = activeTab === tab
-          const isDisabled = tab === 'compare' && selectedIds.length === 0
+          const isDisabled = tab === 'compare' && selectedIds.length < 2
 
           return (
             <button
@@ -166,14 +254,48 @@ function ResultsPanel({
         })}
       </nav>
 
+      <div className="results-panel__selection-controls" aria-live="polite">
+        <p>
+          {selectedIds.length === 0
+            ? 'Select 2–3 products to compare them side by side.'
+            : selectedIds.length === 1
+              ? '1 product selected. Select at least one more to enable comparison.'
+              : `${selectedIds.length} of 3 products selected. You can compare these options now.`}
+        </p>
+        <OroButton
+          disabled={selectedIds.length < 2}
+          onClick={() => onTabChange('compare')}
+          variant={selectedIds.length >= 2 ? 'primary' : 'secondary'}
+        >
+          Compare selected{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
+        </OroButton>
+      </div>
+
       {selectionLimitReached && (
         <OroCallout type="warning" title="You can compare up to three options">
           Remove one selection before adding another product.
         </OroCallout>
       )}
 
+      {activeTab === 'all'
+        && allProducts.some((product) => product.id === 'reverse-mortgage' && product.ineligible) && (
+        <OroCallout type="neutral" title="Reverse mortgage remains visible">
+          At age {Number.isFinite(enteredAge) ? enteredAge : 'the entered age'}, it is unavailable
+          for estimates but still available for neutral education.
+        </OroCallout>
+      )}
+
       {activeTab === 'compare' && selectedProducts.length > 0 && (
-        <section className="results-panel__chart-section" aria-labelledby="chart-section-title">
+        <>
+          <OroResultsComparison
+            enteredAge={enteredAge}
+            mode={comparisonMode}
+            onModeChange={setComparisonMode}
+            onOpenDetail={onOpenDetail}
+            onSelect={onSelection}
+            products={selectedProducts}
+          />
+          <section className="results-panel__chart-section" aria-labelledby="chart-section-title">
           <div className="results-panel__section-heading">
             <div>
               <p className="results-panel__eyebrow">Selected options</p>
@@ -187,7 +309,8 @@ function ResultsPanel({
             seriesByView={chartSeries}
             view={chartView}
           />
-        </section>
+          </section>
+        </>
       )}
 
       {activeTab === 'compare' && selectedProducts.length === 0 && (
@@ -247,7 +370,14 @@ function ResultsPanel({
             definition={detailProduct.description}
             definitionTitle={`How ${detailProduct.name} works`}
             disclaimer="This is an illustrative Oro estimate, not a quote, APR, underwriting decision, or financial advice."
-            eligibility={detailProduct.ineligible ? { status: 'ineligible', label: 'Not available for this profile' } : undefined}
+            eligibility={detailProduct.ineligible
+              ? {
+                status: 'ineligible',
+                label: detailProduct.id === 'reverse-mortgage'
+                  ? 'Unavailable · age 62+'
+                  : 'Not available for this profile',
+              }
+              : undefined}
             onClose={onRemoveDetail}
             productName={detailProduct.name}
             summary={detailProduct.risk}

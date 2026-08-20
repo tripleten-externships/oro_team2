@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import './Questionnaire.css'
 
 const questionConfig = [
   {
     id: 'goal',
+    progressLabel: 'Your priorities',
     title: 'What are you trying to accomplish?',
     description: 'Choose the outcome that is closest to what you need right now.',
     options: [
@@ -15,6 +16,7 @@ const questionConfig = [
   },
   {
     id: 'stay',
+    progressLabel: 'Time in home',
     title: 'How long do you plan to stay in your home?',
     description: 'This helps us prioritize options that fit your timeline.',
     options: [
@@ -26,6 +28,7 @@ const questionConfig = [
   },
   {
     id: 'payment',
+    progressLabel: 'Payment comfort',
     title: 'Can you comfortably handle an added payment?',
     description: 'Some options add a payment; others do not.',
     options: [
@@ -36,6 +39,7 @@ const questionConfig = [
   },
   {
     id: 'priority',
+    progressLabel: 'Decision priority',
     title: 'Which priority matters most?',
     description: 'When tradeoffs arise, what matters most to you?',
     options: [
@@ -54,17 +58,14 @@ const emptyAnswers = {
   priority: '',
 }
 
-function Questionnaire({ onComplete, onBack, initialAnswers = emptyAnswers }) {
+function Questionnaire({ onComplete, onBack, onStepChange, initialAnswers = emptyAnswers }) {
   const [answers, setAnswers] = useState(() => ({ ...emptyAnswers, ...initialAnswers }))
   const [currentStep, setCurrentStep] = useState(0)
   const question = questionConfig[currentStep]
   const selectedValue = answers[question.id]
   const isComplete = Boolean(selectedValue)
 
-  const progressLabel = useMemo(
-    () => `Question ${currentStep + 1} of ${questionConfig.length}`,
-    [currentStep],
-  )
+  const progressLabel = `Step ${currentStep + 1} of 6 · ${question.progressLabel}`
 
   const handleChange = (value) => {
     setAnswers((current) => ({ ...current, [question.id]: value }))
@@ -76,6 +77,7 @@ function Questionnaire({ onComplete, onBack, initialAnswers = emptyAnswers }) {
       return
     }
 
+    onStepChange?.(currentStep)
     setCurrentStep((step) => step - 1)
   }
 
@@ -89,17 +91,26 @@ function Questionnaire({ onComplete, onBack, initialAnswers = emptyAnswers }) {
       return
     }
 
+    onStepChange?.(currentStep + 2)
     setCurrentStep((step) => step + 1)
   }
 
   return (
     <section className="questionnaire" aria-labelledby="questionnaire-title">
-      <div className="questionnaire__top-progress" aria-label="Options progress">
+      <div
+        aria-label={progressLabel}
+        aria-valuemax="6"
+        aria-valuemin="1"
+        aria-valuenow={currentStep + 1}
+        aria-valuetext={progressLabel}
+        className="questionnaire__top-progress"
+        role="progressbar"
+      >
         <div className="questionnaire__segments">
-          {questionConfig.map((item, index) => (
+          {Array.from({ length: 6 }, (_, index) => (
             <span
               className={`questionnaire__segment ${index <= currentStep ? 'active' : ''}`}
-              key={item.id}
+              key={index}
             />
           ))}
         </div>

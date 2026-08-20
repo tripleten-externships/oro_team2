@@ -5,6 +5,10 @@
   color: var(--oro-color-text-primary);
 }
 
+.results-panel__progress {
+  margin-bottom: var(--oro-space-32);
+}
+
 .results-panel__header,
 .results-panel__section-heading,
 .results-panel__footer {
@@ -46,6 +50,10 @@
   margin-bottom: var(--oro-space-24);
 }
 
+.results-panel > .oro-disclaimer-block {
+  margin-bottom: var(--oro-space-24);
+}
+
 .results-panel__tabs {
   display: flex;
   gap: var(--oro-space-8);
@@ -81,6 +89,26 @@
   cursor: not-allowed;
 }
 
+.results-panel__selection-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--oro-space-16);
+  margin-top: calc(var(--oro-space-32) * -1);
+  margin-bottom: var(--oro-space-32);
+  padding: var(--oro-space-16);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+}
+
+.results-panel__selection-controls p {
+  margin: 0;
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-size);
+  line-height: var(--oro-type-body-line);
+}
+
 .results-panel__cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -96,6 +124,10 @@
 
 .results-panel__card .oro-product-card {
   height: 100%;
+}
+
+.results-panel__card .oro-product-card__callout {
+  min-height: 88px;
 }
 
 .results-panel__cards .oro-product-card__description {
@@ -146,6 +178,14 @@
 .results-panel__table-section,
 .results-panel__detail,
 .results-panel__empty {
+  margin-top: var(--oro-space-32);
+  padding: var(--oro-space-24);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+}
+
+.results-panel > .oro-results-comparison {
   margin-top: var(--oro-space-32);
   padding: var(--oro-space-24);
   border: var(--oro-border-default) solid var(--oro-color-border-default);
@@ -234,6 +274,15 @@
     display: grid;
   }
 
+  .results-panel__selection-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .results-panel__selection-controls .oro-button {
+    width: 100%;
+  }
+
   .results-panel__header-actions,
   .results-panel__header-actions .oro-button {
     width: 100%;
@@ -250,7 +299,8 @@
   .results-panel__chart-section,
   .results-panel__table-section,
   .results-panel__detail,
-  .results-panel__empty {
+  .results-panel__empty,
+  .results-panel > .oro-results-comparison {
     padding: var(--oro-space-16);
   }
 

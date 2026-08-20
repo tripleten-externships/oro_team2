@@ -8,6 +8,8 @@ function OroAppHeader({
   notice,
   restartLabel = 'Restart',
   onRestart,
+  reviseLabel = 'Revise answers',
+  onReviseAnswers,
   brandHref,
   className = '',
 }) {
@@ -24,14 +26,27 @@ function OroAppHeader({
         href={brandHref}
       />
       <p className="oro-app-header__context">{journeyContext}</p>
-      {onRestart && (
-        <OroButton
-          className="oro-app-header__restart"
-          variant="tertiary"
-          onClick={onRestart}
-        >
-          {restartLabel}
-        </OroButton>
+      {(onReviseAnswers || onRestart) && (
+        <div className="oro-app-header__actions">
+          {onReviseAnswers && (
+            <OroButton
+              className="oro-app-header__revise"
+              variant="tertiary"
+              onClick={onReviseAnswers}
+            >
+              {reviseLabel}
+            </OroButton>
+          )}
+          {onRestart && (
+            <OroButton
+              className="oro-app-header__restart"
+              variant="tertiary"
+              onClick={onRestart}
+            >
+              {restartLabel}
+            </OroButton>
+          )}
+        </div>
       )}
     </header>
   )

@@ -1,5 +1,6 @@
 .oro-chart-axis-label {
   display: inline-flex;
+  flex: 0 0 auto;
   padding: var(--oro-space-4);
   color: var(--oro-color-text-secondary);
   font: var(--oro-font-weight-medium) var(--oro-type-body-compact-size) / 19px
