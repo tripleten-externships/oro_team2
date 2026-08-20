@@ -25,9 +25,10 @@
 }
 
 .oro-product-card--selected {
-  border: var(--oro-border-selection-emphasis) solid
-    var(--oro-color-border-selection-emphasis);
+  border: var(--oro-border-default) solid var(--oro-color-border-selected);
   background: var(--oro-color-surface-card);
+  box-shadow: 0 0 0 var(--oro-border-selection-emphasis)
+    var(--oro-color-border-selection-emphasis);
 }
 
 .oro-product-card--unavailable {
@@ -47,6 +48,17 @@
   color: var(--oro-color-text-secondary);
   font-size: var(--oro-type-card-size);
   line-height: var(--oro-type-card-line);
+}
+
+.oro-product-card__callout {
+  padding: var(--oro-space-12);
+  font-size: var(--oro-type-body-size);
+  line-height: var(--oro-type-body-line);
+}
+
+.oro-product-card__action {
+  width: 100%;
+  margin-top: auto;
 }
 
 .oro-product-card__status {

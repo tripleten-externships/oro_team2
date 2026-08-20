@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { OroChartAxisLabel } from '../oro-chart-axis-label'
 import { OroChartLegendItem } from '../oro-chart-legend-item'
 import { OroChartTooltip } from '../oro-chart-tooltip'
@@ -6,6 +7,7 @@ import './oro-chart-container.css'
 
 const patterns = ['solid', 'dashed', 'dotted']
 const tones = new Set(['primary', 'accent', 'neutral'])
+const directLabelGap = 20
 
 function normalizeSeries(rawSeries, kind) {
   if (!Array.isArray(rawSeries)) {
@@ -42,6 +44,48 @@ function defaultValueFormatter(value) {
   }).format(value)
 }
 
+function getDirectLabelPositions(series, scaleY, plot) {
+  const minimumY = plot.top + 8
+  const maximumY = plot.bottom - 8
+  const gap = series.length > 1
+    ? Math.min(directLabelGap, (maximumY - minimumY) / (series.length - 1))
+    : directLabelGap
+  const labels = series
+    .map((item, index) => ({
+      id: item.id,
+      index,
+      targetY: scaleY(item.points[item.points.length - 1].y) + 4,
+    }))
+    .sort((left, right) => left.targetY - right.targetY || left.index - right.index)
+  const positions = []
+
+  labels.forEach((label, index) => {
+    const previousY = positions[index - 1]?.y
+    positions.push({
+      ...label,
+      y: Math.max(label.targetY, minimumY, previousY === undefined ? minimumY : previousY + gap),
+    })
+  })
+
+  const overflow = positions.length > 0
+    ? positions[positions.length - 1].y - maximumY
+    : 0
+  if (overflow > 0) {
+    positions.forEach((position) => {
+      position.y -= overflow
+    })
+  }
+
+  const underflow = positions.length > 0 ? minimumY - positions[0].y : 0
+  if (underflow > 0) {
+    positions.forEach((position) => {
+      position.y += underflow
+    })
+  }
+
+  return new Map(positions.map(({ id, y }) => [id, y]))
+}
+
 function LineChart({ series, selectedSeriesId, valueFormatter }) {
   const allPoints = series.flatMap((item) => item.points)
   const xValues = allPoints.map(({ x }) => x)
@@ -57,6 +101,7 @@ function LineChart({ series, selectedSeriesId, valueFormatter }) {
     + ((value - minimumX) / xRange) * (plot.right - plot.left)
   const scaleY = (value) => plot.bottom
     - ((value - minimumY) / yRange) * (plot.bottom - plot.top)
+  const directLabelPositions = getDirectLabelPositions(series, scaleY, plot)
 
   return (
     <svg className="oro-chart-container__svg" viewBox="0 0 704 250" aria-hidden="true">
@@ -107,7 +152,7 @@ function LineChart({ series, selectedSeriesId, valueFormatter }) {
             <text
               className="oro-chart-container__direct-label"
               x="680"
-              y={scaleY(lastPoint.y) + 4}
+              y={directLabelPositions.get(item.id) ?? scaleY(lastPoint.y) + 4}
               textAnchor="end"
             >
               {item.label} · {valueFormatter(lastPoint.y)}
@@ -189,10 +234,18 @@ function OroChartContainer({
   caption,
   emptyTitle = 'No comparison data yet',
   emptyBody = 'Enter home details and select products to generate this chart.',
+  error,
+  errorTitle = 'We could not display this chart',
+  errorBody = 'Try again or return to your comparison selections.',
   className = '',
 }) {
+  const generatedId = useId().replace(/:/g, '')
   const safeKind = kind === 'bar' ? 'bar' : 'line'
   const series = normalizeSeries(rawSeries, safeKind)
+  const hasError = Boolean(error)
+  const resolvedErrorBody = typeof error === 'string'
+    ? error
+    : error?.message || errorBody
   const selectedSeries = series.find((item) => item.id === selectedSeriesId)
   const selectedValue = selectedSeries
     ? safeKind === 'line'
@@ -207,6 +260,7 @@ function OroChartContainer({
     : null
   const middleYear = firstYear !== null ? Math.round((firstYear + lastYear) / 2) : null
   const classes = ['oro-chart-container', className].filter(Boolean).join(' ')
+  const scrollHintId = `${generatedId}-scroll-hint`
 
   return (
     <figure className={classes}>
@@ -215,7 +269,7 @@ function OroChartContainer({
         <p className="oro-chart-container__description">{description}</p>
       </figcaption>
 
-      {series.length > 0 && (
+      {series.length > 0 && !hasError && (
         <div className="oro-chart-container__legend" aria-label="Chart series">
           {series.map((item) => (
             <OroChartLegendItem
@@ -233,10 +287,21 @@ function OroChartContainer({
 
       <div
         className="oro-chart-container__plot"
-        role="img"
+        role={series.length > 0 && !hasError ? 'img' : undefined}
         aria-label={`${title}. ${description}`}
+        aria-describedby={!hasError && series.length > 0 ? scrollHintId : undefined}
       >
-        {series.length > 0 ? (
+        {hasError ? (
+          <div
+            className="oro-chart-container__empty oro-chart-container__empty--error"
+            role="alert"
+            aria-live="assertive"
+          >
+            <span className="oro-chart-container__empty-marker" aria-hidden="true">!</span>
+            <strong>{errorTitle}</strong>
+            <span>{resolvedErrorBody}</span>
+          </div>
+        ) : series.length > 0 ? (
           <>
             {safeKind === 'line' ? (
               <LineChart
@@ -267,23 +332,32 @@ function OroChartContainer({
             )}
           </>
         ) : (
-          <div className="oro-chart-container__empty" role="status">
+          <div className="oro-chart-container__empty" role="status" aria-live="polite">
+            <span className="oro-chart-container__empty-marker" aria-hidden="true">—</span>
             <strong>{emptyTitle}</strong>
             <span>{emptyBody}</span>
           </div>
         )}
       </div>
 
-      <ul className="oro-visually-hidden">
-        {series.map((item) => (
-          <li key={item.id}>
-            {item.label}:{' '}
-            {safeKind === 'line'
-              ? item.points.map(({ x, y }) => `${x} years, ${valueFormatter(y)}`).join('; ')
-              : valueFormatter(item.value)}
-          </li>
-        ))}
-      </ul>
+      {series.length > 0 && !hasError && (
+        <p className="oro-chart-container__scroll-hint" id={scrollHintId} role="note">
+          Swipe horizontally to view the full chart and all labels.
+        </p>
+      )}
+
+      {!hasError && (
+        <ul className="oro-visually-hidden">
+          {series.map((item) => (
+            <li key={item.id}>
+              {item.label}:{' '}
+              {safeKind === 'line'
+                ? item.points.map(({ x, y }) => `${x} years, ${valueFormatter(y)}`).join('; ')
+                : valueFormatter(item.value)}
+            </li>
+          ))}
+        </ul>
+      )}
 
       <OroEducationalChartCaption>{caption}</OroEducationalChartCaption>
     </figure>

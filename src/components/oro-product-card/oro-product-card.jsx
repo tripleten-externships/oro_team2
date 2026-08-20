@@ -1,4 +1,5 @@
 import { OroButton } from '../oro-button'
+import { OroCallout } from '../oro-callout'
 import { OroEligibilityBadge } from '../oro-eligibility-badge'
 import { OroSuitabilityIndicator } from '../oro-suitability-indicator'
 import { OroTradeoffRow } from '../oro-tradeoff-row'
@@ -15,7 +16,10 @@ function normalizeOption(value, options, fallback) {
 
 function resolveEligibility(eligibility, isUnavailable) {
   if (isUnavailable) {
-    return { status: 'ineligible', label: 'Unavailable' }
+    const label = eligibility && typeof eligibility === 'object'
+      ? eligibility.label
+      : typeof eligibility === 'string' ? eligibility : undefined
+    return { status: 'ineligible', label: label || 'Unavailable' }
   }
 
   if (eligibility && typeof eligibility === 'object') {
@@ -124,6 +128,7 @@ function OroProductCard({
   const actionLabel = isUnavailable
     ? unavailableLabel
     : safeMode === 'comparison' ? selectLabel : learnMoreLabel
+  const hasCallout = callout && typeof callout === 'object'
   const classes = [
     'oro-product-card',
     `oro-product-card--${safeState}`,
@@ -153,10 +158,22 @@ function OroProductCard({
         </dl>
       )}
 
+      {hasCallout && (
+        <OroCallout
+          className="oro-product-card__callout"
+          surface="card"
+          title={callout.title}
+          type={callout.type || 'neutral'}
+        >
+          {callout.body}
+        </OroCallout>
+      )}
+
       <OroTradeoffRow {...tradeoffContent} />
 
       {typeof actionHandler === 'function' && (
         <OroButton
+          className="oro-product-card__action"
           variant="secondary"
           disabled={isUnavailable}
           aria-pressed={safeMode === 'comparison' ? safeState === 'selected' : undefined}

@@ -3,6 +3,8 @@ import { DEFAULT_INPUTS } from '../../domain/mortgage-calculator.js'
 import { OroButton } from '../oro-button'
 import { OroCallout } from '../oro-callout'
 import { OroInputField } from '../oro-input-field'
+import { OroStepIndicator } from '../oro-step-indicator'
+import { getFieldErrors } from './home-details-validation.js'
 import './home-details.css'
 
 const fieldConfig = [
@@ -10,6 +12,7 @@ const fieldConfig = [
     id: 'homeValue',
     label: 'Estimated home value',
     kind: 'currency',
+    placeholder: '750,000',
     helper: 'Use a recent estimate or appraisal if you have one.',
     inputMode: 'decimal',
   },
@@ -17,6 +20,7 @@ const fieldConfig = [
     id: 'mortgageBalance',
     label: 'Current mortgage balance',
     kind: 'currency',
+    placeholder: '350,000',
     helper: 'An approximate remaining balance is okay.',
     inputMode: 'decimal',
   },
@@ -24,6 +28,7 @@ const fieldConfig = [
     id: 'currentMortgageRateAnnualPercent',
     label: 'Current mortgage rate',
     kind: 'percentage',
+    placeholder: '4.5',
     helper: 'Enter 0 if your current loan has no interest rate.',
     inputMode: 'decimal',
   },
@@ -31,6 +36,7 @@ const fieldConfig = [
     id: 'yearsRemaining',
     label: 'Years remaining on mortgage',
     kind: 'number',
+    placeholder: '22',
     helper: 'Use the remaining term, not the original loan term.',
     inputMode: 'numeric',
   },
@@ -38,6 +44,7 @@ const fieldConfig = [
     id: 'cashNeeded',
     label: 'Cash you want to access',
     kind: 'currency',
+    placeholder: '100,000',
     helper: 'This is the amount you would like to receive before product costs.',
     inputMode: 'decimal',
   },
@@ -45,6 +52,7 @@ const fieldConfig = [
     id: 'age',
     label: 'Age of the youngest homeowner',
     kind: 'number',
+    placeholder: '55',
     helper: 'This only affects the illustrative reverse mortgage estimate.',
     inputMode: 'numeric',
   },
@@ -55,59 +63,6 @@ function toFormValues(values) {
     formValues[field.id] = values[field.id] ?? ''
     return formValues
   }, {})
-}
-
-function isBlank(value) {
-  return value === undefined || String(value).trim() === ''
-}
-
-function getFieldErrors(values) {
-  const numbers = Object.fromEntries(
-    fieldConfig.map((field) => [field.id, Number(values[field.id])]),
-  )
-  const errors = {}
-
-  if (isBlank(values.homeValue)) {
-    errors.homeValue = 'Enter a home value.'
-  } else if (!Number.isFinite(numbers.homeValue) || numbers.homeValue <= 0) {
-    errors.homeValue = 'Enter a home value greater than $0.'
-  }
-
-  if (isBlank(values.mortgageBalance)) {
-    errors.mortgageBalance = 'Enter your current mortgage balance.'
-  } else if (!Number.isFinite(numbers.mortgageBalance) || numbers.mortgageBalance < 0) {
-    errors.mortgageBalance = 'Enter a mortgage balance of $0 or more.'
-  }
-
-  if (isBlank(values.currentMortgageRateAnnualPercent)) {
-    errors.currentMortgageRateAnnualPercent = 'Enter your current mortgage rate.'
-  } else if (
-    !Number.isFinite(numbers.currentMortgageRateAnnualPercent)
-    || numbers.currentMortgageRateAnnualPercent < 0
-    || numbers.currentMortgageRateAnnualPercent > 100
-  ) {
-    errors.currentMortgageRateAnnualPercent = 'Enter a rate between 0% and 100%.'
-  }
-
-  if (isBlank(values.yearsRemaining)) {
-    errors.yearsRemaining = 'Enter the years remaining on your mortgage.'
-  } else if (!Number.isFinite(numbers.yearsRemaining) || numbers.yearsRemaining <= 0) {
-    errors.yearsRemaining = 'Enter at least 1 year remaining.'
-  }
-
-  if (isBlank(values.cashNeeded)) {
-    errors.cashNeeded = 'Enter the cash amount you want to access.'
-  } else if (!Number.isFinite(numbers.cashNeeded) || numbers.cashNeeded < 0) {
-    errors.cashNeeded = 'Enter a cash amount of $0 or more.'
-  }
-
-  if (isBlank(values.age)) {
-    errors.age = 'Enter the youngest homeowner age.'
-  } else if (!Number.isFinite(numbers.age) || numbers.age < 18 || numbers.age > 120) {
-    errors.age = 'Enter an age between 18 and 120.'
-  }
-
-  return errors
 }
 
 function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
@@ -134,8 +89,17 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
     ))
   }
 
+  function focusField(fieldId) {
+    document.getElementById(fieldId)?.focus()
+  }
+
   return (
     <main className="home-details" aria-labelledby="home-details-title">
+      <OroStepIndicator
+        className="home-details__progress"
+        currentStep={5}
+        label="Home details"
+      />
       <div className="home-details__layout">
         <section className="home-details__panel">
           <header className="home-details__header">
@@ -148,8 +112,22 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
           </header>
 
           {submitted && Object.keys(errors).length > 0 && (
-            <OroCallout type="error" title="Check the highlighted details" role="alert">
-              Every field needs a valid value before we can show the comparison.
+            <OroCallout type="error" title="Check these fields" role="alert">
+              <ul className="home-details__validation-list">
+                {fieldConfig
+                  .filter((field) => errors[field.id])
+                  .map((field) => (
+                    <li key={field.id}>
+                      <button
+                        className="home-details__validation-link"
+                        type="button"
+                        onClick={() => focusField(field.id)}
+                      >
+                        {field.label}: {errors[field.id]}
+                      </button>
+                    </li>
+                  ))}
+              </ul>
             </OroCallout>
           )}
 
