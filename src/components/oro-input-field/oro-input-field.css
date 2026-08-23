@@ -17,7 +17,7 @@
   display: flex;
   min-height: var(--oro-field-height);
   align-items: center;
-  gap: var(--oro-space-8);
+  gap: var(--oro-space-4);
   overflow: hidden;
   border: var(--oro-border-default) solid var(--oro-color-border-strong);
   border-radius: var(--oro-radius-control);

@@ -155,7 +155,7 @@ function OroResultsComparison({
         </div>
       ) : (
         <div className="oro-results-comparison__table-wrap">
-          <table className="oro-results-comparison__table">
+          <table className={`oro-results-comparison__table ${products.length === 1 ? 'oro-results-comparison__table--single' : ''}`}>
             <caption className="oro-visually-hidden">Detailed comparison of selected options</caption>
             <thead>
               <tr>

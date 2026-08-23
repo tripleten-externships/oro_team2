@@ -119,6 +119,21 @@
   font-size: var(--oro-type-body-size);
 }
 
+.oro-results-comparison__table--single {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.oro-results-comparison__table--single th,
+.oro-results-comparison__table--single td {
+  overflow-wrap: anywhere;
+}
+
+.oro-results-comparison__table--single thead th:first-child,
+.oro-results-comparison__table--single tbody th {
+  width: 30%;
+}
+
 .oro-results-comparison__table th,
 .oro-results-comparison__table td {
   padding: var(--oro-space-16);

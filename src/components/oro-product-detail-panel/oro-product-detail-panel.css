@@ -29,8 +29,9 @@
 .oro-product-detail-panel__status {
   display: flex;
   max-width: 100%;
+  flex-wrap: wrap;
   gap: var(--oro-space-12);
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .oro-product-detail-panel__summary {

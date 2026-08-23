@@ -85,8 +85,13 @@ function OroChartPanel({
   error,
   errorTitle,
   errorBody,
+  loading = false,
+  loadingTitle,
+  loadingBody,
   emptyTitle,
   emptyBody,
+  onEditSelection,
+  onReviseAndRecalculate,
   className = '',
 }) {
   const generatedId = useId().replace(/:/g, '')
@@ -174,8 +179,13 @@ function OroChartPanel({
           error={error}
           errorTitle={errorTitle}
           errorBody={errorBody}
+          loading={loading}
+          loadingTitle={loadingTitle}
+          loadingBody={loadingBody}
           emptyTitle={emptyTitle}
           emptyBody={emptyBody}
+          onEditSelection={onEditSelection}
+          onReviseAndRecalculate={onReviseAndRecalculate}
         />
       </div>
     </section>

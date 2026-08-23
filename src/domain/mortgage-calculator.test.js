@@ -62,6 +62,10 @@ test('rejects malformed and unsafe inputs', () => {
     /homeValue must be greater than 0/,
   )
   assert.throws(
+    () => new MortgageCalculator({ homeValue: 100000001 }),
+    /homeValue must be no greater than 100000000/,
+  )
+  assert.throws(
     () => new MortgageCalculator({ mortgageBalance: -1 }),
     /mortgageBalance must be greater than or equal to 0/,
   )

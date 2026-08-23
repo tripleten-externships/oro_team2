@@ -21,6 +21,8 @@ The page reads six numeric inputs on every recalculation:
 
 The corrected implementation applies defaults only when a field is absent. Numeric strings are accepted from forms and localStorage. Blank strings, non-numeric values, infinities and invalid negatives are rejected instead of silently falling back to defaults. A zero interest rate is valid and is handled explicitly.
 
+The prototype also applies a `$100,000,000` home-value sanity cap before calculation. This keeps illustrative projections and displayed metrics within a useful range; it is a product-input guardrail, not an underwriting or lender limit.
+
 ## 2. Shared constants and notation
 
 - Annual home appreciation: `3%`; annual growth factor: `1.03`.

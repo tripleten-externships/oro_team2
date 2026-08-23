@@ -31,9 +31,15 @@ function App() {
     revisingAnswers: false,
   }))
   const [isRestartModalOpen, setIsRestartModalOpen] = useState(false)
-  const [calculationStatus, setCalculationStatus] = useState(() => (
-    state.screen === 'results' ? 'reviewing' : null
-  ))
+  const [calculationStatus, setCalculationStatus] = useState(null)
+  const [resultsNotice, setResultsNotice] = useState(null)
+  const [qaChartState, setQaChartState] = useState(() => {
+    const requestedState = new URLSearchParams(globalThis.location?.search || '')
+      .get('qaChartState')
+    return ['empty', 'error', 'loading'].includes(requestedState)
+      ? requestedState
+      : null
+  })
 
   useEffect(() => {
     if (state.screen === 'starter') {
@@ -57,18 +63,22 @@ function App() {
   }, [state.answers, state.flowMode, state.inputs, state.screen])
 
   useEffect(() => {
-    if (state.screen !== 'results') {
+    if (state.screen !== 'results' || !calculationStatus) {
       return undefined
     }
 
+    const completedStatus = calculationStatus
     const clearTimer = window.setTimeout(() => {
       setCalculationStatus(null)
+      if (completedStatus === 'updating') {
+        setResultsNotice('updated')
+      }
     }, 960)
 
     return () => {
       window.clearTimeout(clearTimer)
     }
-  }, [state.answers, state.inputs, state.screen])
+  }, [calculationStatus, state.screen])
 
   function updateState(updates) {
     setState((current) => ({ ...current, ...updates }))
@@ -76,6 +86,7 @@ function App() {
 
   function handleGuidedStart() {
     setCalculationStatus(null)
+    setResultsNotice(null)
     updateState({
       answers: { ...EMPTY_ANSWERS },
       activeTab: 'matches',
@@ -91,6 +102,7 @@ function App() {
 
   function handleDirectStart() {
     setCalculationStatus(null)
+    setResultsNotice(null)
     updateState({
       activeTab: 'all',
       detailProductId: null,
@@ -105,8 +117,9 @@ function App() {
   function handleQuestionnaireComplete(answers) {
     updateState({
       answers,
-      editingInputs: false,
+      editingInputs: state.revisingAnswers,
       flowMode: 'guided',
+      questionnaireStep: 4,
       revisingAnswers: false,
       screen: 'home-details',
     })
@@ -123,12 +136,15 @@ function App() {
     }
 
     updateState({
+      questionnaireStep: state.flowMode === 'guided' ? 4 : state.questionnaireStep,
       screen: state.flowMode === 'guided' ? 'questionnaire' : 'starter',
     })
   }
 
   function handleDetailsSubmit(inputs) {
-    setCalculationStatus(state.editingInputs ? 'updating' : 'reviewing')
+    const isUpdate = state.editingInputs
+    setCalculationStatus(isUpdate ? 'updating' : 'reviewing')
+    setResultsNotice(null)
     updateState({
       activeTab: state.flowMode === 'direct' ? 'all' : 'matches',
       detailProductId: null,
@@ -146,6 +162,7 @@ function App() {
   function handleConfirmRestart() {
     clearStoredState()
     setCalculationStatus(null)
+    setResultsNotice(null)
     setState({
       ...createDefaultState(),
       editingInputs: false,
@@ -176,6 +193,13 @@ function App() {
     })
   }
 
+  function handleRetryChart() {
+    const nextUrl = new URL(globalThis.location.href)
+    nextUrl.searchParams.delete('qaChartState')
+    globalThis.history.replaceState({}, '', nextUrl)
+    setQaChartState(null)
+  }
+
   const guidedStep = Number.isInteger(state.questionnaireStep)
     ? Math.min(Math.max(state.questionnaireStep, 1), GUIDED_PROGRESS_LABELS.length)
     : 1
@@ -184,7 +208,9 @@ function App() {
     : state.screen === 'home-details'
       ? 'Step 5 of 6 · Home details'
       : state.screen === 'results'
-        ? 'Step 6 of 6 · Options to explore'
+        ? resultsNotice === 'updated'
+          ? 'Step 6 of 6 · Results updated'
+          : 'Step 6 of 6 · Options to explore'
         : 'Home equity explorer'
 
   return (
@@ -202,13 +228,6 @@ function App() {
             : undefined}
         />
         <div className="app__content">
-          {calculationStatus && state.screen === 'results' && (
-            <div className="app__calculation-status" role="status" aria-live="polite">
-              {calculationStatus === 'reviewing'
-                ? 'Reviewing illustrative calculations'
-                : 'Updating illustrative calculations'}
-            </div>
-          )}
           {state.screen === 'starter' && (
             <StarterPage
               onCompareAll={handleDirectStart}
@@ -218,6 +237,7 @@ function App() {
           {state.screen === 'questionnaire' && (
             <Questionnaire
               initialAnswers={state.answers}
+              initialStep={state.questionnaireStep}
               onBack={() => updateState({
                 revisingAnswers: false,
                 screen: state.revisingAnswers ? 'results' : 'starter',
@@ -241,9 +261,13 @@ function App() {
               onOpenDetail={(productId) => updateState({ detailProductId: productId })}
               onRemoveDetail={() => updateState({ detailProductId: null })}
               onRestart={requestRestart}
+              onRetryChart={handleRetryChart}
               onSelection={handleSelection}
               onTabChange={(activeTab) => updateState({ activeTab })}
+              calculationStatus={calculationStatus}
+              chartState={qaChartState}
               results={results}
+              resultsUpdated={resultsNotice === 'updated'}
               selectedIds={state.selectedIds}
             />
           )}

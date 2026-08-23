@@ -3,11 +3,12 @@ import { OroChartAxisLabel } from '../oro-chart-axis-label'
 import { OroChartLegendItem } from '../oro-chart-legend-item'
 import { OroChartTooltip } from '../oro-chart-tooltip'
 import { OroEducationalChartCaption } from '../oro-educational-chart-caption'
+import { OroButton } from '../oro-button'
 import './oro-chart-container.css'
 
 const patterns = ['solid', 'dashed', 'dotted']
 const tones = new Set(['primary', 'accent', 'neutral'])
-const directLabelGap = 20
+const directLabelGap = 28
 
 function normalizeSeries(rawSeries, kind) {
   if (!Array.isArray(rawSeries)) {
@@ -96,7 +97,9 @@ function LineChart({ series, selectedSeriesId, valueFormatter }) {
   const maximumY = Math.max(0, ...yValues)
   const xRange = maximumX - minimumX || 1
   const yRange = maximumY - minimumY || 1
-  const plot = { left: 58, right: 620, top: 36, bottom: 220 }
+  const plot = { left: 58, right: 438, top: 36, bottom: 220 }
+  const labelStartX = 454
+  const labelX = 690
   const scaleX = (value) => plot.left
     + ((value - minimumX) / xRange) * (plot.right - plot.left)
   const scaleY = (value) => plot.bottom
@@ -149,9 +152,17 @@ function LineChart({ series, selectedSeriesId, valueFormatter }) {
               points={item.points.map(({ x, y }) => `${scaleX(x)},${scaleY(y)}`).join(' ')}
               vectorEffect="non-scaling-stroke"
             />
+            <line
+              className="oro-chart-container__label-leader"
+              x1={scaleX(lastPoint.x)}
+              x2={labelStartX}
+              y1={scaleY(lastPoint.y)}
+              y2={directLabelPositions.get(item.id) ?? scaleY(lastPoint.y) + 4}
+              vectorEffect="non-scaling-stroke"
+            />
             <text
               className="oro-chart-container__direct-label"
-              x="680"
+              x={labelX}
               y={directLabelPositions.get(item.id) ?? scaleY(lastPoint.y) + 4}
               textAnchor="end"
             >
@@ -235,8 +246,13 @@ function OroChartContainer({
   emptyTitle = 'No comparison data yet',
   emptyBody = 'Enter home details and select products to generate this chart.',
   error,
-  errorTitle = 'We could not display this chart',
-  errorBody = 'Try again or return to your comparison selections.',
+  errorTitle = 'The chart could not be shown',
+  errorBody = 'The comparison cards and text values are still available. Revise the inputs or retry the illustrative calculation.',
+  loading = false,
+  loadingTitle = 'Preparing the chart',
+  loadingBody = 'The selected product labels and accessible text summary will appear when the illustrative values are ready.',
+  onEditSelection,
+  onReviseAndRecalculate,
   className = '',
 }) {
   const generatedId = useId().replace(/:/g, '')
@@ -269,7 +285,7 @@ function OroChartContainer({
         <p className="oro-chart-container__description">{description}</p>
       </figcaption>
 
-      {series.length > 0 && !hasError && (
+      {series.length > 0 && !hasError && !loading && (
         <div className="oro-chart-container__legend" aria-label="Chart series">
           {series.map((item) => (
             <OroChartLegendItem
@@ -287,11 +303,25 @@ function OroChartContainer({
 
       <div
         className="oro-chart-container__plot"
-        role={series.length > 0 && !hasError ? 'img' : undefined}
+        role={series.length > 0 && !hasError && !loading ? 'img' : undefined}
         aria-label={`${title}. ${description}`}
         aria-describedby={!hasError && series.length > 0 ? scrollHintId : undefined}
       >
-        {hasError ? (
+        {loading ? (
+          <div
+            className="oro-chart-container__empty oro-chart-container__empty--loading"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <span
+              className="oro-chart-container__empty-marker oro-chart-container__empty-marker--loading"
+              aria-hidden="true"
+            />
+            <strong>{loadingTitle}</strong>
+            <span>{loadingBody}</span>
+          </div>
+        ) : hasError ? (
           <div
             className="oro-chart-container__empty oro-chart-container__empty--error"
             role="alert"
@@ -300,6 +330,20 @@ function OroChartContainer({
             <span className="oro-chart-container__empty-marker" aria-hidden="true">!</span>
             <strong>{errorTitle}</strong>
             <span>{resolvedErrorBody}</span>
+            {(onEditSelection || onReviseAndRecalculate) && (
+              <div className="oro-chart-container__state-actions">
+                {onEditSelection && (
+                  <OroButton onClick={onEditSelection} variant="secondary">
+                    Edit selection
+                  </OroButton>
+                )}
+                {onReviseAndRecalculate && (
+                  <OroButton onClick={onReviseAndRecalculate} variant="primary">
+                    Revise and recalculate
+                  </OroButton>
+                )}
+              </div>
+            )}
           </div>
         ) : series.length > 0 ? (
           <>
@@ -340,13 +384,13 @@ function OroChartContainer({
         )}
       </div>
 
-      {series.length > 0 && !hasError && (
+      {series.length > 0 && !hasError && !loading && (
         <p className="oro-chart-container__scroll-hint" id={scrollHintId} role="note">
           Swipe horizontally to view the full chart and all labels.
         </p>
       )}
 
-      {!hasError && (
+      {!hasError && !loading && (
         <ul className="oro-visually-hidden">
           {series.map((item) => (
             <li key={item.id}>

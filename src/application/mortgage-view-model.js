@@ -146,12 +146,14 @@ function buildChartSeries(products) {
 
 function getResults(inputs, answers, direct = false) {
   const calculator = new MortgageCalculator(inputs)
+  const normalizedInputs = calculator.getInputs()
   const allProducts = calculator.getProducts().map((product) => toViewProduct(product))
 
   if (direct) {
     return {
       allProducts,
       direct: true,
+      inputs: normalizedInputs,
       recommendations: allProducts.slice(0, 3),
       hasCloseMatch: false,
       seriesByView: buildChartSeries(allProducts),
@@ -168,6 +170,7 @@ function getResults(inputs, answers, direct = false) {
   return {
     allProducts,
     direct: false,
+    inputs: normalizedInputs,
     recommendations,
     hasCloseMatch,
     seriesByView: buildChartSeries(allProducts),
