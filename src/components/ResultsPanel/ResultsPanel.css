@@ -22,6 +22,42 @@
   margin-bottom: var(--oro-space-28);
 }
 
+.results-panel__header-actions {
+  display: grid;
+  justify-items: end;
+  gap: var(--oro-space-12);
+}
+
+.results-panel__calculation-status {
+  max-width: 320px;
+  padding: var(--oro-space-10) var(--oro-space-12);
+  border: var(--oro-border-default) solid var(--oro-color-border-info);
+  border-radius: var(--oro-radius-control);
+  background: var(--oro-color-surface-info);
+  color: var(--oro-color-text-info);
+  font: var(--oro-font-weight-medium) var(--oro-type-body-size) /
+    var(--oro-type-body-line) var(--oro-font-control);
+  text-align: right;
+}
+
+.results-panel__calculation-status.is-hidden {
+  visibility: hidden;
+}
+
+.results-panel__update-status {
+  min-height: 116px;
+}
+
+.results-panel--calculating .results-panel__tabs,
+.results-panel--calculating .results-panel__cards,
+.results-panel--calculating .results-panel__table-section,
+.results-panel--calculating .results-panel__detail,
+.results-panel--calculating .results-panel__selection-controls,
+.results-panel--calculating > .oro-results-comparison {
+  opacity: var(--oro-opacity-disabled);
+  pointer-events: none;
+}
+
 .results-panel__eyebrow {
   margin: 0 0 var(--oro-space-12);
   color: var(--oro-color-text-secondary);
@@ -94,8 +130,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--oro-space-16);
-  margin-top: calc(var(--oro-space-32) * -1);
-  margin-bottom: var(--oro-space-32);
+  margin-top: var(--oro-space-40);
   padding: var(--oro-space-16);
   border: var(--oro-border-default) solid var(--oro-color-border-default);
   border-radius: var(--oro-radius-panel);
@@ -183,6 +218,10 @@
   border: var(--oro-border-default) solid var(--oro-color-border-default);
   border-radius: var(--oro-radius-panel);
   background: var(--oro-color-surface-card);
+}
+
+.results-panel__chart-section--preview {
+  margin-top: 0;
 }
 
 .results-panel > .oro-results-comparison {
@@ -274,6 +313,15 @@
     display: grid;
   }
 
+  .results-panel__tabs {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .results-panel__tab {
+    flex: 1 1 auto;
+  }
+
   .results-panel__selection-controls {
     align-items: stretch;
     flex-direction: column;
@@ -286,6 +334,19 @@
   .results-panel__header-actions,
   .results-panel__header-actions .oro-button {
     width: 100%;
+  }
+
+  .results-panel__header-actions {
+    justify-items: stretch;
+  }
+
+  .results-panel__calculation-status {
+    max-width: none;
+    text-align: left;
+  }
+
+  .results-panel__calculation-status.is-hidden {
+    display: none;
   }
 
   .results-panel__cards {

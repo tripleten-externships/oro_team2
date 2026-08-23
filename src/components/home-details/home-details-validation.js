@@ -1,18 +1,31 @@
+import { MAX_HOME_VALUE } from '../../domain/mortgage-calculator.js'
+
 const mortgageBalanceError =
   'Enter a mortgage balance greater than $0 and no higher than your home value.'
+const limitedEquityWarning =
+  'Lower the amount or revise the home value and mortgage balance. Actual availability may be lower after costs and provider limits.'
+const maximumHomeValueError = `Enter a home value no higher than $${MAX_HOME_VALUE.toLocaleString('en-US')}.`
 
 function isBlank(value) {
   return value === undefined || String(value).trim() === ''
 }
 
+export function parseNumericFieldValue(value) {
+  if (value === undefined || value === null) {
+    return Number.NaN
+  }
+
+  return Number(String(value).replace(/\s+/g, ''))
+}
+
 export function getFieldErrors(values) {
   const numbers = {
-    homeValue: Number(values.homeValue),
-    mortgageBalance: Number(values.mortgageBalance),
-    currentMortgageRateAnnualPercent: Number(values.currentMortgageRateAnnualPercent),
-    yearsRemaining: Number(values.yearsRemaining),
-    cashNeeded: Number(values.cashNeeded),
-    age: Number(values.age),
+    homeValue: parseNumericFieldValue(values.homeValue),
+    mortgageBalance: parseNumericFieldValue(values.mortgageBalance),
+    currentMortgageRateAnnualPercent: parseNumericFieldValue(values.currentMortgageRateAnnualPercent),
+    yearsRemaining: parseNumericFieldValue(values.yearsRemaining),
+    cashNeeded: parseNumericFieldValue(values.cashNeeded),
+    age: parseNumericFieldValue(values.age),
   }
   const errors = {}
 
@@ -20,6 +33,8 @@ export function getFieldErrors(values) {
     errors.homeValue = 'Enter a home value.'
   } else if (!Number.isFinite(numbers.homeValue) || numbers.homeValue <= 0) {
     errors.homeValue = 'Enter a home value greater than $0.'
+  } else if (numbers.homeValue > MAX_HOME_VALUE) {
+    errors.homeValue = maximumHomeValueError
   }
 
   if (isBlank(values.mortgageBalance)) {
@@ -56,15 +71,6 @@ export function getFieldErrors(values) {
     errors.cashNeeded = 'Enter the cash amount you want to access.'
   } else if (!Number.isFinite(numbers.cashNeeded) || numbers.cashNeeded < 0) {
     errors.cashNeeded = 'Enter a cash amount of $0 or more.'
-  } else if (
-    Number.isFinite(numbers.homeValue)
-    && numbers.homeValue > 0
-    && Number.isFinite(numbers.mortgageBalance)
-    && numbers.mortgageBalance > 0
-    && numbers.mortgageBalance <= numbers.homeValue
-    && numbers.cashNeeded > numbers.homeValue - numbers.mortgageBalance
-  ) {
-    errors.cashNeeded = 'Cash needed cannot exceed your available equity (home value minus mortgage balance).'
   }
 
   if (isBlank(values.age)) {
@@ -75,3 +81,27 @@ export function getFieldErrors(values) {
 
   return errors
 }
+
+export function getFieldWarnings(values) {
+  const homeValue = parseNumericFieldValue(values.homeValue)
+  const mortgageBalance = parseNumericFieldValue(values.mortgageBalance)
+  const cashNeeded = parseNumericFieldValue(values.cashNeeded)
+
+  if (
+    Number.isFinite(homeValue)
+    && homeValue > 0
+    && homeValue <= MAX_HOME_VALUE
+    && Number.isFinite(mortgageBalance)
+    && mortgageBalance > 0
+    && mortgageBalance <= homeValue
+    && Number.isFinite(cashNeeded)
+    && cashNeeded >= 0
+    && cashNeeded > homeValue - mortgageBalance
+  ) {
+    return { cashNeeded: limitedEquityWarning }
+  }
+
+  return {}
+}
+
+export { limitedEquityWarning }

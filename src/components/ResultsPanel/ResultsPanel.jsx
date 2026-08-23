@@ -21,6 +21,7 @@ const tabLabels = {
 
 const tabOrder = Object.keys(tabLabels)
 const STORAGE_KEY = 'oro-home-equity-explorer'
+const LIMITED_EQUITY_PRODUCT_IDS = new Set(['heloc', 'heloan', 'cash-out-refinance'])
 
 function formatMetric(value, formatter = formatCurrency) {
   return value === null ? '—' : formatter(value)
@@ -92,14 +93,18 @@ function getUnavailableCallout(product, enteredAge) {
 
 function ResultsPanel({
   activeTab = 'matches',
+  calculationStatus,
+  chartState,
   detailProductId,
   onEditInputs,
   onOpenDetail,
   onRemoveDetail,
   onRestart,
+  onRetryChart,
   onSelection,
   onTabChange,
   results,
+  resultsUpdated = false,
   selectedIds = [],
 }) {
   const [chartView, setChartView] = useState('equity')
@@ -108,6 +113,11 @@ function ResultsPanel({
   const [selectionLimitReached, setSelectionLimitReached] = useState(false)
   const allProducts = results?.allProducts || []
   const recommendations = results?.recommendations || []
+  const inputs = results?.inputs || {}
+  const availableEquity = Number(inputs.homeValue) - Number(inputs.mortgageBalance)
+  const limitedEquity = Number.isFinite(availableEquity)
+    && Number.isFinite(Number(inputs.cashNeeded))
+    && Number(inputs.cashNeeded) > availableEquity
   const selectedProducts = selectedIds
     .map((id) => allProducts.find((product) => product.id === id))
     .filter(Boolean)
@@ -127,12 +137,6 @@ function ResultsPanel({
       ? selectedProducts
       : allProducts
 
-  useEffect(() => {
-    if (activeTab === 'compare' && selectedIds.length < 2) {
-      onTabChange('all')
-    }
-  }, [activeTab, onTabChange, selectedIds.length])
-
   const chartSeries = useMemo(() => {
     if (selectedProducts.length === 0) {
       return {}
@@ -145,6 +149,32 @@ function ResultsPanel({
       ]),
     )
   }, [results.seriesByView, selectedIds, selectedProducts.length])
+  const effectiveChartState = calculationStatus ? 'loading' : chartState
+  const visibleChartSeries = effectiveChartState === 'empty' ? {} : chartSeries
+
+  function renderChartPanel() {
+    return (
+      <OroChartPanel
+        callout={{ body: 'Illustrative estimate only. Actual terms, rates, fees, and home values may differ.' }}
+        emptyBody="Enter home details and select products to generate this chart."
+        emptyTitle="No comparison data yet"
+        error={effectiveChartState === 'error'}
+        errorBody="The comparison cards and text values are still available. Revise the inputs or retry the illustrative calculation."
+        errorTitle="The chart could not be shown"
+        loading={effectiveChartState === 'loading'}
+        loadingBody="The selected product labels and accessible text summary will appear when the illustrative values are ready."
+        loadingTitle="Preparing the chart"
+        onEditSelection={() => onTabChange('all')}
+        onReviseAndRecalculate={() => {
+          onRetryChart?.()
+          onEditInputs()
+        }}
+        onViewChange={setChartView}
+        seriesByView={visibleChartSeries}
+        view={chartView}
+      />
+    )
+  }
 
   function handleSelection(product) {
     if (!selectedIds.includes(product.id) && selectedIds.length >= 3) {
@@ -158,16 +188,24 @@ function ResultsPanel({
 
   function renderCard(product) {
     const selected = selectedIds.includes(product.id)
-    const unavailable = product.ineligible
+    const limitedByEquity = limitedEquity && LIMITED_EQUITY_PRODUCT_IDS.has(product.id)
+    const unavailable = product.ineligible || limitedByEquity
     const isMatch = !results.direct
       && recommendations.some((recommendation) => recommendation.id === product.id)
-    const suitabilityLevel = getSuitabilityLevel(product, recommendations, results.direct)
+    const suitabilityLevel = limitedByEquity
+      ? 'limited'
+      : getSuitabilityLevel(product, recommendations, results.direct)
+    const limitedDescription = 'Not available under these estimates because there is not enough estimated accessible equity.'
+    const limitedMetrics = [
+      { id: 'cash', label: 'Cash available', value: 'Too low' },
+      { id: 'next-step', label: 'Next step', value: 'Reduce cash request' },
+    ]
 
     return (
       <div className="results-panel__card" key={product.id}>
         <OroProductCard
-          callout={getUnavailableCallout(product, enteredAge)}
-          description={product.description}
+          callout={limitedByEquity ? undefined : getUnavailableCallout(product, enteredAge)}
+          description={limitedByEquity ? limitedDescription : product.description}
           emphasis={isMatch && suitabilityLevel === 'strong' ? 'match' : 'standard'}
           eligibility={unavailable
             ? {
@@ -175,17 +213,20 @@ function ResultsPanel({
               label: product.id === 'reverse-mortgage' ? 'Unavailable · age 62+' : 'Unavailable',
             }
             : { status: 'eligible', label: 'Eligible' }}
-          metrics={[
+          metrics={limitedByEquity ? limitedMetrics : [
             { id: 'monthly', label: product.monthlyLabel, value: formatMetric(product.monthly, formatSignedCurrency) },
             { id: 'cash', label: 'Cash net', value: formatMetric(product.cashNet) },
           ]}
           mode="comparison"
           name={product.name}
           onSelect={() => handleSelection(product)}
+          preserveMetricValuesWhenUnavailable={limitedByEquity}
           selectLabel={selected ? 'Remove from comparison' : 'Add to comparison'}
           state={unavailable ? 'unavailable' : selected ? 'selected' : 'default'}
           suitability={{ level: suitabilityLevel }}
-          tradeoff={getProductTradeoff(product)}
+          tradeoff={limitedByEquity
+            ? { type: 'consideration', text: 'Reduce cash request or revise details.' }
+            : getProductTradeoff(product)}
           unavailableLabel={product.id === 'reverse-mortgage' ? 'Unavailable · age 62+' : 'Not available'}
         />
         <button
@@ -200,22 +241,43 @@ function ResultsPanel({
   }
 
   return (
-    <main className="results-panel" aria-labelledby="results-title">
+    <main
+      aria-busy={Boolean(calculationStatus) || undefined}
+      className={`results-panel ${calculationStatus ? 'results-panel--calculating' : ''}`}
+      aria-labelledby="results-title"
+    >
       <OroStepIndicator
         className="results-panel__progress"
         currentStep={6}
-        label="Options to explore"
+        label={resultsUpdated ? 'Results updated' : 'Options to explore'}
       />
       <header className="results-panel__header">
         <div>
-          <p className="results-panel__eyebrow">Illustrative estimate</p>
-          <h1 id="results-title">Your home equity options</h1>
+          <p className="results-panel__eyebrow">
+            {limitedEquity ? 'Your illustrative results' : 'Illustrative estimate'}
+          </p>
+          <h1 id="results-title">
+            {limitedEquity ? 'Few options are available under these estimates' : 'Your home equity options'}
+          </h1>
           <p className="results-panel__intro">
-            These estimates compare modeled cash, monthly impact, costs, and future
-            equity using the details you entered.
+            {limitedEquity
+              ? `The ${formatCurrency(Number(inputs.cashNeeded))} cash request is above the estimated accessible equity. Every option remains visible, with a clear reason when it is limited or unavailable.`
+              : 'These estimates compare modeled cash, monthly impact, costs, and future equity using the details you entered.'}
           </p>
         </div>
         <div className="results-panel__header-actions">
+          <div
+            aria-hidden={!calculationStatus || undefined}
+            aria-live={calculationStatus ? 'polite' : undefined}
+            className={`results-panel__calculation-status ${calculationStatus ? '' : 'is-hidden'}`}
+            role={calculationStatus ? 'status' : undefined}
+          >
+            {calculationStatus === 'reviewing'
+              ? 'Reviewing illustrative calculations'
+              : calculationStatus === 'updating'
+                ? 'Updating illustrative calculations'
+                : 'Illustrative calculations ready'}
+          </div>
           <OroButton variant="secondary" onClick={onEditInputs}>Edit details</OroButton>
         </div>
       </header>
@@ -224,6 +286,28 @@ function ResultsPanel({
         These estimates are for education only. They are not a quote, approval, APR disclosure,
         underwriting decision, or financial advice.
       </OroDisclaimerBlock>
+
+      {(calculationStatus === 'updating' || resultsUpdated) && (
+        <OroCallout
+          className="results-panel__update-status"
+          type={resultsUpdated ? 'success' : 'info'}
+          title={resultsUpdated
+            ? 'Your illustrative results were updated'
+            : 'Updating illustrative calculations'}
+          role="status"
+        >
+          {resultsUpdated
+            ? 'The matches, comparison values, and chart examples now reflect the revised information you submitted in this session.'
+            : 'The existing values remain visible while the revised inputs are applied. Comparison controls are temporarily paused.'}
+        </OroCallout>
+      )}
+
+      {limitedEquity && (
+        <OroCallout type="warning" title="Limited available equity">
+          Home value {formatCurrency(Number(inputs.homeValue))} less mortgage balance {formatCurrency(Number(inputs.mortgageBalance))}{' '}
+          leaves about {formatCurrency(availableEquity)} before costs and provider limits. Lower the cash request, revise the estimates, or explore a smaller need.
+        </OroCallout>
+      )}
 
       {results.hasCloseMatch && activeTab === 'matches' && (
         <OroCallout type="info" title="Two options may fit similarly">
@@ -235,7 +319,7 @@ function ResultsPanel({
       <nav className="results-panel__tabs" aria-label="Results views" role="tablist">
         {tabOrder.map((tab) => {
           const isSelected = activeTab === tab
-          const isDisabled = tab === 'compare' && selectedIds.length < 2
+          const isDisabled = tab === 'compare' && selectedIds.length === 0
 
           return (
             <button
@@ -254,34 +338,9 @@ function ResultsPanel({
         })}
       </nav>
 
-      <div className="results-panel__selection-controls" aria-live="polite">
-        <p>
-          {selectedIds.length === 0
-            ? 'Select 2–3 products to compare them side by side.'
-            : selectedIds.length === 1
-              ? '1 product selected. Select at least one more to enable comparison.'
-              : `${selectedIds.length} of 3 products selected. You can compare these options now.`}
-        </p>
-        <OroButton
-          disabled={selectedIds.length < 2}
-          onClick={() => onTabChange('compare')}
-          variant={selectedIds.length >= 2 ? 'primary' : 'secondary'}
-        >
-          Compare selected{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
-        </OroButton>
-      </div>
-
       {selectionLimitReached && (
         <OroCallout type="warning" title="You can compare up to three options">
           Remove one selection before adding another product.
-        </OroCallout>
-      )}
-
-      {activeTab === 'all'
-        && allProducts.some((product) => product.id === 'reverse-mortgage' && product.ineligible) && (
-        <OroCallout type="neutral" title="Reverse mortgage remains visible">
-          At age {Number.isFinite(enteredAge) ? enteredAge : 'the entered age'}, it is unavailable
-          for estimates but still available for neutral education.
         </OroCallout>
       )}
 
@@ -303,12 +362,7 @@ function ResultsPanel({
             </div>
             <p>Negative values indicate a payment or reduced equity; positive values indicate income.</p>
           </div>
-          <OroChartPanel
-            callout={{ body: 'Illustrative estimate only. Actual terms, rates, fees, and home values may differ.' }}
-            onViewChange={setChartView}
-            seriesByView={chartSeries}
-            view={chartView}
-          />
+          {renderChartPanel()}
           </section>
         </>
       )}
@@ -322,9 +376,24 @@ function ResultsPanel({
       )}
 
       {activeTab !== 'compare' && (
-        <section className="results-panel__cards" aria-label={tabLabels[activeTab]}>
-          {visibleProducts.map(renderCard)}
-        </section>
+        <>
+          <section className="results-panel__cards" aria-label={tabLabels[activeTab]}>
+            {visibleProducts.map(renderCard)}
+          </section>
+          <section
+            className="results-panel__chart-section results-panel__chart-section--preview"
+            aria-labelledby="chart-preview-title"
+          >
+            <div className="results-panel__section-heading">
+              <div>
+                <p className="results-panel__eyebrow">Comparison preview</p>
+                <h2 id="chart-preview-title">See the modeled tradeoffs over time</h2>
+              </div>
+              <p>Select an option to preview its values, then compare up to three.</p>
+            </div>
+            {renderChartPanel()}
+          </section>
+        </>
       )}
 
       {activeTab === 'all' && (
@@ -390,6 +459,23 @@ function ResultsPanel({
           />
         </aside>
       )}
+
+      <div className="results-panel__selection-controls" aria-live="polite">
+        <p>
+          {selectedIds.length === 0
+            ? 'Select 1–3 products to review them in the comparison view.'
+            : selectedIds.length === 1
+              ? '1 product selected. You can review it now or add up to two more.'
+              : `${selectedIds.length} of 3 products selected. You can compare these options now.`}
+        </p>
+        <OroButton
+          disabled={selectedIds.length === 0}
+          onClick={() => onTabChange('compare')}
+          variant={selectedIds.length > 0 ? 'primary' : 'secondary'}
+        >
+          Compare selected{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
+        </OroButton>
+      </div>
 
       <footer className="results-panel__footer">
         <p>Want to start with a different goal or set of home details?</p>

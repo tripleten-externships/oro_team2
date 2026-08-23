@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { getFieldErrors } from './home-details-validation.js'
+import {
+  getFieldErrors,
+  getFieldWarnings,
+  limitedEquityWarning,
+  parseNumericFieldValue,
+} from './home-details-validation.js'
 
 const validValues = {
   homeValue: 750000,
@@ -15,10 +20,11 @@ test('accepts valid decimal, spaced, and zero-interest input values', () => {
   assert.deepEqual(getFieldErrors({
     ...validValues,
     homeValue: ' 750000.50 ',
-    mortgageBalance: '350000.25',
-    currentMortgageRateAnnualPercent: '0',
-    cashNeeded: '100000.75',
+    mortgageBalance: '350 000.25',
+    currentMortgageRateAnnualPercent: ' 0 ',
+    cashNeeded: '100 000.75',
   }), {})
+  assert.equal(parseNumericFieldValue(' 750 000.50 '), 750000.5)
 })
 
 test('requires a positive mortgage balance no higher than home value', () => {
@@ -33,11 +39,18 @@ test('requires a positive mortgage balance no higher than home value', () => {
   assert.equal(getFieldErrors({ ...validValues, mortgageBalance: 750000 }).mortgageBalance, undefined)
 })
 
-test('reports cash needed above available equity on the cash field', () => {
+test('warns when cash needed exceeds available equity without blocking review', () => {
   assert.equal(getFieldErrors({ ...validValues, cashNeeded: 400000 }).cashNeeded, undefined)
   assert.equal(
-    getFieldErrors({ ...validValues, cashNeeded: 400001 }).cashNeeded,
-    'Cash needed cannot exceed your available equity (home value minus mortgage balance).',
+    getFieldWarnings({ ...validValues, cashNeeded: 400001 }).cashNeeded,
+    limitedEquityWarning,
+  )
+})
+
+test('caps home value before it reaches the calculation model', () => {
+  assert.match(
+    getFieldErrors({ ...validValues, homeValue: 100000001 }).homeValue,
+    /no higher than \$100,000,000/,
   )
 })
 
@@ -47,7 +60,12 @@ test('clears cross-field errors when the corrected values are submitted', () => 
     mortgageBalance: 300000,
     cashNeeded: 450000,
   }), {})
-  assert.deepEqual(getFieldErrors({
+  assert.deepEqual(getFieldWarnings({
+    ...validValues,
+    mortgageBalance: 300000,
+    cashNeeded: 450001,
+  }), { cashNeeded: limitedEquityWarning })
+  assert.deepEqual(getFieldWarnings({
     ...validValues,
     homeValue: 900000,
     mortgageBalance: 300000,

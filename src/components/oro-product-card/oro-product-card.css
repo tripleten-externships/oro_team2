@@ -65,8 +65,9 @@
   display: flex;
   width: 100%;
   align-items: flex-start;
+  flex-wrap: wrap;
   gap: var(--oro-space-8);
-  overflow: clip;
+  overflow: visible;
 }
 
 .oro-product-card__metrics {

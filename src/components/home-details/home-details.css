@@ -64,6 +64,10 @@
   margin-bottom: calc(var(--oro-space-8) * -1);
 }
 
+.home-details__panel > .oro-callout {
+  margin-bottom: var(--oro-space-24);
+}
+
 .home-details__validation-list {
   display: grid;
   margin: 0;

@@ -9,8 +9,10 @@ const DEFAULT_INPUTS = Object.freeze({
   age: 55,
 })
 
+const MAX_HOME_VALUE = 100_000_000
+
 const INPUT_RULES = Object.freeze({
-  homeValue: { minimum: 0, exclusive: true },
+  homeValue: { minimum: 0, exclusive: true, maximum: MAX_HOME_VALUE },
   mortgageBalance: { minimum: 0 },
   currentMortgageRateAnnualPercent: { minimum: 0 },
   yearsRemaining: { minimum: 0, exclusive: true },
@@ -66,10 +68,14 @@ function normalizeNumericInput(rawInputs, key) {
     throw new TypeError(`${key} must be a finite number`)
   }
 
-  const { minimum, exclusive } = INPUT_RULES[key]
+  const { minimum, exclusive, maximum } = INPUT_RULES[key]
   const isBelowMinimum = exclusive
     ? numericValue <= minimum
     : numericValue < minimum
+
+  if (Number.isFinite(maximum) && numericValue > maximum) {
+    throw new RangeError(`${key} must be no greater than ${maximum}`)
+  }
 
   if (isBelowMinimum) {
     const comparison = exclusive ? 'greater than' : 'greater than or equal to'
@@ -448,6 +454,7 @@ class MortgageCalculator {
 
 export {
   DEFAULT_INPUTS,
+  MAX_HOME_VALUE,
   MortgageCalculator,
   PRODUCT_IDS,
   PROJECTION_YEARS,

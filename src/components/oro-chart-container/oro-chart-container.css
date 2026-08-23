@@ -105,6 +105,11 @@
   stroke-width: 3px;
 }
 
+.oro-chart-container__label-leader {
+  stroke: currentColor;
+  stroke-width: var(--oro-border-default);
+}
+
 .oro-chart-container__series--selected .oro-chart-container__line {
   stroke-width: 4px;
 }
@@ -168,6 +173,10 @@
   color: var(--oro-color-text-error);
 }
 
+.oro-chart-container__empty--loading {
+  background: var(--oro-color-surface-subtle);
+}
+
 .oro-chart-container__empty-marker {
   color: currentColor;
   font-size: var(--oro-type-card-size);
@@ -175,10 +184,33 @@
   line-height: var(--oro-type-card-line);
 }
 
+.oro-chart-container__empty-marker--loading {
+  width: var(--oro-icon-size-md);
+  height: var(--oro-icon-size-md);
+  border: var(--oro-border-emphasis) solid var(--oro-color-border-default);
+  border-top-color: var(--oro-color-action-primary);
+  border-radius: var(--oro-radius-full);
+  animation: oro-chart-loading-spin 700ms linear infinite;
+}
+
 .oro-chart-container__empty strong {
   color: var(--oro-color-text-primary);
   font-size: var(--oro-type-section-size);
   line-height: var(--oro-type-section-line);
+}
+
+.oro-chart-container__state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--oro-space-12);
+  margin-top: var(--oro-space-4);
+}
+
+@keyframes oro-chart-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .oro-chart-container__scroll-hint {
@@ -212,6 +244,11 @@
   .oro-chart-container__scroll-hint {
     display: block;
   }
+
+  .oro-chart-container__state-actions,
+  .oro-chart-container__state-actions .oro-button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 767px) {
@@ -223,5 +260,9 @@
 @media (prefers-reduced-motion: reduce) {
   .oro-chart-container__series {
     transition: none;
+  }
+
+  .oro-chart-container__empty-marker--loading {
+    animation: none;
   }
 }

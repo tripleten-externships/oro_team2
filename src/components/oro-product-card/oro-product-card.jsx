@@ -88,6 +88,7 @@ function OroProductCard({
   emphasis = 'standard',
   mode = 'summary',
   metrics = [],
+  preserveMetricValuesWhenUnavailable = false,
   monthlyImpact = 'Monthly impact · $0',
   equityAt10Years = '10-year equity · $286,000',
   showMetrics = true,
@@ -116,7 +117,7 @@ function OroProductCard({
   const visibleMetrics = Array.isArray(metrics) && metrics.length > 0
     ? metrics.slice(0, 2).map((metric) => ({
       id: metric.id || metric.label,
-      text: `${metric.label} · ${isUnavailable ? '—' : metric.value}`,
+      text: `${metric.label} · ${isUnavailable && !preserveMetricValuesWhenUnavailable ? '—' : metric.value}`,
     }))
     : [
       { id: 'monthly-impact', text: isUnavailable ? 'Monthly impact · —' : monthlyImpact },

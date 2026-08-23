@@ -58,9 +58,17 @@ const emptyAnswers = {
   priority: '',
 }
 
-function Questionnaire({ onComplete, onBack, onStepChange, initialAnswers = emptyAnswers }) {
+function Questionnaire({
+  onComplete,
+  onBack,
+  onStepChange,
+  initialAnswers = emptyAnswers,
+  initialStep = 1,
+}) {
   const [answers, setAnswers] = useState(() => ({ ...emptyAnswers, ...initialAnswers }))
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(() => (
+    Math.min(Math.max(Number(initialStep) - 1, 0), questionConfig.length - 1)
+  ))
   const question = questionConfig[currentStep]
   const selectedValue = answers[question.id]
   const isComplete = Boolean(selectedValue)
@@ -161,14 +169,21 @@ function Questionnaire({ onComplete, onBack, onStepChange, initialAnswers = empt
             <button type="button" className="questionnaire__secondary" onClick={handleBack}>
               Back
             </button>
-            <button
-              type="button"
-              className="questionnaire__primary"
-              disabled={!isComplete}
-              onClick={handleContinue}
-            >
-              {currentStep === questionConfig.length - 1 ? 'Continue to home details' : 'Continue'}
-            </button>
+            <div className="questionnaire__primary-group">
+              {!isComplete && (
+                <p className="questionnaire__action-hint" role="note">
+                  Select an option to continue.
+                </p>
+              )}
+              <button
+                type="button"
+                className="questionnaire__primary"
+                disabled={!isComplete}
+                onClick={handleContinue}
+              >
+                {currentStep === questionConfig.length - 1 ? 'Continue to home details' : 'Continue'}
+              </button>
+            </div>
           </div>
         </article>
 

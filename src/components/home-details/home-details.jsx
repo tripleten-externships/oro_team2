@@ -4,7 +4,11 @@ import { OroButton } from '../oro-button'
 import { OroCallout } from '../oro-callout'
 import { OroInputField } from '../oro-input-field'
 import { OroStepIndicator } from '../oro-step-indicator'
-import { getFieldErrors } from './home-details-validation.js'
+import {
+  getFieldErrors,
+  getFieldWarnings,
+  parseNumericFieldValue,
+} from './home-details-validation.js'
 import './home-details.css'
 
 const fieldConfig = [
@@ -69,10 +73,24 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
   const [values, setValues] = useState(() => toFormValues(initialValues))
   const [submitted, setSubmitted] = useState(false)
   const errors = submitted ? getFieldErrors(values) : {}
+  const warnings = getFieldWarnings(values)
+  const showLimitedOptionsAction = Boolean(warnings.cashNeeded && Object.keys(errors).length === 0)
 
   function handleChange(event) {
     const { name, value } = event.target
     setValues((current) => ({ ...current, [name]: value }))
+  }
+
+  function handleBlur(event) {
+    const field = fieldConfig.find((item) => item.id === event.target.name)
+    if (!field || !['currency', 'percentage'].includes(field.kind)) {
+      return
+    }
+
+    const normalizedValue = event.target.value.replace(/\s+/g, '')
+    if (normalizedValue !== event.target.value) {
+      setValues((current) => ({ ...current, [field.id]: normalizedValue }))
+    }
   }
 
   function handleSubmit(event) {
@@ -85,7 +103,7 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
     }
 
     onSubmit(Object.fromEntries(
-      fieldConfig.map((field) => [field.id, Number(values[field.id])]),
+      fieldConfig.map((field) => [field.id, parseNumericFieldValue(values[field.id])]),
     ))
   }
 
@@ -131,6 +149,16 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
             </OroCallout>
           )}
 
+          {warnings.cashNeeded && (
+            <OroCallout
+              role="status"
+              type="error"
+              title="Cash requested exceeds estimated available equity"
+            >
+              {warnings.cashNeeded}
+            </OroCallout>
+          )}
+
           <form className="home-details__form" onSubmit={handleSubmit} noValidate>
             <div className="home-details__fields">
               {fieldConfig.map((field) => (
@@ -140,6 +168,7 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
                   id={field.id}
                   key={field.id}
                   name={field.id}
+                  onBlur={handleBlur}
                   onChange={handleChange}
                   value={values[field.id]}
                 />
@@ -148,7 +177,9 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
 
             <div className="home-details__actions">
               <OroButton variant="secondary" onClick={onBack}>Back</OroButton>
-              <OroButton type="submit">See my options</OroButton>
+              <OroButton type="submit">
+                {showLimitedOptionsAction ? 'Review Limited Options' : 'See my options'}
+              </OroButton>
             </div>
           </form>
         </section>

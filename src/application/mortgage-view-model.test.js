@@ -46,3 +46,19 @@ test('keeps an ineligible reverse mortgage visible with unavailable values', () 
   assert.equal(reverse.cashNet, null)
   assert.equal(reverse.projections, null)
 })
+
+test('keeps limited-equity review data calculable for the warning flow', () => {
+  const results = getResults({
+    ...inputs,
+    homeValue: 350000,
+    mortgageBalance: 320000,
+    cashNeeded: 100000,
+  }, {}, true)
+
+  assert.equal(results.inputs.homeValue, 350000)
+  assert.equal(results.inputs.mortgageBalance, 320000)
+  assert.equal(results.inputs.cashNeeded, 100000)
+  assert.ok(results.allProducts.every((product) => (
+    product.cashNet === null || Number.isFinite(product.cashNet)
+  )))
+})
