@@ -14,6 +14,38 @@ from diagrams.onprem.client import Client
 from PIL import Image
 
 
+class LargeClient(Client):
+    _height = 2.4
+
+
+class LargeWAF(WAF):
+    _height = 2.6
+
+
+class LargeCloudFront(CloudFront):
+    _height = 2.6
+
+
+class LargeCognito(Cognito):
+    _height = 2.6
+
+
+class LargeAmplify(Amplify):
+    _height = 2.6
+
+
+class LargeS3(S3):
+    _height = 2.6
+
+
+class LargeLambda(Lambda):
+    _height = 2.6
+
+
+class LargeDynamodb(Dynamodb):
+    _height = 2.6
+
+
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_IMAGE = REPOSITORY_ROOT / "docs" / "images" / "oro-observability-architecture.png"
 RAW_OUTPUT = OUTPUT_IMAGE.with_name(".oro-observability-architecture-render")
@@ -22,36 +54,81 @@ RAW_IMAGE = RAW_OUTPUT.with_suffix(".png")
 GRAPH_ATTRIBUTES = {
     "size": "16,9!",
     "ratio": "fill",
-    "pad": "0.35",
-    "nodesep": "0.6",
-    "ranksep": "1.0",
+    "pad": "0.25",
+    "nodesep": "0.4",
+    "ranksep": "0.7",
     "splines": "spline",
     "fontname": "Arial",
-    "fontsize": "22",
+    "fontsize": "26",
+    "fontcolor": "#253547",
     "labelloc": "t",
     "labeljust": "l",
     "label": (
-        "ORO Observability MVP | Solution architecture\\n"
-        "Solid arrows: request or data flow. Dashed arrows: administrator authentication."
+        "ORO Observability MVP · Solution architecture\\n"
+        "Solid arrows show request or data flow. Dashed arrows show administrator authentication."
     ),
 }
 
 NODE_ATTRIBUTES = {
     "fontname": "Arial",
-    "fontsize": "11",
+    "fontsize": "20",
+    "fontcolor": "#253547",
+    "width": "1.9",
+    "imagescale": "true",
 }
 
 EDGE_ATTRIBUTES = {
     "fontname": "Arial",
-    "fontsize": "10",
+    "fontsize": "15",
     "color": "#232F3E",
     "fontcolor": "#232F3E",
+    "penwidth": "2.2",
+    "arrowsize": "0.9",
 }
 
 AUTH_EDGE = {
     "style": "dashed",
     "color": "#5B6470",
     "fontcolor": "#5B6470",
+}
+
+AWS_CLOUD_ATTRIBUTES = {
+    "bgcolor": "#FFFFFF",
+    "pencolor": "#253547",
+    "penwidth": "2.5",
+    "fontsize": "24",
+    "fontname": "Arial",
+    "fontcolor": "#253547",
+    "margin": "28",
+}
+
+ACCOUNT_ATTRIBUTES = {
+    "bgcolor": "#FFFFFF",
+    "pencolor": "#253547",
+    "penwidth": "2",
+    "fontsize": "21",
+    "fontname": "Arial",
+    "fontcolor": "#253547",
+    "margin": "22",
+}
+
+AUTHENTICATION_ATTRIBUTES = {
+    "bgcolor": "#FFFFFF",
+    "pencolor": "#6B7C93",
+    "penwidth": "1.8",
+    "style": "dashed",
+    "fontsize": "18",
+    "fontname": "Arial",
+    "fontcolor": "#253547",
+    "margin": "18",
+}
+
+SERVICE_ATTRIBUTES = {
+    "width": "2.0",
+}
+
+CLIENT_ATTRIBUTES = {
+    "width": "1.8",
 }
 
 
@@ -65,21 +142,23 @@ with Diagram(
     node_attr=NODE_ATTRIBUTES,
     edge_attr=EDGE_ATTRIBUTES,
 ):
-    homeowner = Client("Homeowner browser\nPublic app · no sign-in")
-    administrator = Client("Administrator browser\n/oro-admin · access token")
+    homeowner = LargeClient("Homeowner", **CLIENT_ATTRIBUTES)
+    administrator = LargeClient("ORO administrator", **CLIENT_ATTRIBUTES)
 
-    with Cluster("AWS Cloud"):
-        waf = WAF("AWS WAF")
-        cloudfront = CloudFront("CloudFront\nOnly public entry")
+    with Cluster("AWS Cloud", graph_attr=AWS_CLOUD_ATTRIBUTES):
+        waf = LargeWAF("AWS WAF", **SERVICE_ATTRIBUTES)
+        cloudfront = LargeCloudFront("Amazon CloudFront", **SERVICE_ATTRIBUTES)
 
-        with Cluster("Regional resources | us-east-1"):
-            cognito = Cognito("Hosted UI\nAuthorization Code + PKCE\noro-admin group required")
-            amplify = Amplify("Amplify Hosting\nPublic React application")
-            admin_assets = S3("Admin assets\nPrivate bundle origin")
-            ingest = Lambda("Ingest function\nValidates anonymous events\nCloudFront IP + geography")
-            events = Dynamodb("Events table\nDaily GSI · 4 shards · 30-day TTL\nEncryption + PITR")
-            admin_api = Lambda("Admin function\nBounded metrics + CSV\nValidates access token")
-            exports = S3("Exports\nPrivate CSV · 24-hour expiry")
+        with Cluster("ORO AWS account · us-east-1", graph_attr=ACCOUNT_ATTRIBUTES):
+            with Cluster("Admin authentication", graph_attr=AUTHENTICATION_ATTRIBUTES):
+                cognito = LargeCognito("Amazon Cognito", **SERVICE_ATTRIBUTES)
+
+            amplify = LargeAmplify("AWS Amplify", **SERVICE_ATTRIBUTES)
+            admin_assets = LargeS3("Admin assets", **SERVICE_ATTRIBUTES)
+            ingest = LargeLambda("Ingest Lambda", **SERVICE_ATTRIBUTES)
+            events = LargeDynamodb("DynamoDB events", **SERVICE_ATTRIBUTES)
+            admin_api = LargeLambda("Admin Lambda", **SERVICE_ATTRIBUTES)
+            exports = LargeS3("CSV exports", **SERVICE_ATTRIBUTES)
 
     homeowner >> Edge(label="public app") >> waf
     administrator >> Edge(label="admin page + API") >> waf
