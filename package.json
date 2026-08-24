@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite --open",
     "build": "vite build",
+    "build:admin": "vite build --config admin/vite.config.js",
     "lint": "eslint .",
-    "test": "node --test src/domain/*.test.js src/application/*.test.js src/components/*/*.test.js",
+    "test": "node --test src/domain/*.test.js src/application/*.test.js src/components/*/*.test.js src/observability/*.test.js admin/src/*.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

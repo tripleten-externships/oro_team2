@@ -1,7 +1,10 @@
 # Dependencies and build output
 node_modules/
 dist/
+dist-admin/
 dist-ssr/
+infra/observability/cdk.out/
+.playwright-cli/
 .vite/
 coverage/
 
