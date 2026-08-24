@@ -1,25 +1,25 @@
 # ORO Observability MVP
 
-La capa de observabilidad registra interacciones anónimas para que el equipo ORO entienda el recorrido de producto sin alterar los cálculos, la experiencia pública ni la comparación de opciones.
+The observability layer records anonymous interactions so the ORO team can understand the product journey without changing calculations, the public experience, or option comparison.
 
-![Diagrama de arquitectura ORO Observability](images/oro-observability-architecture.svg)
+![ORO Observability architecture diagram](images/oro-observability-architecture.svg)
 
-## Qué mide
+## What it measures
 
-El tracker del navegador es opcional y no bloquea la interfaz. Cuando está habilitado, registra eventos acotados: inicio de recorrido, pasos completados, resultados, detalle y selección de producto, comparación y reinicio. Las propiedades son enums controlados; no transmite valores de vivienda, saldo, tasa, necesidad de efectivo, edad, respuestas, nombres, emails ni texto libre.
+The browser tracker is optional and never blocks the interface. When enabled, it records bounded events: journey starts, completed steps, results, product details and selections, comparisons, and restarts. Properties use controlled enums; it never sends home values, balances, rates, cash needs, age, answers, names, email addresses, or free text.
 
-CloudFront aporta la IP y la geografía de confianza. Se guarda el país para todos los visitantes y el código de estado únicamente cuando el país es `US`; para el resto, la región se normaliza a `XX`. La IP se conserva solo en DynamoDB para el periodo de retención de 30 días y nunca se incluye en la interfaz, los logs, ni las exportaciones.
+CloudFront supplies the trusted IP address and geography. The country is stored for every visitor, while the state code is stored only when the country is `US`; all other regions are normalized to `XX`. The IP address is retained only in DynamoDB for 30 days and is never included in the interface, logs, or exports.
 
-## Arquitectura y seguridad
+## Architecture and security
 
-CloudFront con WAF es la única entrada pública. Conserva la app homeowner en Amplify, sirve el bundle admin desde S3 privado y enruta las dos APIs a Lambda Function URLs protegidas mediante Origin Access Control y SigV4. No hay API Gateway, VPC, ALB, NAT ni servicios de procesamiento adicionales.
+CloudFront with WAF is the only public entry point. It keeps the homeowner app in Amplify, serves the admin bundle from private S3, and routes both APIs to Lambda Function URLs protected by Origin Access Control and SigV4. There is no API Gateway, VPC, ALB, NAT, or additional processing service.
 
-La Lambda de ingesta valida tamaño, esquema, UUID, eventos y propiedades permitidas antes de escribir en DynamoDB. La tabla está cifrada, usa TTL de 30 días, PITR y un índice por día con cuatro shards. La Lambda admin consulta solo ese índice, devuelve métricas acotadas y genera CSV temporal en un bucket privado con expiración de 24 horas.
+The ingestion Lambda validates size, schema, UUIDs, allowed events, and allowed properties before writing to DynamoDB. The table is encrypted, uses a 30-day TTL, PITR, and a per-day index with four shards. The admin Lambda queries only that index, returns bounded metrics, and creates temporary CSV files in a private bucket with a 24-hour expiry.
 
-El homeowner y la comparación continúan completamente públicos. Solo `/oro-admin` usa Cognito Hosted UI con Authorization Code + PKCE. El cliente SPA no tiene secreto; el acceso a métricas y exportaciones exige un access token válido con el grupo `oro-admin`.
+The homeowner app and comparison remain fully public. Only `/oro-admin` uses Cognito Hosted UI with Authorization Code + PKCE. The SPA client has no secret; metrics and exports require a valid access token for the `oro-admin` group.
 
-## Operación
+## Operations
 
-El workflow manual **ORO Observability Deploy** usa GitHub Actions OIDC y el environment protegido `oro-production`; no usa access keys. Con `OBSERVABILITY_TRACKING_ENABLED=true`, construye el bundle público con tracking, publica el admin privado y actualiza exclusivamente el stack y distribución `oro-*`.
+The manual **ORO Observability Deploy** workflow uses GitHub Actions OIDC and the protected `oro-production` environment; it does not use access keys. With `OBSERVABILITY_TRACKING_ENABLED=true`, it builds the public bundle with tracking, publishes the private admin, and updates only the `oro-*` stack and distribution.
 
-El dashboard muestra sesiones únicas, finalización guiada, exploración de producto, dispositivo y ubicaciones. El CSV contiene solo fecha de recepción, evento, país, estado US cuando exista, dispositivo, propiedades permitidas y un seudónimo efímero de sesión.
+The dashboard shows unique sessions, guided completion, product exploration, device, and location. The CSV contains only the received date, event, country, US state when available, device, allowed properties, and an ephemeral session pseudonym.
