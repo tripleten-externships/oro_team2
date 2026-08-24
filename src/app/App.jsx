@@ -15,6 +15,7 @@ import { OroRestartModal } from '../components/oro-restart-modal'
 import Questionnaire from '../components/Questionnaire/Questionnaire.jsx'
 import ResultsPanel from '../components/ResultsPanel/ResultsPanel.jsx'
 import StarterPage from '../components/StarterPage/StarterPage.jsx'
+import { observabilityTracker } from '../observability/index.js'
 
 const GUIDED_PROGRESS_LABELS = [
   'Your priorities',
@@ -22,6 +23,7 @@ const GUIDED_PROGRESS_LABELS = [
   'Payment comfort',
   'Decision priority',
 ]
+const ASSESSMENT_STEP_IDS = ['goal', 'stay', 'payment', 'priority']
 
 function App() {
   const [state, setState] = useState(() => ({
@@ -85,6 +87,8 @@ function App() {
   }
 
   function handleGuidedStart() {
+    observabilityTracker.trackOnce('session-start', 'session_started', { entryPath: 'guided' })
+    observabilityTracker.track('guided_flow_started')
     setCalculationStatus(null)
     setResultsNotice(null)
     updateState({
@@ -101,6 +105,8 @@ function App() {
   }
 
   function handleDirectStart() {
+    observabilityTracker.trackOnce('session-start', 'session_started', { entryPath: 'direct' })
+    observabilityTracker.track('direct_flow_started')
     setCalculationStatus(null)
     setResultsNotice(null)
     updateState({
@@ -115,6 +121,8 @@ function App() {
   }
 
   function handleQuestionnaireComplete(answers) {
+    observabilityTracker.track('assessment_step_completed', { stepId: 'priority' })
+    observabilityTracker.track('assessment_completed')
     updateState({
       answers,
       editingInputs: state.revisingAnswers,
@@ -126,6 +134,10 @@ function App() {
   }
 
   function handleQuestionnaireStepChange(step) {
+    const completedStepId = ASSESSMENT_STEP_IDS[step - 2]
+    if (completedStepId) {
+      observabilityTracker.track('assessment_step_completed', { stepId: completedStepId })
+    }
     updateState({ questionnaireStep: step })
   }
 
@@ -143,6 +155,9 @@ function App() {
 
   function handleDetailsSubmit(inputs) {
     const isUpdate = state.editingInputs
+    const journeyType = state.flowMode === 'direct' ? 'direct' : 'guided'
+    observabilityTracker.track('home_details_submitted')
+    observabilityTracker.trackOnce(`results-viewed-${journeyType}`, 'results_viewed', { journeyType })
     setCalculationStatus(isUpdate ? 'updating' : 'reviewing')
     setResultsNotice(null)
     updateState({
@@ -160,6 +175,9 @@ function App() {
   }
 
   function handleConfirmRestart() {
+    if (['questionnaire', 'home-details', 'results'].includes(state.screen)) {
+      observabilityTracker.track('flow_restarted', { fromStage: state.screen })
+    }
     clearStoredState()
     setCalculationStatus(null)
     setResultsNotice(null)
@@ -182,6 +200,10 @@ function App() {
   }
 
   function handleSelection(productId) {
+    if (!state.selectedIds.includes(productId) && state.selectedIds.length < 3) {
+      observabilityTracker.track('product_selected', { productId })
+    }
+
     setState((current) => {
       const selectedIds = current.selectedIds.includes(productId)
         ? current.selectedIds.filter((id) => id !== productId)
@@ -191,6 +213,22 @@ function App() {
 
       return { ...current, selectedIds }
     })
+  }
+
+  function handleOpenDetail(productId) {
+    observabilityTracker.track('product_detail_opened', { productId })
+    updateState({ detailProductId: productId })
+  }
+
+  function handleTabChange(activeTab) {
+    if (activeTab === 'compare' && state.selectedIds.length > 0) {
+      observabilityTracker.trackOnce(
+        `comparison-viewed-${state.flowMode}`,
+        'comparison_viewed',
+        { productCountBucket: String(Math.min(state.selectedIds.length, 3)) },
+      )
+    }
+    updateState({ activeTab })
   }
 
   function handleRetryChart() {
@@ -258,12 +296,12 @@ function App() {
               activeTab={state.activeTab}
               detailProductId={state.detailProductId}
               onEditInputs={() => updateState({ editingInputs: true, screen: 'home-details' })}
-              onOpenDetail={(productId) => updateState({ detailProductId: productId })}
+              onOpenDetail={handleOpenDetail}
               onRemoveDetail={() => updateState({ detailProductId: null })}
               onRestart={requestRestart}
               onRetryChart={handleRetryChart}
               onSelection={handleSelection}
-              onTabChange={(activeTab) => updateState({ activeTab })}
+              onTabChange={handleTabChange}
               calculationStatus={calculationStatus}
               chartState={qaChartState}
               results={results}
