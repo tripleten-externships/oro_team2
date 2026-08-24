@@ -10,4 +10,4 @@ docs/diagrams/.venv/bin/python -m pip install -r docs/diagrams/requirements.txt
 docs/diagrams/.venv/bin/python docs/diagrams/oro_observability_architecture.py
 ```
 
-The render command updates `docs/images/oro-observability-architecture.png`. Review the generated image and commit it together with its Python source whenever the architecture changes.
+The render command updates `docs/images/oro-observability-architecture.png` as an exact 16:9 image. Review the generated image and commit it together with its Python source whenever the architecture changes.
