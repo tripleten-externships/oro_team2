@@ -2,7 +2,17 @@
 
 The observability layer records anonymous interactions so the ORO team can understand the product journey without changing calculations, the public experience, or option comparison.
 
-![ORO Observability architecture diagram](images/oro-observability-architecture.svg)
+## MVP flows
+
+![ORO Observability MVP flow diagram](images/oro-observability-mvp-flow.svg)
+
+The public homeowner flow and comparison require no authentication. The tracker sends a bounded anonymous event after supported interactions without interrupting navigation or calculations. The separate admin flow requires Cognito sign-in before it can query metrics or create an export.
+
+## Solution architecture
+
+![ORO Observability solution architecture diagram](images/oro-observability-architecture.svg)
+
+The architecture diagram separates browser traffic, CloudFront routing, authentication, isolated compute, and storage. Its arrows show the direction of each request or data flow.
 
 ## What it measures
 
