@@ -572,7 +572,9 @@ function handler(event) {
     new cdk.CfnOutput(this, 'EventsTableName', { value: eventsTable.tableName })
     new cdk.CfnOutput(this, 'CognitoUserPoolId', { value: userPool.userPoolId })
     new cdk.CfnOutput(this, 'CognitoClientId', { value: adminClient.userPoolClientId })
-    new cdk.CfnOutput(this, 'CognitoHostedUiDomain', { value: userPoolDomain.domainName })
+    // domainName is only the Cognito prefix. CI needs the complete Hosted UI
+    // URL when compiling the separate admin bundle.
+    new cdk.CfnOutput(this, 'CognitoHostedUiDomain', { value: userPoolDomain.baseUrl() })
     new cdk.CfnOutput(this, 'GithubActionsRoleArn', { value: githubActionsRole.roleArn })
   }
 }
