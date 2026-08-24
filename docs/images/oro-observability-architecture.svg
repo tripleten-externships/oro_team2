@@ -1,9 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690" role="img" aria-labelledby="title description">
-  <title id="title">ORO Observability architecture</title>
-  <desc id="description">CloudFront with WAF routes the public application, protected admin dashboard, and two isolated Lambda APIs. Ingestion writes events to DynamoDB; the dashboard queries metrics and exports temporary CSV files to S3. Cognito protects only the admin dashboard.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title description">
+  <title id="title">ORO Observability solution architecture</title>
+  <desc id="description">Every solid arrow shows a request or data flow in its direction. CloudFront with WAF routes public and admin traffic to Amplify, private S3, and two Lambda APIs. Cognito protects the admin browser only. The Lambdas write and query DynamoDB, while the admin API creates temporary CSV exports in private S3.</desc>
   <defs>
-    <marker id="arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
+    <marker id="arrow" markerHeight="9" markerWidth="9" orient="auto" refX="8" refY="4.5">
       <path d="M0,0 L8,4 L0,8 Z" fill="#09453B"/>
+    </marker>
+    <marker id="arrow-gold" markerHeight="9" markerWidth="9" orient="auto" refX="8" refY="4.5">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#5B4209"/>
     </marker>
     <style>
       .lane { fill: #FBF6ED; stroke: #85938F; stroke-width: 1.5; }
@@ -14,76 +17,81 @@
       .label { fill: #06281D; font: 600 16px Arial, sans-serif; }
       .detail { fill: #6F6D69; font: 14px Arial, sans-serif; }
       .line { fill: none; stroke: #09453B; stroke-width: 2.2; marker-end: url(#arrow); }
-      .dashed { fill: none; stroke: #5B4209; stroke-width: 2; stroke-dasharray: 7 6; marker-end: url(#arrow); }
+      .dashed { fill: none; stroke: #5B4209; stroke-width: 2; stroke-dasharray: 7 6; marker-end: url(#arrow-gold); }
       .caption { fill: #6F6D69; font: 13px Arial, sans-serif; }
     </style>
   </defs>
 
-  <rect width="1200" height="690" fill="#FBF6ED"/>
-  <text x="54" y="54" class="heading">ORO Observability MVP · isolated architecture</text>
+  <rect width="1200" height="720" fill="#FBF6ED"/>
+  <text x="54" y="54" class="heading">ORO Observability MVP · solution architecture</text>
 
-  <rect x="40" y="92" width="1120" height="500" rx="18" class="lane"/>
-  <text x="66" y="126" class="detail">CloudFront is the only public entry point; WAF applies protection and rate limits.</text>
+  <rect x="40" y="92" width="1120" height="566" rx="18" class="lane"/>
+  <text x="66" y="126" class="detail">Solid arrows show the direction of requests or data. CloudFront + WAF is the only public entry point.</text>
 
-  <rect x="72" y="276" width="150" height="92" rx="12" class="node"/>
-  <text x="147" y="313" text-anchor="middle" class="label">Homeowner</text>
-  <text x="147" y="338" text-anchor="middle" class="detail">public browser</text>
+  <rect x="70" y="260" width="160" height="96" rx="12" class="node"/>
+  <text x="150" y="300" text-anchor="middle" class="label">Homeowner browser</text>
+  <text x="150" y="326" text-anchor="middle" class="detail">public · no sign-in</text>
 
-  <rect x="286" y="252" width="180" height="140" rx="12" class="node-accent"/>
-  <text x="376" y="291" text-anchor="middle" class="label">CloudFront + WAF</text>
-  <text x="376" y="317" text-anchor="middle" class="detail">HTTPS · routes</text>
-  <text x="376" y="340" text-anchor="middle" class="detail">OAC to Lambda/S3</text>
-  <text x="376" y="363" text-anchor="middle" class="detail">no API Gateway</text>
+  <rect x="70" y="468" width="160" height="96" rx="12" class="node-private"/>
+  <text x="150" y="508" text-anchor="middle" class="label">Admin browser</text>
+  <text x="150" y="534" text-anchor="middle" class="detail">/oro-admin · token</text>
 
-  <rect x="548" y="140" width="190" height="82" rx="12" class="node"/>
-  <text x="643" y="176" text-anchor="middle" class="label">Amplify Hosting</text>
-  <text x="643" y="201" text-anchor="middle" class="detail">React homeowner · /*</text>
+  <rect x="285" y="248" width="205" height="148" rx="12" class="node-accent"/>
+  <text x="387" y="288" text-anchor="middle" class="label">CloudFront + WAF</text>
+  <text x="387" y="315" text-anchor="middle" class="detail">HTTPS routing</text>
+  <text x="387" y="338" text-anchor="middle" class="detail">OAC + SigV4 to origins</text>
+  <text x="387" y="361" text-anchor="middle" class="detail">no API Gateway</text>
 
-  <rect x="548" y="258" width="190" height="82" rx="12" class="node-private"/>
-  <text x="643" y="294" text-anchor="middle" class="label">Private S3</text>
-  <text x="643" y="319" text-anchor="middle" class="detail">bundle /oro-admin/*</text>
+  <rect x="285" y="130" width="205" height="92" rx="12" class="node-private"/>
+  <text x="387" y="168" text-anchor="middle" class="label">Cognito Hosted UI</text>
+  <text x="387" y="194" text-anchor="middle" class="detail">Authorization Code + PKCE</text>
 
-  <rect x="548" y="376" width="190" height="92" rx="12" class="node"/>
-  <text x="643" y="413" text-anchor="middle" class="label">Ingestion Lambda</text>
-  <text x="643" y="438" text-anchor="middle" class="detail">POST anonymous events</text>
-  <text x="643" y="459" text-anchor="middle" class="detail">IP + country + US state</text>
+  <rect x="570" y="130" width="200" height="84" rx="12" class="node"/>
+  <text x="670" y="166" text-anchor="middle" class="label">Amplify Hosting</text>
+  <text x="670" y="191" text-anchor="middle" class="detail">public React app · /*</text>
 
-  <rect x="548" y="504" width="190" height="92" rx="12" class="node"/>
-  <text x="643" y="541" text-anchor="middle" class="label">Admin Lambda</text>
-  <text x="643" y="566" text-anchor="middle" class="detail">metrics and CSV</text>
-  <text x="643" y="587" text-anchor="middle" class="detail">JWT + oro-admin group</text>
+  <rect x="570" y="250" width="200" height="84" rx="12" class="node-private"/>
+  <text x="670" y="286" text-anchor="middle" class="label">Private S3 assets</text>
+  <text x="670" y="311" text-anchor="middle" class="detail">admin bundle · /oro-admin/*</text>
 
-  <rect x="825" y="366" width="180" height="102" rx="12" class="node-private"/>
-  <text x="915" y="405" text-anchor="middle" class="label">DynamoDB events</text>
-  <text x="915" y="431" text-anchor="middle" class="detail">Daily GSI · 30d TTL</text>
-  <text x="915" y="452" text-anchor="middle" class="detail">PITR · encryption</text>
+  <rect x="570" y="370" width="200" height="92" rx="12" class="node"/>
+  <text x="670" y="407" text-anchor="middle" class="label">Ingestion Lambda</text>
+  <text x="670" y="432" text-anchor="middle" class="detail">POST anonymous events</text>
+  <text x="670" y="453" text-anchor="middle" class="detail">trusted IP + geography</text>
 
-  <rect x="1030" y="502" width="102" height="94" rx="12" class="node-private"/>
-  <text x="1081" y="540" text-anchor="middle" class="label">S3</text>
-  <text x="1081" y="563" text-anchor="middle" class="detail">CSV</text>
-  <text x="1081" y="582" text-anchor="middle" class="detail">24h</text>
+  <rect x="570" y="510" width="200" height="92" rx="12" class="node"/>
+  <text x="670" y="547" text-anchor="middle" class="label">Admin Lambda</text>
+  <text x="670" y="572" text-anchor="middle" class="detail">bounded metrics + CSV</text>
+  <text x="670" y="593" text-anchor="middle" class="detail">validates oro-admin group</text>
 
-  <rect x="825" y="150" width="180" height="92" rx="12" class="node-private"/>
-  <text x="915" y="187" text-anchor="middle" class="label">Cognito Hosted UI</text>
-  <text x="915" y="212" text-anchor="middle" class="detail">Code + PKCE</text>
-  <text x="915" y="233" text-anchor="middle" class="detail">only /oro-admin</text>
+  <rect x="850" y="360" width="190" height="108" rx="12" class="node-private"/>
+  <text x="945" y="401" text-anchor="middle" class="label">DynamoDB events</text>
+  <text x="945" y="428" text-anchor="middle" class="detail">daily GSI · 30d TTL</text>
+  <text x="945" y="450" text-anchor="middle" class="detail">PITR · encryption</text>
 
-  <path d="M222 322 H286" class="line"/>
-  <path d="M466 279 H516 V181 H548" class="line"/>
-  <path d="M466 322 H548" class="line"/>
-  <path d="M466 352 H516 V422 H548" class="line"/>
-  <path d="M466 366 H516 V550 H548" class="line"/>
-  <path d="M738 422 H825" class="line"/>
-  <path d="M738 550 H784 V448 H825" class="line"/>
-  <path d="M738 550 H1030" class="line"/>
-  <path d="M738 299 H786 V196 H825" class="dashed"/>
-  <path d="M915 242 V322 H643 V340" class="dashed"/>
+  <rect x="1060" y="510" width="92" height="92" rx="12" class="node-private"/>
+  <text x="1106" y="547" text-anchor="middle" class="label">Private S3</text>
+  <text x="1106" y="572" text-anchor="middle" class="detail">CSV · 24h</text>
 
-  <text x="480" y="165" class="caption">public app</text>
-  <text x="478" y="307" class="caption">static admin</text>
-  <text x="478" y="407" class="caption">/events</text>
-  <text x="478" y="538" class="caption">/admin/*</text>
-  <text x="755" y="181" class="caption">sign-in</text>
-  <text x="70" y="634" class="detail">Allowed data: events, anonymous session, device type, country, and US state only.</text>
-  <text x="70" y="659" class="detail">Never sent to the dashboard or CSV: IP, tokens, mortgage values, answers, or other personal data.</text>
+  <path d="M230 308 H285" class="line"/>
+  <path d="M230 516 H260 V397 H285" class="line"/>
+  <path d="M490 276 H530 V172 H570" class="line"/>
+  <path d="M490 304 H570" class="line"/>
+  <path d="M490 352 H530 V416 H570" class="line"/>
+  <path d="M490 380 H530 V556 H570" class="line"/>
+  <path d="M770 416 H850" class="line"/>
+  <path d="M770 556 H808 V446 H850" class="line"/>
+  <path d="M770 556 H1060" class="line"/>
+  <path d="M150 468 V198 H285" class="dashed"/>
+  <path d="M285 152 H255 V584 H150 V564" class="dashed"/>
+
+  <text x="245" y="292" class="caption">public app</text>
+  <text x="240" y="410" class="caption">admin page + API</text>
+  <text x="510" y="159" class="caption">/*</text>
+  <text x="505" y="296" class="caption">/oro-admin/*</text>
+  <text x="500" y="405" class="caption">/events</text>
+  <text x="500" y="543" class="caption">/admin/*</text>
+  <text x="166" y="186" class="caption">sign-in (PKCE)</text>
+  <text x="170" y="608" class="caption">authorization return</text>
+  <text x="70" y="690" class="detail">IP remains in DynamoDB only. Dashboard and CSV exclude IP, tokens, financial values, answers, and other personal data.</text>
 </svg>
