@@ -187,6 +187,7 @@ async function createCsvExport(records) {
     Bucket: process.env.EXPORT_BUCKET_NAME,
     Body: Buffer.from(csv, 'utf8'),
     CacheControl: 'no-store',
+    ContentDisposition: 'attachment; filename="oro-observability.csv"',
     ContentType: 'text/csv; charset=utf-8',
     Key: objectKey,
     ServerSideEncryption: 'AES256',
