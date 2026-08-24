@@ -10,7 +10,7 @@ This isolated CDK package creates only new `oro-*` resources for the observabili
 - Custom domains: intentionally unsupported for this MVP.
 - Homeowner tracking: disabled until the CloudFront and admin flow are validated.
 
-The stack creates DynamoDB, a new Amplify Hosting app and production branch, two private S3 buckets, Cognito, two Lambda function URLs protected by CloudFront OAC, WAF, CloudWatch alarms, and the `oro-observability-github-actions` OIDC role. It assumes the account already has the standard CDK bootstrap resources and GitHub's `token.actions.githubusercontent.com` OIDC provider.
+The stack creates DynamoDB, a new Amplify Hosting app and production branch, two private S3 buckets, Cognito, two Lambda function URLs protected by CloudFront OAC, WAF, CloudWatch alarms, and the `oro-observability-github-actions` OIDC role. It assumes the account already has the standard CDK bootstrap resources and GitHub's `token.actions.githubusercontent.com` OIDC provider. The role trust is pinned to this repository's immutable GitHub owner and repository IDs plus the `oro-production` environment, matching the organization's OIDC subject format.
 
 ## Local validation
 

@@ -120,7 +120,7 @@ test('creates a GitHub OIDC role restricted to the ORO repository environment', 
   assert.ok(githubRole)
   const trustPolicy = JSON.stringify(githubRole.Properties.AssumeRolePolicyDocument)
   assert.match(trustPolicy, /token\.actions\.githubusercontent\.com/)
-  assert.match(trustPolicy, /repo:tripleten-externships\/oro_team2:environment:oro-production/)
+  assert.match(trustPolicy, /repo:tripleten-externships@196565056\/oro_team2@1315215016:environment:oro-production/)
   assert.match(trustPolicy, /sts\.amazonaws\.com/)
   assert.doesNotMatch(trustPolicy, /:iam:us-east-1:/)
 })
