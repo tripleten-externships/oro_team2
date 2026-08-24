@@ -1,0 +1,22 @@
+{
+  "name": "oro-observability-infrastructure",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cdk": "cdk",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1116.0",
+    "@aws-sdk/client-s3": "^3.1116.0",
+    "@aws-sdk/lib-dynamodb": "^3.1116.0",
+    "@aws-sdk/s3-request-presigner": "^3.1116.0",
+    "aws-cdk-lib": "^2.263.0",
+    "constructs": "^10.4.2",
+    "jose": "^6.0.11"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.1138.0",
+    "esbuild": "^0.25.0"
+  }
+}
