@@ -191,7 +191,7 @@ jobs:
 
       - name: Build admin bundle from deployment outputs
         run: >-
-          VITE_COGNITO_DOMAIN="https://$COGNITO_HOSTED_UI_DOMAIN"
+          VITE_COGNITO_DOMAIN="$COGNITO_HOSTED_UI_DOMAIN"
           VITE_COGNITO_CLIENT_ID="$COGNITO_CLIENT_ID"
           VITE_COGNITO_REDIRECT_URI="https://$CLOUD_FRONT_DOMAIN/oro-admin/"
           npm run build:admin
