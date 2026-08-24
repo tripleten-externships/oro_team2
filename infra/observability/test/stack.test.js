@@ -151,6 +151,10 @@ test('exposes only deployment identifiers needed by the CI workflow', () => {
   ]) {
     template.hasOutput(outputName, {})
   }
+
+  const hostedUiOutput = template.findOutputs('CognitoHostedUiDomain').CognitoHostedUiDomain
+  assert.match(JSON.stringify(hostedUiOutput.Value), /https:\/\//)
+  assert.match(JSON.stringify(hostedUiOutput.Value), /amazoncognito\.com/)
 })
 
 test('uses optional TOTP MFA without creating an SMS service role', () => {
