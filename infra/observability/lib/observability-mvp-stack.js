@@ -19,8 +19,9 @@ import {
 const { Duration, RemovalPolicy, Stack, Tags } = cdk
 const repositoryDirectory = resolve(fileURLToPath(new URL('../..', import.meta.url)), '..')
 const resourcePrefix = 'oro-observability'
-const githubRepository = 'tripleten-externships/oro_team2'
-const githubEnvironment = 'oro-production'
+// This GitHub organization emits its OIDC subject with immutable owner and
+// repository IDs. CloudTrail is the source of truth for this exact value.
+const githubOidcSubject = 'repo:tripleten-externships@196565056/oro_team2@1315215016:environment:oro-production'
 
 function lambdaEntry(name) {
   return resolve(repositoryDirectory, 'infra/observability/lambda', name)
@@ -439,7 +440,7 @@ function handler(event) {
       assumedBy: new iam.WebIdentityPrincipal(githubOidcProvider.openIdConnectProviderArn, {
         StringEquals: {
           'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-          'token.actions.githubusercontent.com:sub': `repo:${githubRepository}:environment:${githubEnvironment}`,
+          'token.actions.githubusercontent.com:sub': githubOidcSubject,
         },
       }),
       description: 'OIDC deployment role for the ORO observability GitHub Actions workflow.',
