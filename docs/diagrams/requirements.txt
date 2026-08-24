@@ -1,0 +1,2 @@
+# Documentation rendering only; not an ORO runtime dependency.
+diagrams==0.25.1
