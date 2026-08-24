@@ -12,7 +12,7 @@ The public homeowner flow and comparison require no authentication. The tracker 
 
 ![ORO Observability solution architecture diagram](images/oro-observability-architecture.svg)
 
-The architecture diagram separates browser traffic, CloudFront routing, authentication, isolated compute, and storage. Its arrows show the direction of each request or data flow.
+The architecture diagram separates browser traffic, CloudFront routing, authentication, isolated compute, and storage. Its arrows show the direction of each request or data flow. It uses the current [AWS Architecture Icons](https://aws.amazon.com/architecture/icons/) for each AWS service.
 
 ## What it measures
 
