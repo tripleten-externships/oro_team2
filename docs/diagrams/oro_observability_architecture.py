@@ -1,5 +1,6 @@
-"""Render the ORO Observability solution architecture from source-controlled code."""
+"""Render the ORO Observability solution architecture as a 16:9 image."""
 
+from math import ceil
 from pathlib import Path
 
 from diagrams import Cluster, Diagram, Edge
@@ -10,12 +11,17 @@ from diagrams.aws.network import CloudFront
 from diagrams.aws.security import Cognito, WAF
 from diagrams.aws.storage import S3
 from diagrams.onprem.client import Client
+from PIL import Image
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-OUTPUT_PATH = REPOSITORY_ROOT / "docs" / "images" / "oro-observability-architecture"
+OUTPUT_IMAGE = REPOSITORY_ROOT / "docs" / "images" / "oro-observability-architecture.png"
+RAW_OUTPUT = OUTPUT_IMAGE.with_name(".oro-observability-architecture-render")
+RAW_IMAGE = RAW_OUTPUT.with_suffix(".png")
 
 GRAPH_ATTRIBUTES = {
+    "size": "16,9!",
+    "ratio": "fill",
     "pad": "0.35",
     "nodesep": "0.6",
     "ranksep": "1.0",
@@ -51,10 +57,10 @@ AUTH_EDGE = {
 
 with Diagram(
     name="ORO Observability solution architecture",
-    filename=str(OUTPUT_PATH),
+    filename=str(RAW_OUTPUT),
     outformat="png",
     show=False,
-    direction="LR",
+    direction="TB",
     graph_attr=GRAPH_ATTRIBUTES,
     node_attr=NODE_ATTRIBUTES,
     edge_attr=EDGE_ATTRIBUTES,
@@ -88,3 +94,21 @@ with Diagram(
     ingest >> Edge(label="conditional PutItem") >> events
     admin_api >> Edge(label="GSI queries") >> events
     admin_api >> Edge(label="CSV export · 24-hour TTL") >> exports
+
+
+with Image.open(RAW_IMAGE) as rendered:
+    source = rendered.convert("RGBA")
+    source_ratio = source.width / source.height
+    target_ratio = 16 / 9
+
+    if source_ratio < target_ratio:
+        canvas_size = (ceil(source.height * target_ratio), source.height)
+    else:
+        canvas_size = (source.width, ceil(source.width / target_ratio))
+
+    canvas = Image.new("RGBA", canvas_size, "white")
+    offset = ((canvas.width - source.width) // 2, (canvas.height - source.height) // 2)
+    canvas.alpha_composite(source, offset)
+    canvas.convert("RGB").save(OUTPUT_IMAGE, "PNG", optimize=True)
+
+RAW_IMAGE.unlink()
