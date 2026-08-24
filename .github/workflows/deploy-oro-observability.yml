@@ -103,7 +103,7 @@ jobs:
       - name: Confirm AWS target
         run: |
           aws sts get-caller-identity
-          test "$(aws configure get region)" = "$AWS_REGION"
+          test "$AWS_DEFAULT_REGION" = "$AWS_REGION"
 
       - name: Install homeowner dependencies
         run: npm ci
