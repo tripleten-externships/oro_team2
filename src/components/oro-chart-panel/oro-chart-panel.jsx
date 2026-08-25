@@ -89,8 +89,9 @@ function OroChartPanel({
   const [internalSelectedSeriesId, setInternalSelectedSeriesId] = useState()
   const activeView = viewOptions.find((option) => option.id === view) || viewOptions[0]
   const [loadingViewId, setLoadingViewId] = useState(activeView.id)
-  const isLoading = loadingViewId === activeView.id
   const series = normalizeSeries(seriesByView?.[activeView.id], activeView.kind)
+  const hasData = series.length > 0
+  const isLoading = hasData && loadingViewId === activeView.id
   const panelId = `${generatedId}-chart-panel`
   const effectiveSelectedSeriesId = selectedSeriesId ?? internalSelectedSeriesId
   const classes = ['oro-chart-panel', className].filter(Boolean).join(' ')

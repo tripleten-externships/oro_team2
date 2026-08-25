@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   formatCurrency,
   formatSignedCurrency,
@@ -57,12 +57,6 @@ function ResultsPanel({
     : activeTab === 'compare'
       ? selectedProducts
       : allProducts
-
-  useEffect(() => {
-    if (activeTab === 'compare' && selectedIds.length === 0) {
-      onTabChange('all')
-    }
-  }, [activeTab, onTabChange, selectedIds.length])
 
   const chartSeries = useMemo(() => {
     if (selectedProducts.length === 0) {
@@ -154,13 +148,11 @@ function ResultsPanel({
       <nav className="results-panel__tabs" aria-label="Results views" role="tablist">
         {tabOrder.map((tab) => {
           const isSelected = activeTab === tab
-          const isDisabled = tab === 'compare' && selectedIds.length === 0
 
           return (
             <button
               aria-selected={isSelected}
               className={`results-panel__tab ${isSelected ? 'selected' : ''}`}
-              disabled={isDisabled}
               key={tab}
               onClick={() => onTabChange(tab)}
               role="tab"
@@ -179,14 +171,18 @@ function ResultsPanel({
         </OroCallout>
       )}
 
-      {activeTab === 'compare' && selectedProducts.length > 0 && (
+      {activeTab === 'compare' && (
         <section className="results-panel__chart-section" aria-labelledby="chart-section-title">
           <div className="results-panel__section-heading">
             <div>
               <p className="results-panel__eyebrow">Selected options</p>
               <h2 id="chart-section-title">See the modeled tradeoffs over time</h2>
             </div>
-            <p>Negative values indicate a payment or reduced equity; positive values indicate income.</p>
+            <p>
+              {selectedProducts.length > 0
+                ? 'Negative values indicate a payment or reduced equity; positive values indicate income.'
+                : 'Choose products to compare and the chart will populate in this same panel.'}
+            </p>
           </div>
           <OroChartPanel
             callout={{ body: 'Illustrative estimate only. Actual terms, rates, fees, and home values may differ.' }}
@@ -195,14 +191,6 @@ function ResultsPanel({
             view={chartView}
           />
         </section>
-      )}
-
-      {activeTab === 'compare' && selectedProducts.length === 0 && (
-        <div className="results-panel__empty">
-          <h2>Choose options to compare</h2>
-          <p>Select up to three products from the other tabs to see their modeled paths together.</p>
-          <OroButton variant="secondary" onClick={() => onTabChange('all')}>Browse all options</OroButton>
-        </div>
       )}
 
       {activeTab !== 'compare' && (
