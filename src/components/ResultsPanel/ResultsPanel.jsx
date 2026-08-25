@@ -23,6 +23,10 @@ function formatMetric(value, formatter = formatCurrency) {
 }
 
 function getProductTradeoff(product) {
+  if (product.tradeoff) {
+    return product.tradeoff
+  }
+
   if (product.monthly > 0) {
     return { type: 'benefit', text: product.risk }
   }
@@ -88,6 +92,11 @@ function ResultsPanel({
     const unavailable = product.ineligible
     const isMatch = !results.direct
       && recommendations.some((recommendation) => recommendation.id === product.id)
+    const suitabilityLevel = product.suitabilityLevel
+      || (unavailable ? 'limited' : isMatch && index === 0 ? 'strong' : 'possible')
+    const eligibility = product.eligibility || (unavailable
+      ? { status: 'ineligible', label: 'Unavailable' }
+      : { status: 'eligible', label: 'Eligible' })
 
     return (
       <div className="results-panel__card" key={product.id}>
@@ -95,19 +104,17 @@ function ResultsPanel({
           callout={unavailable ? { type: 'warning', title: 'Not available for this profile' } : undefined}
           description={product.description}
           emphasis={isMatch ? 'match' : 'standard'}
-          eligibility={unavailable
-            ? { status: 'ineligible', label: 'Unavailable' }
-            : { status: 'eligible', label: 'Eligible' }}
+          eligibility={eligibility}
           metrics={[
             { id: 'monthly', label: product.monthlyLabel, value: formatMetric(product.monthly, formatSignedCurrency) },
-            { id: 'cash', label: 'Cash net', value: formatMetric(product.cashNet) },
+            { id: 'cash', label: product.cashMetricLabel || 'Cash net', value: formatMetric(product.cashNet) },
           ]}
           mode="comparison"
           name={product.name}
           onSelect={() => handleSelection(product)}
           selectLabel={selected ? 'Remove from comparison' : 'Add to comparison'}
           state={unavailable ? 'unavailable' : selected ? 'selected' : 'default'}
-          suitability={{ level: unavailable ? 'limited' : isMatch && index === 0 ? 'strong' : 'possible' }}
+          suitability={{ level: suitabilityLevel }}
           tradeoff={getProductTradeoff(product)}
         />
         <button
