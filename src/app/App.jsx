@@ -12,6 +12,7 @@ import { HomeDetails } from '../components/home-details'
 import { OroAppHeader } from '../components/oro-app-header'
 import { OroCallout } from '../components/oro-callout'
 import Questionnaire from '../components/Questionnaire/Questionnaire.jsx'
+import { ReviewingCalculations } from '../components/reviewing-calculations'
 import ResultsPanel from '../components/ResultsPanel/ResultsPanel.jsx'
 import StarterPage from '../components/StarterPage/StarterPage.jsx'
 
@@ -83,8 +84,14 @@ function App() {
       activeTab: state.flowMode === 'direct' ? 'all' : 'matches',
       detailProductId: null,
       inputs,
-      screen: 'results',
+      screen: 'reviewing',
       selectedIds: [],
+    })
+  }
+
+  function handleViewIllustrativeResults() {
+    updateState({
+      screen: 'results',
     })
   }
 
@@ -109,6 +116,8 @@ function App() {
     ? 'Guided questions'
     : state.screen === 'home-details'
       ? 'Home details'
+      : state.screen === 'reviewing'
+        ? 'Reviewing calculations'
       : state.screen === 'results'
         ? 'Options to explore'
         : 'Home equity explorer'
@@ -138,6 +147,12 @@ function App() {
             initialValues={state.inputs}
             onBack={handleHomeDetailsBack}
             onSubmit={handleDetailsSubmit}
+          />
+        )}
+        {state.screen === 'reviewing' && (
+          <ReviewingCalculations
+            onBack={() => updateState({ screen: 'home-details' })}
+            onContinue={handleViewIllustrativeResults}
           />
         )}
         {state.screen === 'results' && results && (
