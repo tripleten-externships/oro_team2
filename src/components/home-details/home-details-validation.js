@@ -1,0 +1,97 @@
+const HOME_DETAILS_FIELD_IDS = Object.freeze([
+  'homeValue',
+  'mortgageBalance',
+  'currentMortgageRateAnnualPercent',
+  'yearsRemaining',
+  'cashNeeded',
+  'age',
+])
+
+function isBlank(value) {
+  return value === undefined || String(value).trim() === ''
+}
+
+function parseNumericInput(rawValue) {
+  if (isBlank(rawValue)) {
+    return Number.NaN
+  }
+
+  const normalized = String(rawValue)
+    .trim()
+    .replace(/\$/g, '')
+    .replace(/,/g, '')
+
+  if (normalized === '') {
+    return Number.NaN
+  }
+
+  const parsed = Number(normalized)
+  return Number.isFinite(parsed) ? parsed : Number.NaN
+}
+
+function toParsedHomeDetailsValues(values) {
+  return Object.fromEntries(
+    HOME_DETAILS_FIELD_IDS.map((fieldId) => [fieldId, parseNumericInput(values[fieldId])]),
+  )
+}
+
+function getFieldErrors(values) {
+  const numbers = toParsedHomeDetailsValues(values)
+  const errors = {}
+
+  if (isBlank(values.homeValue)) {
+    errors.homeValue = 'Enter a home value.'
+  } else if (!Number.isFinite(numbers.homeValue) || numbers.homeValue <= 0) {
+    errors.homeValue = 'Enter a home value greater than $0.'
+  }
+
+  if (isBlank(values.mortgageBalance)) {
+    errors.mortgageBalance = 'Enter your current mortgage balance.'
+  } else if (
+    !Number.isFinite(numbers.mortgageBalance)
+    || numbers.mortgageBalance <= 0
+    || (
+      Number.isFinite(numbers.homeValue)
+      && numbers.homeValue > 0
+      && numbers.mortgageBalance > numbers.homeValue
+    )
+  ) {
+    errors.mortgageBalance = 'Enter a mortgage balance greater than $0 and no higher than your home value.'
+  }
+
+  if (isBlank(values.currentMortgageRateAnnualPercent)) {
+    errors.currentMortgageRateAnnualPercent = 'Enter your current mortgage rate.'
+  } else if (
+    !Number.isFinite(numbers.currentMortgageRateAnnualPercent)
+    || numbers.currentMortgageRateAnnualPercent < 0
+    || numbers.currentMortgageRateAnnualPercent > 100
+  ) {
+    errors.currentMortgageRateAnnualPercent = 'Enter a rate between 0% and 100%.'
+  }
+
+  if (isBlank(values.yearsRemaining)) {
+    errors.yearsRemaining = 'Enter the years remaining on your mortgage.'
+  } else if (!Number.isFinite(numbers.yearsRemaining) || numbers.yearsRemaining <= 0) {
+    errors.yearsRemaining = 'Enter at least 1 year remaining.'
+  }
+
+  if (isBlank(values.cashNeeded)) {
+    errors.cashNeeded = 'Enter the cash amount you want to access.'
+  } else if (!Number.isFinite(numbers.cashNeeded) || numbers.cashNeeded < 0) {
+    errors.cashNeeded = 'Enter a cash amount of $0 or more.'
+  }
+
+  if (isBlank(values.age)) {
+    errors.age = 'Enter the youngest homeowner age.'
+  } else if (!Number.isFinite(numbers.age) || numbers.age < 18 || numbers.age > 120) {
+    errors.age = 'Enter an age between 18 and 120.'
+  }
+
+  return errors
+}
+
+export {
+  getFieldErrors,
+  parseNumericInput,
+  toParsedHomeDetailsValues,
+}

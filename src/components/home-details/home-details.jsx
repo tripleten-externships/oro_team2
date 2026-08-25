@@ -3,6 +3,10 @@ import { DEFAULT_INPUTS } from '../../domain/mortgage-calculator.js'
 import { OroButton } from '../oro-button'
 import { OroCallout } from '../oro-callout'
 import { OroInputField } from '../oro-input-field'
+import {
+  getFieldErrors,
+  toParsedHomeDetailsValues,
+} from './home-details-validation.js'
 import './home-details.css'
 
 const fieldConfig = [
@@ -57,59 +61,6 @@ function toFormValues(values) {
   }, {})
 }
 
-function isBlank(value) {
-  return value === undefined || String(value).trim() === ''
-}
-
-function getFieldErrors(values) {
-  const numbers = Object.fromEntries(
-    fieldConfig.map((field) => [field.id, Number(values[field.id])]),
-  )
-  const errors = {}
-
-  if (isBlank(values.homeValue)) {
-    errors.homeValue = 'Enter a home value.'
-  } else if (!Number.isFinite(numbers.homeValue) || numbers.homeValue <= 0) {
-    errors.homeValue = 'Enter a home value greater than $0.'
-  }
-
-  if (isBlank(values.mortgageBalance)) {
-    errors.mortgageBalance = 'Enter your current mortgage balance.'
-  } else if (!Number.isFinite(numbers.mortgageBalance) || numbers.mortgageBalance < 0) {
-    errors.mortgageBalance = 'Enter a mortgage balance of $0 or more.'
-  }
-
-  if (isBlank(values.currentMortgageRateAnnualPercent)) {
-    errors.currentMortgageRateAnnualPercent = 'Enter your current mortgage rate.'
-  } else if (
-    !Number.isFinite(numbers.currentMortgageRateAnnualPercent)
-    || numbers.currentMortgageRateAnnualPercent < 0
-    || numbers.currentMortgageRateAnnualPercent > 100
-  ) {
-    errors.currentMortgageRateAnnualPercent = 'Enter a rate between 0% and 100%.'
-  }
-
-  if (isBlank(values.yearsRemaining)) {
-    errors.yearsRemaining = 'Enter the years remaining on your mortgage.'
-  } else if (!Number.isFinite(numbers.yearsRemaining) || numbers.yearsRemaining <= 0) {
-    errors.yearsRemaining = 'Enter at least 1 year remaining.'
-  }
-
-  if (isBlank(values.cashNeeded)) {
-    errors.cashNeeded = 'Enter the cash amount you want to access.'
-  } else if (!Number.isFinite(numbers.cashNeeded) || numbers.cashNeeded < 0) {
-    errors.cashNeeded = 'Enter a cash amount of $0 or more.'
-  }
-
-  if (isBlank(values.age)) {
-    errors.age = 'Enter the youngest homeowner age.'
-  } else if (!Number.isFinite(numbers.age) || numbers.age < 18 || numbers.age > 120) {
-    errors.age = 'Enter an age between 18 and 120.'
-  }
-
-  return errors
-}
-
 function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
   const [values, setValues] = useState(() => toFormValues(initialValues))
   const [submitted, setSubmitted] = useState(false)
@@ -129,9 +80,7 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
       return
     }
 
-    onSubmit(Object.fromEntries(
-      fieldConfig.map((field) => [field.id, Number(values[field.id])]),
-    ))
+    onSubmit(toParsedHomeDetailsValues(values))
   }
 
   return (
