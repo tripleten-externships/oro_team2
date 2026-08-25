@@ -52,6 +52,14 @@ function ResultsPanel({
   const recommendations = results?.recommendations || []
   const selectedProducts = allProducts.filter((product) => selectedIds.includes(product.id))
   const detailProduct = allProducts.find((product) => product.id === detailProductId)
+  const forceChartError = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return false
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    return params.get('chartError') === '1' || params.get('chartState') === 'error'
+  }, [])
   const visibleProducts = activeTab === 'matches'
     ? recommendations
     : activeTab === 'compare'
@@ -186,7 +194,10 @@ function ResultsPanel({
           </div>
           <OroChartPanel
             callout={{ body: 'Illustrative estimate only. Actual terms, rates, fees, and home values may differ.' }}
+            errorState={forceChartError && selectedProducts.length > 0}
             onViewChange={setChartView}
+            onEditSelection={() => onTabChange('all')}
+            onReviseAndRecalculate={onEditInputs}
             seriesByView={chartSeries}
             view={chartView}
           />

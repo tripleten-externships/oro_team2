@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react'
+import { OroButton } from '../oro-button'
 import { OroChartContainer } from '../oro-chart-container'
 import { OroViewTab } from '../oro-view-tab'
 import './oro-chart-panel.css'
@@ -82,6 +83,9 @@ function OroChartPanel({
   callout,
   selectedSeriesId,
   onSeriesSelect,
+  errorState = false,
+  onEditSelection,
+  onReviseAndRecalculate,
   minimumLoadingMs = 700,
   className = '',
 }) {
@@ -170,7 +174,20 @@ function OroChartPanel({
         role="tabpanel"
         aria-labelledby={`${generatedId}-${activeView.id}-tab`}
       >
-        {isLoading ? (
+        {errorState ? (
+          <section className="oro-chart-panel__error" role="alert" aria-live="assertive">
+            <div className="oro-chart-panel__error-marker" aria-hidden="true">!</div>
+            <h3>The chart could not be shown</h3>
+            <p>
+              The comparison cards and text values are still available. Revise the inputs or
+              retry the illustrative calculation.
+            </p>
+            <div className="oro-chart-panel__error-actions">
+              <OroButton variant="secondary" onClick={onEditSelection}>Edit selection</OroButton>
+              <OroButton onClick={onReviseAndRecalculate}>Revise and recalculate</OroButton>
+            </div>
+          </section>
+        ) : isLoading ? (
           <section className="oro-chart-panel__loading" role="status" aria-live="polite">
             <div className="oro-chart-panel__loading-marker" aria-hidden="true">i</div>
             <h3>Preparing the chart</h3>
