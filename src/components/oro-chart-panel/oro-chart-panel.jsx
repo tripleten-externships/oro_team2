@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { OroChartContainer } from '../oro-chart-container'
 import { OroViewTab } from '../oro-view-tab'
 import './oro-chart-panel.css'
@@ -82,17 +82,21 @@ function OroChartPanel({
   callout,
   selectedSeriesId,
   onSeriesSelect,
+  minimumLoadingMs = 700,
   className = '',
 }) {
   const generatedId = useId().replace(/:/g, '')
   const [internalSelectedSeriesId, setInternalSelectedSeriesId] = useState()
   const activeView = viewOptions.find((option) => option.id === view) || viewOptions[0]
+  const [loadingViewId, setLoadingViewId] = useState(activeView.id)
+  const isLoading = loadingViewId === activeView.id
   const series = normalizeSeries(seriesByView?.[activeView.id], activeView.kind)
   const panelId = `${generatedId}-chart-panel`
   const effectiveSelectedSeriesId = selectedSeriesId ?? internalSelectedSeriesId
   const classes = ['oro-chart-panel', className].filter(Boolean).join(' ')
 
   function selectView(nextView) {
+    setLoadingViewId(nextView)
     onViewChange?.(nextView)
   }
 
@@ -126,6 +130,20 @@ function OroChartPanel({
     event.currentTarget.querySelector(`#${generatedId}-${nextView.id}-tab`)?.focus()
   }
 
+  useEffect(() => {
+    if (!isLoading) {
+      return undefined
+    }
+
+    const timeoutId = setTimeout(() => {
+      setLoadingViewId((current) => (current === activeView.id ? null : current))
+    }, minimumLoadingMs)
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [activeView.id, isLoading, minimumLoadingMs])
+
   return (
     <section className={classes}>
       <div
@@ -151,16 +169,27 @@ function OroChartPanel({
         role="tabpanel"
         aria-labelledby={`${generatedId}-${activeView.id}-tab`}
       >
-        <OroChartContainer
-          title={activeView.title}
-          description={activeView.description}
-          series={series}
-          kind={activeView.kind}
-          selectedSeriesId={effectiveSelectedSeriesId}
-          onSeriesSelect={selectSeries}
-          valueFormatter={createValueFormatter(activeView.id)}
-          caption={callout?.body || activeView.caption}
-        />
+        {isLoading ? (
+          <section className="oro-chart-panel__loading" role="status" aria-live="polite">
+            <div className="oro-chart-panel__loading-marker" aria-hidden="true">i</div>
+            <h3>Preparing the chart</h3>
+            <p>
+              The selected product labels and accessible text summary will appear when the
+              illustrative values are ready.
+            </p>
+          </section>
+        ) : (
+          <OroChartContainer
+            title={activeView.title}
+            description={activeView.description}
+            series={series}
+            kind={activeView.kind}
+            selectedSeriesId={effectiveSelectedSeriesId}
+            onSeriesSelect={selectSeries}
+            valueFormatter={createValueFormatter(activeView.id)}
+            caption={callout?.body || activeView.caption}
+          />
+        )}
       </div>
     </section>
   )
