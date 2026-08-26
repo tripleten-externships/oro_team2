@@ -7,7 +7,6 @@ import { OroStepIndicator } from '../oro-step-indicator'
 import {
   getFieldErrors,
   getFieldWarnings,
-  parseNumericFieldValue,
   toParsedHomeDetailsValues,
 } from './home-details-validation.js'
 import './home-details.css'
