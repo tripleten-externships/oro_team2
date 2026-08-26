@@ -1,7 +1,10 @@
 # Dependencies and build output
 node_modules/
 dist/
+dist-admin/
 dist-ssr/
+infra/observability/cdk.out/
+.playwright-cli/
 .vite/
 coverage/
 
@@ -37,3 +40,5 @@ lerna-debug.log*
 # Local agent/tool state; committed skills and docs remain tracked
 .agents/.cache/
 .agents/mcp-settings.local.json
+docs/diagrams/.venv/
+docs/diagrams/__pycache__/

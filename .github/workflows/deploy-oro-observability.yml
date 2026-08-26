@@ -1,0 +1,209 @@
+name: Validate and deploy ORO observability
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oro-observability-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate application and infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install homeowner dependencies
+        run: npm ci
+
+      - name: Test homeowner and observability code
+        run: npm test
+
+      - name: Lint homeowner and observability code
+        run: npm run lint
+
+      - name: Build homeowner with tracking disabled
+        run: VITE_PUBLIC_BASE=/ VITE_OBSERVABILITY_ENABLED=false npm run build
+
+      - name: Build admin with non-secret CI configuration
+        run: >-
+          VITE_COGNITO_DOMAIN=https://oro-admin-ci.auth.us-east-1.amazoncognito.com
+          VITE_COGNITO_CLIENT_ID=ci-client-id
+          VITE_COGNITO_REDIRECT_URI=https://ci.example.cloudfront.net/oro-admin/
+          npm run build:admin
+
+      - name: Install CDK dependencies
+        run: npm --prefix infra/observability ci
+
+      - name: Test CDK stack and Lambda contracts
+        run: npm --prefix infra/observability test
+
+      - name: Synthesize isolated CDK stack
+        run: >-
+          npm --prefix infra/observability run cdk -- synth oro-observability-mvp
+          -c cognitoDomainPrefix=oro-admin-ci
+          -c adminRedirectUri=https://ci.example.cloudfront.net/oro-admin/
+
+  deploy:
+    name: Deploy ORO observability
+    if: github.event_name == 'workflow_dispatch'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: oro-production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+      COGNITO_DOMAIN_PREFIX: ${{ vars.COGNITO_DOMAIN_PREFIX }}
+      OBSERVABILITY_TRACKING_ENABLED: ${{ vars.OBSERVABILITY_TRACKING_ENABLED || 'false' }}
+      ORO_STACK_NAME: ${{ vars.ORO_STACK_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Validate protected environment configuration
+        run: |
+          test "$AWS_REGION" = "us-east-1"
+          test "$ORO_STACK_NAME" = "oro-observability-mvp"
+          test -n "$AWS_ROLE_ARN"
+          test -n "$COGNITO_DOMAIN_PREFIX"
+          case "$COGNITO_DOMAIN_PREFIX" in oro-*) ;; *) exit 1 ;; esac
+          case "$OBSERVABILITY_TRACKING_ENABLED" in true|false) ;; *) exit 1 ;; esac
+
+      - name: Configure AWS credentials through GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          role-session-name: oro-observability-${{ github.run_id }}
+
+      - name: Confirm AWS target
+        run: |
+          aws sts get-caller-identity
+          test "$AWS_DEFAULT_REGION" = "$AWS_REGION"
+
+      - name: Install homeowner dependencies
+        run: npm ci
+
+      - name: Install CDK dependencies
+        run: npm --prefix infra/observability ci
+
+      - name: Confirm bootstrap stack exists
+        run: |
+          aws cloudformation describe-stacks --stack-name "$ORO_STACK_NAME" > /dev/null
+
+      - name: Read canonical CloudFront domain
+        run: |
+          CLOUD_FRONT_DOMAIN="$(aws cloudformation describe-stacks \
+            --stack-name "$ORO_STACK_NAME" \
+            --query "Stacks[0].Outputs[?OutputKey=='CloudFrontDomain'].OutputValue | [0]" \
+            --output text)"
+          test -n "$CLOUD_FRONT_DOMAIN"
+          test "$CLOUD_FRONT_DOMAIN" != "None"
+          echo "CLOUD_FRONT_DOMAIN=$CLOUD_FRONT_DOMAIN" >> "$GITHUB_ENV"
+
+      - name: Show isolated stack diff
+        run: >-
+          npm --prefix infra/observability run cdk -- diff "$ORO_STACK_NAME" --no-change-set
+          -c cognitoDomainPrefix="$COGNITO_DOMAIN_PREFIX"
+          -c adminRedirectUri="https://$CLOUD_FRONT_DOMAIN/oro-admin/"
+
+      - name: Deploy isolated stack with canonical callback
+        run: >-
+          npm --prefix infra/observability run cdk -- deploy "$ORO_STACK_NAME" --require-approval never
+          --parameters "$ORO_STACK_NAME:AdminRedirectUri=https://$CLOUD_FRONT_DOMAIN/oro-admin/"
+          -c cognitoDomainPrefix="$COGNITO_DOMAIN_PREFIX"
+          -c adminRedirectUri="https://$CLOUD_FRONT_DOMAIN/oro-admin/"
+
+      - name: Read deployment outputs
+        run: |
+          OUTPUT_QUERY="Stacks[0].Outputs[?OutputKey=='%s'].OutputValue | [0]"
+          ADMIN_ASSETS_BUCKET="$(aws cloudformation describe-stacks --stack-name "$ORO_STACK_NAME" --query "$(printf "$OUTPUT_QUERY" AdminAssetsBucketName)" --output text)"
+          AMPLIFY_HOMEOWNER_APP_ID="$(aws cloudformation describe-stacks --stack-name "$ORO_STACK_NAME" --query "$(printf "$OUTPUT_QUERY" AmplifyHomeownerAppId)" --output text)"
+          AMPLIFY_HOMEOWNER_BRANCH_NAME="$(aws cloudformation describe-stacks --stack-name "$ORO_STACK_NAME" --query "$(printf "$OUTPUT_QUERY" AmplifyHomeownerBranchName)" --output text)"
+          COGNITO_CLIENT_ID="$(aws cloudformation describe-stacks --stack-name "$ORO_STACK_NAME" --query "$(printf "$OUTPUT_QUERY" CognitoClientId)" --output text)"
+          COGNITO_HOSTED_UI_DOMAIN="$(aws cloudformation describe-stacks --stack-name "$ORO_STACK_NAME" --query "$(printf "$OUTPUT_QUERY" CognitoHostedUiDomain)" --output text)"
+          DISTRIBUTION_ID="$(aws cloudformation describe-stacks --stack-name "$ORO_STACK_NAME" --query "$(printf "$OUTPUT_QUERY" CloudFrontDistributionId)" --output text)"
+          test -n "$ADMIN_ASSETS_BUCKET" && test "$ADMIN_ASSETS_BUCKET" != "None"
+          test -n "$AMPLIFY_HOMEOWNER_APP_ID" && test "$AMPLIFY_HOMEOWNER_APP_ID" != "None"
+          test -n "$AMPLIFY_HOMEOWNER_BRANCH_NAME" && test "$AMPLIFY_HOMEOWNER_BRANCH_NAME" != "None"
+          test -n "$COGNITO_CLIENT_ID" && test "$COGNITO_CLIENT_ID" != "None"
+          test -n "$COGNITO_HOSTED_UI_DOMAIN" && test "$COGNITO_HOSTED_UI_DOMAIN" != "None"
+          test -n "$DISTRIBUTION_ID" && test "$DISTRIBUTION_ID" != "None"
+          {
+            echo "ADMIN_ASSETS_BUCKET=$ADMIN_ASSETS_BUCKET"
+            echo "AMPLIFY_HOMEOWNER_APP_ID=$AMPLIFY_HOMEOWNER_APP_ID"
+            echo "AMPLIFY_HOMEOWNER_BRANCH_NAME=$AMPLIFY_HOMEOWNER_BRANCH_NAME"
+            echo "COGNITO_CLIENT_ID=$COGNITO_CLIENT_ID"
+            echo "COGNITO_HOSTED_UI_DOMAIN=$COGNITO_HOSTED_UI_DOMAIN"
+            echo "DISTRIBUTION_ID=$DISTRIBUTION_ID"
+          } >> "$GITHUB_ENV"
+
+      - name: Build homeowner bundle
+        run: VITE_PUBLIC_BASE=/ VITE_OBSERVABILITY_ENABLED="$OBSERVABILITY_TRACKING_ENABLED" npm run build
+
+      - name: Publish homeowner bundle to Amplify
+        run: |
+          set -euo pipefail
+          FILE_MAP="$(node infra/observability/scripts/create-amplify-file-map.mjs dist)"
+          DEPLOYMENT="$(aws amplify create-deployment --app-id "$AMPLIFY_HOMEOWNER_APP_ID" --branch-name "$AMPLIFY_HOMEOWNER_BRANCH_NAME" --file-map "$FILE_MAP" --output json)"
+          JOB_ID="$(jq -r '.jobId' <<< "$DEPLOYMENT")"
+          test -n "$JOB_ID" && test "$JOB_ID" != "null"
+          while IFS= read -r -d '' FILE; do
+            RELATIVE_PATH="${FILE#dist/}"
+            UPLOAD_URL="$(jq -r --arg file "$RELATIVE_PATH" '.fileUploadUrls[$file]' <<< "$DEPLOYMENT")"
+            test -n "$UPLOAD_URL" && test "$UPLOAD_URL" != "null"
+            curl --fail --silent --show-error --upload-file "$FILE" "$UPLOAD_URL"
+          done < <(find dist -type f -print0)
+          aws amplify start-deployment --app-id "$AMPLIFY_HOMEOWNER_APP_ID" --branch-name "$AMPLIFY_HOMEOWNER_BRANCH_NAME" --job-id "$JOB_ID" > /dev/null
+          for attempt in {1..30}; do
+            STATUS="$(aws amplify get-job --app-id "$AMPLIFY_HOMEOWNER_APP_ID" --branch-name "$AMPLIFY_HOMEOWNER_BRANCH_NAME" --job-id "$JOB_ID" --query 'job.summary.status' --output text)"
+            case "$STATUS" in
+              SUCCEED) exit 0 ;;
+              FAILED|CANCELLED) exit 1 ;;
+              *) sleep 10 ;;
+            esac
+          done
+          exit 1
+
+      - name: Build admin bundle from deployment outputs
+        run: >-
+          VITE_COGNITO_DOMAIN="$COGNITO_HOSTED_UI_DOMAIN"
+          VITE_COGNITO_CLIENT_ID="$COGNITO_CLIENT_ID"
+          VITE_COGNITO_REDIRECT_URI="https://$CLOUD_FRONT_DOMAIN/oro-admin/"
+          npm run build:admin
+
+      - name: Publish admin bundle to its private bucket
+        run: aws s3 sync dist-admin "s3://$ADMIN_ASSETS_BUCKET" --delete --only-show-errors
+
+      - name: Invalidate only admin assets
+        run: aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths '/oro-admin/*'
+
+      - name: Invalidate homeowner assets after an Amplify deployment
+        run: aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths '/*'
+
+      - name: Smoke test the public admin entry point
+        run: curl --fail --location --retry 3 --retry-all-errors --silent --show-error "https://$CLOUD_FRONT_DOMAIN/oro-admin/"
