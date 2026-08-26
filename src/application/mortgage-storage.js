@@ -1,7 +1,7 @@
 import { DEFAULT_INPUTS } from '../domain/mortgage-calculator.js'
 
 const STORAGE_KEY = 'oro-home-equity-explorer'
-const VALID_SCREENS = new Set(['starter', 'questionnaire', 'home-details', 'results'])
+const VALID_SCREENS = new Set(['starter', 'questionnaire', 'home-details', 'reviewing', 'results'])
 
 const EMPTY_ANSWERS = Object.freeze({
   goal: '',

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   formatCurrency,
   formatSignedCurrency,
@@ -28,6 +28,10 @@ function formatMetric(value, formatter = formatCurrency) {
 }
 
 function getProductTradeoff(product) {
+  if (product.tradeoff) {
+    return product.tradeoff
+  }
+
   if (product.monthly > 0) {
     return { type: 'benefit', text: product.risk }
   }
@@ -131,6 +135,14 @@ function ResultsPanel({
 
     return () => globalThis.clearTimeout(timeoutId)
   }, [results])
+  const forceChartError = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return false
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    return params.get('chartError') === '1' || params.get('chartState') === 'error'
+  }, [])
   const visibleProducts = activeTab === 'matches'
     ? recommendations
     : activeTab === 'compare'
@@ -158,7 +170,7 @@ function ResultsPanel({
         callout={{ body: 'Illustrative estimate only. Actual terms, rates, fees, and home values may differ.' }}
         emptyBody="Enter home details and select products to generate this chart."
         emptyTitle="No comparison data yet"
-        error={effectiveChartState === 'error'}
+        error={effectiveChartState === 'error' || forceChartError}
         errorBody="The comparison cards and text values are still available. Revise the inputs or retry the illustrative calculation."
         errorTitle="The chart could not be shown"
         loading={effectiveChartState === 'loading'}
@@ -192,14 +204,18 @@ function ResultsPanel({
     const unavailable = product.ineligible || limitedByEquity
     const isMatch = !results.direct
       && recommendations.some((recommendation) => recommendation.id === product.id)
+    const sharedEquityIsLimited = product.availabilityState === 'limited'
     const suitabilityLevel = limitedByEquity
       ? 'limited'
-      : getSuitabilityLevel(product, recommendations, results.direct)
+      : product.suitabilityLevel || getSuitabilityLevel(product, recommendations, results.direct)
     const limitedDescription = 'Not available under these estimates because there is not enough estimated accessible equity.'
     const limitedMetrics = [
       { id: 'cash', label: 'Cash available', value: 'Too low' },
       { id: 'next-step', label: 'Next step', value: 'Reduce cash request' },
     ]
+    const eligibility = product.eligibility || (unavailable
+      ? { status: 'ineligible', label: 'Unavailable' }
+      : { status: 'eligible', label: 'Eligible' })
 
     return (
       <div className="results-panel__card" key={product.id}>
@@ -210,12 +226,16 @@ function ResultsPanel({
           eligibility={unavailable
             ? {
               status: 'ineligible',
-              label: product.id === 'reverse-mortgage' ? 'Unavailable · age 62+' : 'Unavailable',
+              label: product.availabilityState === 'too-low'
+                ? 'Cash available - Too low'
+                : product.id === 'reverse-mortgage' ? 'Unavailable · age 62+' : 'Unavailable',
             }
-            : { status: 'eligible', label: 'Eligible' }}
+            : sharedEquityIsLimited
+              ? eligibility
+              : { status: 'eligible', label: 'Eligible' }}
           metrics={limitedByEquity ? limitedMetrics : [
             { id: 'monthly', label: product.monthlyLabel, value: formatMetric(product.monthly, formatSignedCurrency) },
-            { id: 'cash', label: 'Cash net', value: formatMetric(product.cashNet) },
+            { id: 'cash', label: product.cashMetricLabel || 'Cash net', value: formatMetric(product.cashNet) },
           ]}
           mode="comparison"
           name={product.name}
@@ -319,13 +339,11 @@ function ResultsPanel({
       <nav className="results-panel__tabs" aria-label="Results views" role="tablist">
         {tabOrder.map((tab) => {
           const isSelected = activeTab === tab
-          const isDisabled = tab === 'compare' && selectedIds.length === 0
 
           return (
             <button
               aria-selected={isSelected}
               className={`results-panel__tab ${isSelected ? 'selected' : ''}`}
-              disabled={isDisabled}
               key={tab}
               onClick={() => onTabChange(tab)}
               role="tab"
@@ -344,35 +362,33 @@ function ResultsPanel({
         </OroCallout>
       )}
 
-      {activeTab === 'compare' && selectedProducts.length > 0 && (
+      {activeTab === 'compare' && (
         <>
-          <OroResultsComparison
-            enteredAge={enteredAge}
-            mode={comparisonMode}
-            onModeChange={setComparisonMode}
-            onOpenDetail={onOpenDetail}
-            onSelect={onSelection}
-            products={selectedProducts}
-          />
+          {selectedProducts.length > 0 && (
+            <OroResultsComparison
+              enteredAge={enteredAge}
+              mode={comparisonMode}
+              onModeChange={setComparisonMode}
+              onOpenDetail={onOpenDetail}
+              onSelect={onSelection}
+              products={selectedProducts}
+            />
+          )}
           <section className="results-panel__chart-section" aria-labelledby="chart-section-title">
           <div className="results-panel__section-heading">
             <div>
               <p className="results-panel__eyebrow">Selected options</p>
               <h2 id="chart-section-title">See the modeled tradeoffs over time</h2>
             </div>
-            <p>Negative values indicate a payment or reduced equity; positive values indicate income.</p>
+            <p>
+              {selectedProducts.length > 0
+                ? 'Negative values indicate a payment or reduced equity; positive values indicate income.'
+                : 'Choose products to compare and the chart will populate in this same panel.'}
+            </p>
           </div>
           {renderChartPanel()}
           </section>
         </>
-      )}
-
-      {activeTab === 'compare' && selectedProducts.length === 0 && (
-        <div className="results-panel__empty">
-          <h2>Choose options to compare</h2>
-          <p>Select up to three products from the other tabs to see their modeled paths together.</p>
-          <OroButton variant="secondary" onClick={() => onTabChange('all')}>Browse all options</OroButton>
-        </div>
       )}
 
       {activeTab !== 'compare' && (

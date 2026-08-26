@@ -5,6 +5,14 @@ const mortgageBalanceError =
 const limitedEquityWarning =
   'Lower the amount or revise the home value and mortgage balance. Actual availability may be lower after costs and provider limits.'
 const maximumHomeValueError = `Enter a home value no higher than $${MAX_HOME_VALUE.toLocaleString('en-US')}.`
+const HOME_DETAILS_FIELD_IDS = Object.freeze([
+  'homeValue',
+  'mortgageBalance',
+  'currentMortgageRateAnnualPercent',
+  'yearsRemaining',
+  'cashNeeded',
+  'age',
+])
 
 function isBlank(value) {
   return value === undefined || String(value).trim() === ''
@@ -15,18 +23,24 @@ export function parseNumericFieldValue(value) {
     return Number.NaN
   }
 
-  return Number(String(value).replace(/\s+/g, ''))
+  return Number(String(value)
+    .replace(/\s+/g, '')
+    .replace(/\$/g, '')
+    .replace(/,/g, ''))
+}
+
+export function parseNumericInput(value) {
+  return parseNumericFieldValue(value)
+}
+
+export function toParsedHomeDetailsValues(values) {
+  return Object.fromEntries(
+    HOME_DETAILS_FIELD_IDS.map((fieldId) => [fieldId, parseNumericFieldValue(values[fieldId])]),
+  )
 }
 
 export function getFieldErrors(values) {
-  const numbers = {
-    homeValue: parseNumericFieldValue(values.homeValue),
-    mortgageBalance: parseNumericFieldValue(values.mortgageBalance),
-    currentMortgageRateAnnualPercent: parseNumericFieldValue(values.currentMortgageRateAnnualPercent),
-    yearsRemaining: parseNumericFieldValue(values.yearsRemaining),
-    cashNeeded: parseNumericFieldValue(values.cashNeeded),
-    age: parseNumericFieldValue(values.age),
-  }
+  const numbers = toParsedHomeDetailsValues(values)
   const errors = {}
 
   if (isBlank(values.homeValue)) {

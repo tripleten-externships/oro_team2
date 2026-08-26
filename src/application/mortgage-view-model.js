@@ -93,10 +93,58 @@ function getMonthlyLabel(monthly) {
   return 'No required monthly payment'
 }
 
-function toViewProduct(product, score) {
+function getAvailabilityState(product, inputs) {
+  const currentEquity = Math.max(0, inputs.homeValue - inputs.mortgageBalance)
+  const hasLimitedEquity = currentEquity < inputs.cashNeeded
+
+  if (!product.eligible) {
+    return 'unavailable'
+  }
+
+  if (hasLimitedEquity && ['heloc', 'heloan', 'cash-out-refinance'].includes(product.id)) {
+    return 'too-low'
+  }
+
+  if (hasLimitedEquity && ['home-equity-investment', 'co-ownership'].includes(product.id)) {
+    return 'limited'
+  }
+
+  return 'available'
+}
+
+function getLimitedTradeoff(productId) {
+  if (productId === 'home-equity-investment') {
+    return {
+      type: 'consideration',
+      text: 'Tradeoff - Shared appreciation. Request less cash; share future value.',
+    }
+  }
+
+  if (productId === 'co-ownership') {
+    return {
+      type: 'consideration',
+      text: 'Tradeoff - Shared ownership. Request less cash; share future value.',
+    }
+  }
+
+  return null
+}
+
+function toViewProduct(product, score, inputs) {
   const metadata = PRODUCT_META[product.id]
-  const unavailable = !product.eligible
+  const availabilityState = getAvailabilityState(product, inputs)
+  const unavailable = availabilityState === 'unavailable' || availabilityState === 'too-low'
   const monthlyLabel = unavailable ? 'Monthly impact' : getMonthlyLabel(product.monthly)
+  const eligibility = availabilityState === 'too-low'
+    ? { status: 'ineligible', label: 'Cash available - Too low' }
+    : availabilityState === 'limited'
+      ? { status: 'review', label: 'Cash available - Limited' }
+      : unavailable
+        ? { status: 'ineligible', label: 'Unavailable' }
+        : { status: 'eligible', label: 'Eligible' }
+  const tradeoff = availabilityState === 'limited'
+    ? getLimitedTradeoff(product.id)
+    : null
 
   return {
     ...product,
@@ -105,6 +153,11 @@ function toViewProduct(product, score) {
     risk: metadata.risk,
     score,
     ineligible: unavailable,
+    availabilityState,
+    eligibility,
+    suitabilityLevel: availabilityState === 'limited' ? 'possible' : null,
+    cashMetricLabel: availabilityState === 'limited' ? 'Cash available - Limited' : 'Cash net',
+    tradeoff,
     equityAt5: getEquityAtYear(product, 5),
     equityAt10: getEquityAtYear(product, 10),
     equityAt15: getEquityAtYear(product, 15),
@@ -147,7 +200,9 @@ function buildChartSeries(products) {
 function getResults(inputs, answers, direct = false) {
   const calculator = new MortgageCalculator(inputs)
   const normalizedInputs = calculator.getInputs()
-  const allProducts = calculator.getProducts().map((product) => toViewProduct(product))
+  const allProducts = calculator
+    .getProducts()
+    .map((product) => toViewProduct(product, undefined, normalizedInputs))
 
   if (direct) {
     return {
@@ -162,7 +217,7 @@ function getResults(inputs, answers, direct = false) {
 
   const recommendations = calculator
     .getRecommendations(mapAnswersToDomain(answers))
-    .map(({ product, score }) => toViewProduct(product, score))
+    .map(({ product, score }) => toViewProduct(product, score, normalizedInputs))
 
   const topScores = recommendations.slice(0, 2).map((product) => product.score)
   const hasCloseMatch = topScores.length === 2 && topScores[0] - topScores[1] <= 1

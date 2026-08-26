@@ -62,3 +62,44 @@ test('keeps limited-equity review data calculable for the warning flow', () => {
     product.cashNet === null || Number.isFinite(product.cashNet)
   )))
 })
+
+test('applies limited-equity messaging for shared-equity products', () => {
+  const results = getResults({
+    homeValue: 350000,
+    mortgageBalance: 320000,
+    currentMortgageRateAnnualPercent: 4.5,
+    yearsRemaining: 22,
+    cashNeeded: 100000,
+    age: 55,
+  }, {}, true)
+  const heloc = results.allProducts.find((product) => product.id === 'heloc')
+  const heloan = results.allProducts.find((product) => product.id === 'heloan')
+  const refinance = results.allProducts.find((product) => product.id === 'cash-out-refinance')
+  const hei = results.allProducts.find((product) => product.id === 'home-equity-investment')
+  const coOwnership = results.allProducts.find((product) => product.id === 'co-ownership')
+
+  assert.equal(heloc.ineligible, true)
+  assert.equal(heloc.eligibility.label, 'Cash available - Too low')
+  assert.equal(heloan.ineligible, true)
+  assert.equal(heloan.eligibility.label, 'Cash available - Too low')
+  assert.equal(refinance.ineligible, true)
+  assert.equal(refinance.eligibility.label, 'Cash available - Too low')
+
+  assert.equal(hei.ineligible, false)
+  assert.equal(hei.eligibility.label, 'Cash available - Limited')
+  assert.equal(hei.suitabilityLevel, 'possible')
+  assert.equal(hei.cashMetricLabel, 'Cash available - Limited')
+  assert.equal(
+    hei.tradeoff.text,
+    'Tradeoff - Shared appreciation. Request less cash; share future value.',
+  )
+
+  assert.equal(coOwnership.ineligible, false)
+  assert.equal(coOwnership.eligibility.label, 'Cash available - Limited')
+  assert.equal(coOwnership.suitabilityLevel, 'possible')
+  assert.equal(coOwnership.cashMetricLabel, 'Cash available - Limited')
+  assert.equal(
+    coOwnership.tradeoff.text,
+    'Tradeoff - Shared ownership. Request less cash; share future value.',
+  )
+})

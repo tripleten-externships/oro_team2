@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { OroChartContainer } from '../oro-chart-container'
 import { OroViewTab } from '../oro-view-tab'
 import './oro-chart-panel.css'
@@ -92,18 +92,24 @@ function OroChartPanel({
   emptyBody,
   onEditSelection,
   onReviseAndRecalculate,
+  errorState = false,
+  minimumLoadingMs = 700,
   className = '',
 }) {
   const generatedId = useId().replace(/:/g, '')
   const [internalSelectedSeriesId, setInternalSelectedSeriesId] = useState()
   const activeView = viewOptions.find((option) => option.id === view) || viewOptions[0]
+  const [loadingViewId, setLoadingViewId] = useState(null)
   const series = normalizeSeries(seriesByView?.[activeView.id], activeView.kind)
+  const hasData = series.length > 0
+  const isViewLoading = hasData && loadingViewId === activeView.id
   const panelId = `${generatedId}-chart-panel`
   const tabScrollHintId = `${generatedId}-tab-scroll-hint`
   const effectiveSelectedSeriesId = selectedSeriesId ?? internalSelectedSeriesId
   const classes = ['oro-chart-panel', className].filter(Boolean).join(' ')
 
   function selectView(nextView) {
+    setLoadingViewId(nextView)
     onViewChange?.(nextView)
   }
 
@@ -136,6 +142,20 @@ function OroChartPanel({
     selectView(nextView.id)
     event.currentTarget.querySelector(`#${generatedId}-${nextView.id}-tab`)?.focus()
   }
+
+  useEffect(() => {
+    if (!isViewLoading) {
+      return undefined
+    }
+
+    const timeoutId = setTimeout(() => {
+      setLoadingViewId((current) => (current === activeView.id ? null : current))
+    }, minimumLoadingMs)
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [activeView.id, isViewLoading, minimumLoadingMs])
 
   return (
     <section className={classes}>
@@ -176,10 +196,10 @@ function OroChartPanel({
           onSeriesSelect={selectSeries}
           valueFormatter={createValueFormatter(activeView.id)}
           caption={callout?.body || activeView.caption}
-          error={error}
+          error={error || errorState}
           errorTitle={errorTitle}
           errorBody={errorBody}
-          loading={loading}
+          loading={loading || isViewLoading}
           loadingTitle={loadingTitle}
           loadingBody={loadingBody}
           emptyTitle={emptyTitle}

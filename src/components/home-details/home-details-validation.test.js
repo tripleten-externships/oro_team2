@@ -5,6 +5,8 @@ import {
   getFieldWarnings,
   limitedEquityWarning,
   parseNumericFieldValue,
+  parseNumericInput,
+  toParsedHomeDetailsValues,
 } from './home-details-validation.js'
 
 const validValues = {
@@ -25,6 +27,33 @@ test('accepts valid decimal, spaced, and zero-interest input values', () => {
     cashNeeded: '100 000.75',
   }), {})
   assert.equal(parseNumericFieldValue(' 750 000.50 '), 750000.5)
+})
+
+test('parses comma- and currency-formatted numeric strings', () => {
+  assert.equal(parseNumericInput('350,000'), 350000)
+  assert.equal(parseNumericInput('$320,000'), 320000)
+  assert.equal(parseNumericInput('4.5'), 4.5)
+})
+
+test('accepts valid comma-formatted home and mortgage values', () => {
+  const values = {
+    homeValue: '350,000',
+    mortgageBalance: '320,000',
+    currentMortgageRateAnnualPercent: '4.5',
+    yearsRemaining: '22',
+    cashNeeded: '100,000',
+    age: '55',
+  }
+
+  assert.deepEqual(toParsedHomeDetailsValues(values), {
+    homeValue: 350000,
+    mortgageBalance: 320000,
+    currentMortgageRateAnnualPercent: 4.5,
+    yearsRemaining: 22,
+    cashNeeded: 100000,
+    age: 55,
+  })
+  assert.deepEqual(getFieldErrors(values), {})
 })
 
 test('requires a positive mortgage balance no higher than home value', () => {
@@ -71,4 +100,18 @@ test('clears cross-field errors when the corrected values are submitted', () => 
     mortgageBalance: 300000,
     cashNeeded: 450000,
   }), {})
+})
+
+test('flags mortgage balances above home value with formatted inputs', () => {
+  const errors = getFieldErrors({
+    ...validValues,
+    homeValue: '350,000',
+    mortgageBalance: '360,000',
+    cashNeeded: '100,000',
+  })
+
+  assert.equal(
+    errors.mortgageBalance,
+    'Enter a mortgage balance greater than $0 and no higher than your home value.',
+  )
 })

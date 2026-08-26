@@ -8,6 +8,7 @@ import {
   getFieldErrors,
   getFieldWarnings,
   parseNumericFieldValue,
+  toParsedHomeDetailsValues,
 } from './home-details-validation.js'
 import './home-details.css'
 
@@ -102,9 +103,7 @@ function HomeDetails({ initialValues = DEFAULT_INPUTS, onSubmit, onBack }) {
       return
     }
 
-    onSubmit(Object.fromEntries(
-      fieldConfig.map((field) => [field.id, parseNumericFieldValue(values[field.id])]),
-    ))
+    onSubmit(toParsedHomeDetailsValues(values))
   }
 
   function focusField(fieldId) {

@@ -13,6 +13,7 @@ import { OroAppHeader } from '../components/oro-app-header'
 import { OroCallout } from '../components/oro-callout'
 import { OroRestartModal } from '../components/oro-restart-modal'
 import Questionnaire from '../components/Questionnaire/Questionnaire.jsx'
+import { ReviewingCalculations } from '../components/reviewing-calculations'
 import ResultsPanel from '../components/ResultsPanel/ResultsPanel.jsx'
 import StarterPage from '../components/StarterPage/StarterPage.jsx'
 
@@ -150,9 +151,14 @@ function App() {
       detailProductId: null,
       editingInputs: false,
       inputs,
-      screen: 'results',
+      screen: isUpdate ? 'results' : 'reviewing',
       revisingAnswers: false,
+      selectedIds: isUpdate ? state.selectedIds : [],
     })
+  }
+
+  function handleViewIllustrativeResults() {
+    updateState({ screen: 'results' })
   }
 
   function requestRestart() {
@@ -196,6 +202,8 @@ function App() {
   function handleRetryChart() {
     const nextUrl = new URL(globalThis.location.href)
     nextUrl.searchParams.delete('qaChartState')
+    nextUrl.searchParams.delete('chartError')
+    nextUrl.searchParams.delete('chartState')
     globalThis.history.replaceState({}, '', nextUrl)
     setQaChartState(null)
   }
@@ -207,6 +215,8 @@ function App() {
     ? `Step ${guidedStep} of 6 · ${GUIDED_PROGRESS_LABELS[guidedStep - 1]}`
     : state.screen === 'home-details'
       ? 'Step 5 of 6 · Home details'
+      : state.screen === 'reviewing'
+        ? 'Step 6 of 6 · Reviewing calculations'
       : state.screen === 'results'
         ? resultsNotice === 'updated'
           ? 'Step 6 of 6 · Results updated'
@@ -251,6 +261,12 @@ function App() {
               initialValues={state.inputs}
               onBack={handleHomeDetailsBack}
               onSubmit={handleDetailsSubmit}
+            />
+          )}
+          {state.screen === 'reviewing' && (
+            <ReviewingCalculations
+              onBack={() => updateState({ screen: 'home-details' })}
+              onContinue={handleViewIllustrativeResults}
             />
           )}
           {state.screen === 'results' && results && (

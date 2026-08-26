@@ -1,0 +1,62 @@
+.reviewing-calculations {
+  max-width: var(--oro-layout-content-max);
+  margin: 0 auto;
+  padding: var(--oro-space-48) var(--oro-space-24) var(--oro-space-64);
+}
+
+.reviewing-calculations__panel {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--oro-space-40);
+  border: var(--oro-border-default) solid var(--oro-color-border-default);
+  border-radius: var(--oro-radius-panel);
+  background: var(--oro-color-surface-card);
+  display: grid;
+  gap: var(--oro-space-24);
+}
+
+.reviewing-calculations__eyebrow {
+  margin: 0;
+  color: var(--oro-color-text-secondary);
+  font: var(--oro-font-weight-semibold) var(--oro-type-label-size) /
+    var(--oro-type-label-line) var(--oro-font-control);
+  letter-spacing: var(--oro-type-label-tracking);
+  text-transform: uppercase;
+}
+
+.reviewing-calculations__panel h1 {
+  margin: 0;
+  color: var(--oro-color-surface-brand);
+  font: var(--oro-font-weight-regular) clamp(2rem, 4vw, 3rem) / 1.1 var(--oro-font-display);
+}
+
+.reviewing-calculations__intro {
+  margin: 0;
+  color: var(--oro-color-text-secondary);
+  font-size: var(--oro-type-body-emphasis-size);
+  line-height: var(--oro-type-body-emphasis-line);
+}
+
+.reviewing-calculations__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--oro-space-12);
+}
+
+@media (max-width: 680px) {
+  .reviewing-calculations {
+    padding: var(--oro-space-32) var(--oro-space-16) var(--oro-space-48);
+  }
+
+  .reviewing-calculations__panel {
+    padding: var(--oro-space-24) var(--oro-space-16);
+  }
+
+  .reviewing-calculations__actions {
+    flex-direction: column-reverse;
+  }
+
+  .reviewing-calculations__actions .oro-button {
+    width: 100%;
+  }
+}

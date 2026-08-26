@@ -353,6 +353,10 @@
     grid-template-columns: 1fr;
   }
 
+  .results-panel__cards .oro-product-card {
+    max-width: none;
+  }
+
   .results-panel__section-heading > p {
     text-align: left;
   }
